@@ -3,11 +3,14 @@ from Board import Board
 class Game:
     ''' ========== Constant Class Variables ========== '''
 
+
     ''' ========== Regular Class Variables ========== '''
+    
 
     ''' ========== Constructor ========== '''
-    def __init__(self, state=None, turn='b', moves_played=0):
-        # In param list here^, the "='b'" and similar are default arguments, so they
+
+    def __init__(self, state=None, turn='b', movesPlayed=0):
+        # In param list here ^, the "='b'" and similar are default arguments, so they
         # can be left out when instantiating Game objects and the args will get defaulted
         # to whatever value is after the '='.
         # ex. usage: 
@@ -26,6 +29,16 @@ class Game:
         #   >>> foo(bar2='test1', bar1='test2')
         #   test2
         #   test1
+
+        # Make sure params are of correct types
+        assert all([
+            type(state) in (list, None),
+            not empty(state),
+            all([len(state[sublist]) == len(state) for sublist in state]),
+            turn in ('b', 'w'),
+            type(movesPlayed) == int,
+            
+        ])
         if state is None:
             state = Board.STARTING_STATE
 
@@ -65,7 +78,6 @@ class Game:
 
 
     ''' ========== Static Methods ========== '''
-
 
     ''' ========== Instance Methods ========== '''
     def get_potential_available_black_moves(self, b):
