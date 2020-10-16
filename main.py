@@ -1,5 +1,6 @@
 from Game import Game
 from Board import Board
+import pygame
 
 def main():
     print()
@@ -9,17 +10,10 @@ def main():
     print('=====================')
     print(game)
 
-    game.board.setState([
-        [None, None, None, None, None, None, None, None],
-        [None, None, None, None, None, None, None, None],
-        [None, None, None, None, None, None, None, None],
-        [None, None, None, 'w', 'b', None, None, None],
-        [None, None, None, 'b', 'w', None, None, None],
-        [None, None, None, None, None, None, None, None],
-        [None, None, None, None, None, None, None, None],
-        [None, None, None, None, None, None, None, None]])
+    game.board.setState(Board.STARTING_STATE)
     print('Game with Starting Othello Position')
     print('===================================')
     print(game)
+
 if __name__ == '__main__':
     main()
