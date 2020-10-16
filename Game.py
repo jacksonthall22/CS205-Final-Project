@@ -1,4 +1,4 @@
-from Board import Board
+from Board import Board 
 
 class Game:
     ''' ========== Constant Class Variables ========== '''
@@ -8,6 +8,7 @@ class Game:
     
 
     ''' ========== Constructor ========== '''
+
     def __init__(self, state=None, turn='b', movesPlayed=0):
         # In param list here ^, the "='b'" and similar are default arguments, so they
         # can be left out when instantiating Game objects and the args will get defaulted
@@ -43,7 +44,9 @@ class Game:
 
         self.board = Board(state)
         self.turn = turn
-        self.movesPlayed = movesPlayed
+        self.moves_played = moves_played
+        self.potential_available_white_moves = get_potential_available_white_moves(self.board)
+        self.potential_available_black_moves = get_potential_available_black_moves(self.board)
 
 
     ''' ========== Magic Methods ========== '''
@@ -77,33 +80,13 @@ class Game:
     ''' ========== Static Methods ========== '''
 
     ''' ========== Instance Methods ========== '''
-    def moveIsPossible(self, move):
-        """ Return True iff move is possible given self.state. """
+    def get_potential_available_black_moves(self, b):
+        """ Take a Board b and return a 2d list where the element at every index is an int representing the number of white GamePieces neighboring that index (vertically and horizontally). """
         
-        if self.turn == 'b':
-            locationsToCheck = self.potentialPossibleWhiteMoves
-        elif self.turn == 'w':
-            locationsToCheck = self.potentialPossibleBlackMoves
-        else:
-            raise ValueError('custom error: self.turn isn\'t "b" or "w"')
-        
-        for location in locationsToCheck:
-            for gamePiece in 
+        # for rowIndex, row in enumerate(b):
+        #     pass
+        pass 
 
-    def makeMove(self, move):
-        """ If move is possible, make the move and flip appropriate GamePieces. """
-        
-
-    
-    def getLegalMoves(self):
-        """ Return a list of available moves. """
-        if self.turn == 'b':
-            # Get legal black moves in current position
-            pass
-        elif self.turn == 'w':
-            # Get legal white moves in current position
-            pass
-        else:
-            raise Exception('custom error: self.turn was not "b" or "w"')
-        
-
+    def get_potential_available_white_moves(self, b):
+        """ Take a Board b and return a 2d list where the element at every index is an int representing the number of black GamePieces neighboring that index (vertically and horizontally). """
+        pass
