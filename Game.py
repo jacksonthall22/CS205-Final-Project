@@ -6,7 +6,7 @@ class Game:
     ''' ========== Regular Class Variables ========== '''
 
     ''' ========== Constructor ========== '''
-    def __init__(self, state=None, turn='b', movesPlayed=0):
+    def __init__(self, state=None, turn='b', moves_played=0):
         # In param list here^, the "='b'" and similar are default arguments, so they
         # can be left out when instantiating Game objects and the args will get defaulted
         # to whatever value is after the '='.
@@ -31,7 +31,9 @@ class Game:
 
         self.board = Board(state)
         self.turn = turn
-        self.movesPlayed = movesPlayed
+        self.moves_played = moves_played
+        self.potential_available_white_moves = get_potential_available_white_moves(self.board)
+        self.potential_available_black_moves = get_potential_available_black_moves(self.board)
 
 
     ''' ========== Magic Methods ========== '''
@@ -66,3 +68,13 @@ class Game:
 
 
     ''' ========== Instance Methods ========== '''
+    def get_potential_available_black_moves(self, b):
+        """ Take a Board b and return a 2d list where the element at every index is an int representing the number of white GamePieces neighboring that index (vertically and horizontally). """
+        
+        # for rowIndex, row in enumerate(b):
+        #     pass
+        pass 
+
+    def get_potential_available_white_moves(self, b):
+        """ Take a Board b and return a 2d list where the element at every index is an int representing the number of black GamePieces neighboring that index (vertically and horizontally). """
+        pass
