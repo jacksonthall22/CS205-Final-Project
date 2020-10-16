@@ -6,27 +6,27 @@ class GamePiece:
     ''' ========== Regular Class Variables ========== '''
     
     ''' ========== Constructor ========== '''
-    def __init__(self, sideUp='b'):
-        self.sideUp = sideUp
+    def __init__(self, side_up='b'):
+        self.side_up = side_up
 
     ''' ========== Magic Methods ========== '''
     def __str__(self):
-        return (B_CHAR, W_CHAR)[sideUp == 'w']
+        return (B_CHAR, W_CHAR)[self.side_up == 'w']
 
     ''' ========== Static Methods ========== '''
     
 
     ''' ========== Instance Methods ========== '''
     def flip(self):
-        """ Change the sideUp to the opposite color. """
-        sideUp = [B_CHAR, W_CHAR][sideUp == 'b']
+        """ Change the side_up to the opposite color. """
+        self.side_up = (B_CHAR, W_CHAR)[self.side_up == 'b']
     
-    def getSideUp(self):
-        """ Return sideUp. """
-        return sideUp
+    def get_side_up(self):
+        """ Return self.side_up. """
+        return self.side_up
     
-    def setSideUp(self, sideUp):
-        """ Set sideUp to given value. """
-        assert sideUp in ('b', 'w')
+    def set_side_up(self, side_up):
+        """ Set self.side_up to given value. """
+        assert side_up in ('b', 'w')
 
-        self.sideUp = sideUp
+        self.side_up = side_up

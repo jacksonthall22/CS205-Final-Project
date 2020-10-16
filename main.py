@@ -10,7 +10,7 @@ def main():
     print('=====================')
     print(game)
 
-    game.board.setState(Board.STARTING_STATE)
+    game.board.set_state(Board.STARTING_STATE)
     print('Game with Starting Othello Position')
     print('===================================')
     print(game)

@@ -9,7 +9,7 @@ class Game:
 
     ''' ========== Constructor ========== '''
 
-    def __init__(self, state=None, turn='b', movesPlayed=0):
+    def __init__(self, state=None, turn='b', moves_played=0):
         # In param list here ^, the "='b'" and similar are default arguments, so they
         # can be left out when instantiating Game objects and the args will get defaulted
         # to whatever value is after the '='.
@@ -36,7 +36,7 @@ class Game:
             not empty(state),
             all([len(state[sublist]) == len(state) for sublist in state]),
             turn in ('b', 'w'),
-            type(movesPlayed) == int,
+            type(moves_played) == int,
             
         ])
         if state is None:
@@ -54,27 +54,27 @@ class Game:
         """ Print Game metadata and state of self.board to the console. """
         
         # Construct string to be printed
-        outputString = ''
+        output_string = ''
 
         # Show move number
-        if self.movesPlayed == 0:
-            outputString += 'It\'s the first move. '
+        if self.moves_played == 0:
+            output_string += 'It\'s the first move. '
         else:
-            outputString += f'It\'s move {self.movesPlayed + 1}. '
+            output_string += f'It\'s move {self.moves_played + 1}. '
 
         # Show who's turn it is
         if self.turn == 'b':
-            outputString += 'Black to move.\n'
+            output_string += 'Black to move.\n'
         elif self.turn == 'w':
-            outputString += 'White to move.\n'
+            output_string += 'White to move.\n'
         else:
             # Should never reach here - will be helpful for debugging later -JH
             raise ValueError('custom error: self.turn isn\'t "b" or "w"')
 
         # Show state of the board
-        outputString += self.board.__str__()
+        output_string += self.board.__str__()
 
-        return outputString
+        return output_string
 
 
     ''' ========== Static Methods ========== '''
@@ -83,7 +83,7 @@ class Game:
     def get_potential_available_black_moves(self, b):
         """ Take a Board b and return a 2d list where the element at every index is an int representing the number of white GamePieces neighboring that index (vertically and horizontally). """
         
-        # for rowIndex, row in enumerate(b):
+        # for row_index, row in enumerate(b):
         #     pass
         pass 
 
