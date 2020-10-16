@@ -1,4 +1,4 @@
-from Board import Board
+from Board import Board 
 
 class Game:
     ''' ========== Constant Class Variables ========== '''
