@@ -1,5 +1,71 @@
-class Board:
+"""
+The `Board` class represents an Othello board. Since `Board` objects need to contain more metadata 
+than just the state of the board, like the methods needed to validate and make moves, the actual 
+state of the game board is an instance variable called `state`.
+
+The `state` variable is an 8 x 8 2d list where sublists represent ranks (rows) and elements in sublists
+are Tiles that optionally contain a `GamePiece` (if no `GamePiece` is in the Tile, the type of `tile.gamePiece`
+will be None.
+
+In the board state below, every rank (row) and file (column) is labeled with two numbers - the first is the 
+letter or number that would conventionally be used to refer to that line of squares. Most games using a chesslike
+board of squares use Algebraic Notation to transcribe games. You can get the gist here: 
+https://en.wikipedia.org/wiki/Algebraic_notation_(chess)). The second numbers represent the index locations
+in the `Board`'s `state` that would be used to access the `GamePiece` object stored there. Recall how double
+indexing works: ((1, 2), (3, 4))[0][1] = (1, 2)[1] = 2
+
+Here's a blank board state (empty Tiles):
+
+        ┌──────┬──────┬──────┬──────┬──────┬──────┬──────┬──────┐
+    8/0 │      │      │      │      │      │      │      │      │
+        │      │      │      │      │      │      │      │      │
+        ├──────┼──────┼──────┼──────┼──────┼──────┼──────┼──────┤
+    7/1 │      │      │      │      │      │      │      │      │
+        │      │      │      │      │      │      │      │      │
+        ├──────┼──────┼──────┼──────┼──────┼──────┼──────┼──────┤
+    6/2 │      │      │      │      │      │      │      │      │
+        │      │      │      │      │      │      │      │      │
+        ├──────┼──────┼──────┼──────┼──────┼──────┼──────┼──────┤
+    5/3 │      │      │      │      │      │      │      │ "h5" │  <—— Normally called h5 when speaking and playing over-the-board
+        │      │      │      │      │      │      │      │[3][7]│  <—— Access the `GamePiece` here with `b.state[3][7]` for a `Board b`
+        ├──────┼──────┼──────┼──────┼──────┼──────┼──────┼──────┤
+    4/4 │      │      │      │      │      │      │      │      │
+        │      │      │      │      │      │      │      │      │
+        ├──────┼──────┼──────┼──────┼──────┼──────┼──────┼──────┤
+    3/5 │      │      │      │      │      │      │      │      │
+        │      │      │      │      │      │      │      │      │
+        ├──────┼──────┼──────┼──────┼──────┼──────┼──────┼──────┤
+    2/6 │      │      │      │      │      │      │      │      │
+        │      │      │      │      │      │      │      │      │
+        ├──────┼──────┼──────┼──────┼──────┼──────┼──────┼──────┤
+    1/7 │      │      │      │      │      │      │      │      │
+        │      │      │      │      │      │      │      │      │
+        └──────┴──────┴──────┴──────┴──────┴──────┴──────┴──────┘
+           a/0    b/1    c/2    d/3    e/4    f/5    g/6    h/7
+
+Fields
+------
+    Constant Class Vars
+    -------------------
+        B_CHAR : Character to print to terminal in board spaces containing black `GamePieces`
+        W_CHAR : Character to print to terminal in board spaces containing white `GamePieces`
+        EMPTY_CHAR : Character to print to terminal in board spaces containing no `GamePiece`
+        BLANK_STATE : The board state containing 
+        STARTING_STATE
+    Instance Vars
+    -------------
+        state : Current state of the board as a 2d list of `Tile` objects, each of which
+                optionally contains a `GamePiece` object (see `Tile` class documentation)
+
+"""
+
+from GUIElement import GUIElement
+
+
+class Board(GUIElement):
+    
     ''' ========== Constant Class Variables ========== '''
+
     B_CHAR = '○'
     W_CHAR = '●'
     EMPTY_CHAR = ' '
@@ -15,15 +81,18 @@ class Board:
         [None, None, None, None, None, None, None, None],
     ]
 
+
     ''' ========== Regular Class Variables ========== '''
 
 
     ''' ========== Constructor ========== '''
+    
     def __init__(self, state=BLANK_STATE):
         self.state = state
 
 
     ''' ========== Magic Methods ========== '''
+
     def __str__(self):
         # Quick check to make sure board is correct dimensions and
         # only contains 'b', 'w', or None in every square
@@ -58,6 +127,7 @@ class Board:
 
 
     ''' ========== Static Methods ========== '''
+    
     @staticmethod
     def is_valid_state(state):
         """
@@ -74,6 +144,7 @@ class Board:
 
 
     ''' ========== Instance Methods ========== '''
+
     def set_state(self, new_state):
         """ If new_state is valid, set state to new_state. """
         if Board.is_valid_state(new_state):
@@ -81,3 +152,7 @@ class Board:
         else:
             # Should never reach here - will be helpful for debugging later -JH
             raise ValueError('custom error: Invalid new_state given to Board.set_state()')
+
+    def draw(self):
+        # TODO
+        pass
