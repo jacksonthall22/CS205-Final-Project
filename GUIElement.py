@@ -15,21 +15,22 @@ Subclasses of GUIElement
 
 """
 
-from abc import ABC, abstractmethod # Builtin Python lib. to declare abstract classes
-import re
+from abc import ABC, abstractmethod  # Builtin Python lib to declare abstract classes
 from utility import is_valid_filename
 
 
 class GUIElement(ABC):
+    """
+        GUIElement is an abstract class used to represent any object that is drawable in the GUI. All drawable objects
+        extend GUIElement.
+    """
 
     ''' ========== Constant Class Variables ========== '''
 
     # Textures of any GUIElement should have one of these extensions (case sensitive) - add as needed
     VALID_IMAGE_FILE_EXTENSIONS = ('png', 'jpg', 'jpeg', 'gif')
 
-
     ''' ========== Regular Class Variables ========== '''
-
 
     ''' ========== Constructor ========== '''
 
@@ -55,39 +56,37 @@ class GUIElement(ABC):
         # Make sure params are of correct type
         assert all([
             type(texture_files) in (dict, None),
-            all([is_valid_filename(filename, VALID_IMAGE_FILE_EXTENSIONS) for filename in texture_files.values()]),
+            all([is_valid_filename(filename, GUIElement.VALID_IMAGE_FILE_EXTENSIONS) for filename in
+                 texture_files.values()]),
         ])
 
         self.texture_files = texture_files
         self.x_loc = x_loc
         self.y_loc = y_loc
-    
 
     ''' ========== Magic Methods ========== '''
     
     def __repr__(self):
         """ Create a formal string representation of this GUIElement. """
 
-        r = f'<{self.__class__.__module__}.{self.__class__.__name__} object at {hex(id(Test))}'
+        r = f'<{self.__class__.__module__}.{self.__class__.__name__} object at {hex(id(self))}'
 
-        # Show vars
+        # Builds string of names and values of all instance variables set in self
         r += ', vars: '
         if self.__dict__:
             r += ', '.join([f'(\'{i}\': {self.__dict__[i]})' for i in self.__dict__.keys()])
         else:
             r += '<no instance variables set>'
-
         r += '>'
+
         return r
 
-
     ''' ========== Static Methods ========== '''
-    
 
     ''' ========== Instance Methods ========== '''
 
     @abstractmethod
-    def draw(self, x):
+    def draw(self):
         # This method is abstract - don't implement here, only in subclasses
 
         # TODO Can still change parameters ^ based on what makes sense (might

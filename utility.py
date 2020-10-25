@@ -1,5 +1,5 @@
 """
-Put any basic helper/utility functions here that do not need to be attached to objects -JH
+Put any helper/utility functions here that do not need to be attached to objects -JH
 
 How To Use
 ----------
@@ -35,4 +35,3 @@ def is_valid_filename(filename, valid_extensions):
 
     # re.match produces a MatchObject if any matches are found, else None
     return re.match(valid_windows_filename_regex, filename) is not None
-

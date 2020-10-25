@@ -1,6 +1,6 @@
 from Game import Game
 from Board import Board
-import pygame
+# import pygame
 
 
 def main():

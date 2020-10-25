@@ -7,41 +7,44 @@ The `state` variable is an 8 x 8 2d list where sublists represent ranks (rows) a
 are Tiles that optionally contain a `GamePiece` (if no `GamePiece` is in the Tile, the type of `tile.gamePiece`
 will be None.
 
-In the board state below, every rank (row) and file (column) is labeled with two numbers - the first is the 
-letter or number that would conventionally be used to refer to that line of squares. Most games using a chesslike
+In the board state below, every rank (row) and file (column) is labeled with two characters - the first is the
+letter or number that would conventionally be used to refer to that line of squares. Most games using a chess-like
 board of squares use Algebraic Notation to transcribe games. You can get the gist here: 
-https://en.wikipedia.org/wiki/Algebraic_notation_(chess)). The second numbers represent the index locations
-in the `Board`'s `state` that would be used to access the `GamePiece` object stored there. Recall how double
-indexing works: ((1, 2), (3, 4))[0][1] = (1, 2)[1] = 2
+https://en.wikipedia.org/wiki/Algebraic_notation_(chess)#/media/File:SCD_algebraic_notation.svg.
+
+The second numbers represent the index locations in the `Board`'s `state` that would be used to access the `GamePiece`
+object stored there. Recall how double indexing works: ((1, 2), (3, 4))[0][1] = (1, 2)[1] = 2.
+
+Also notice that ranks are ordered
 
 Here's a blank board state (empty Tiles):
 
         ┌──────┬──────┬──────┬──────┬──────┬──────┬──────┬──────┐
-    8/0 │      │      │      │      │      │      │      │      │
+  8/[0] │      │      │      │      │      │      │      │      │
         │      │      │      │      │      │      │      │      │
         ├──────┼──────┼──────┼──────┼──────┼──────┼──────┼──────┤
-    7/1 │      │      │      │      │      │      │      │      │
+  7/[1] │      │      │      │      │      │      │      │      │
         │      │      │      │      │      │      │      │      │
         ├──────┼──────┼──────┼──────┼──────┼──────┼──────┼──────┤
-    6/2 │      │      │      │      │      │      │      │      │
+  6/[2] │      │      │      │      │      │      │      │      │
         │      │      │      │      │      │      │      │      │
         ├──────┼──────┼──────┼──────┼──────┼──────┼──────┼──────┤
-    5/3 │      │      │      │      │      │      │      │ "h5" │  <—— Normally called h5 when speaking and playing over-the-board
-        │      │      │      │      │      │      │      │[3][7]│  <—— Access the `GamePiece` here with `b.state[3][7]` for a `Board b`
+  5/[3] │      │      │      │      │      │      │      │ "h5" │  <—— "h5" when speaking and playing over-the-board
+        │      │      │      │      │      │      │      │[3][7]│  <—— `b.state[3][7]` for a `Board b`
         ├──────┼──────┼──────┼──────┼──────┼──────┼──────┼──────┤
-    4/4 │      │      │      │      │      │      │      │      │
+  4/[4] │      │      │      │      │      │      │      │      │
         │      │      │      │      │      │      │      │      │
         ├──────┼──────┼──────┼──────┼──────┼──────┼──────┼──────┤
-    3/5 │      │      │      │      │      │      │      │      │
+  3/[5] │      │      │      │      │      │      │      │      │
         │      │      │      │      │      │      │      │      │
         ├──────┼──────┼──────┼──────┼──────┼──────┼──────┼──────┤
-    2/6 │      │      │      │      │      │      │      │      │
+  2/[6] │      │      │      │      │      │      │      │      │
         │      │      │      │      │      │      │      │      │
         ├──────┼──────┼──────┼──────┼──────┼──────┼──────┼──────┤
-    1/7 │      │      │      │      │      │      │      │      │
+  1/[7] │      │      │      │      │      │      │      │      │
         │      │      │      │      │      │      │      │      │
         └──────┴──────┴──────┴──────┴──────┴──────┴──────┴──────┘
-           a/0    b/1    c/2    d/3    e/4    f/5    g/6    h/7
+          a/[0]  b/[1]  c/[2]  d/[3]  e/[4]  f/[5]  g/[6]  h/[7]
 
 Fields
 ------
@@ -57,39 +60,56 @@ Fields
         state : Current state of the board as a 2d list of `Tile` objects, each of which
                 optionally contains a `GamePiece` object (see `Tile` class documentation)
 
+Methods
+-------
+    TODO
+
 """
+import copy
 
 from GUIElement import GUIElement
+from GamePiece import GamePiece
+from Tile import Tile
 
 
 class Board(GUIElement):
-    
+    """ Board extends GUIElement, represents an Othello board and stores  """
+
     ''' ========== Constant Class Variables ========== '''
 
     B_CHAR = '○'
     W_CHAR = '●'
     EMPTY_CHAR = ' '
-    BLANK_STATE = [[None for file in range(8)] for rank in range(8)]
+    BLANK_STATE = [[Tile()] * 8] * 8
     STARTING_STATE = [
-        [None, None, None, None, None, None, None, None],
-        [None, None, None, None, None, None, None, None],
-        [None, None, None, None, None, None, None, None],
-        [None, None, None, 'w', 'b', None, None, None],
-        [None, None, None, 'b', 'w', None, None, None],
-        [None, None, None, None, None, None, None, None],
-        [None, None, None, None, None, None, None, None],
-        [None, None, None, None, None, None, None, None],
+        [Tile(GamePiece())] * 8,
+        [Tile(GamePiece())] * 8,
+        [Tile(GamePiece())] * 8,
+        [Tile(GamePiece())] * 3 + [Tile(GamePiece('w')), Tile(GamePiece('b'))] + [Tile(GamePiece())] * 3,
+        [Tile(GamePiece())] * 3 + [Tile(GamePiece('b')), Tile(GamePiece('w'))] + [Tile(GamePiece())] * 3,
+        [Tile(GamePiece())] * 8,
+        [Tile(GamePiece())] * 8,
+        [Tile(GamePiece())] * 8
     ]
 
+    # (delta_r, delta_f) tuples in this list correspond to the cells neighboring a state[r][f]
+    # (ie. state[r + delta_r][f + delta_f])
+    # When checking for neighbors using this list, must use try/except to catch index errors for any cells on the
+    # perimeter of board
+    NEIGHBOR_INDEXES_RELATIVE = [(file, rank) for file in (-1, 0, 1) for rank in (-1, 0, 1) if (file, rank) != (0, 0)]
 
     ''' ========== Regular Class Variables ========== '''
 
-
     ''' ========== Constructor ========== '''
     
-    def __init__(self, state=BLANK_STATE):
-        self.state = state
+    def __init__(self, state=None):
+        # Call parent constructor
+        super().__init__()
 
+        if state is None:
+            state = copy.deepcopy(Board.STARTING_STATE)
+
+        self.state = state
 
     ''' ========== Magic Methods ========== '''
 
@@ -125,7 +145,6 @@ class Board(GUIElement):
 
         return output_string
 
-
     ''' ========== Static Methods ========== '''
     
     @staticmethod
@@ -141,7 +160,6 @@ class Board(GUIElement):
             all([len(row) == 8 for row in state]),
             all([all([col in ['b', 'w', None] for col in row]) for row in state]),
         ])
-
 
     ''' ========== Instance Methods ========== '''
 
