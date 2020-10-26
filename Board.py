@@ -9,17 +9,18 @@ will be None.
 
 In the board state below, every rank (row) and file (column) is labeled with two characters - the first is the
 letter or number that would conventionally be used to refer to that line of squares. Most games using a chess-like
-board of squares use Algebraic Notation to transcribe games. You can get the gist here: 
+board of squares use Algebraic Notation (AN) to transcribe games. You can get the gist here:
 https://en.wikipedia.org/wiki/Algebraic_notation_(chess)#/media/File:SCD_algebraic_notation.svg.
 
 The second numbers represent the index locations in the `Board`'s `state` that would be used to access the `GamePiece`
 object stored there. Recall how double indexing works: ((1, 2), (3, 4))[0][1] = (1, 2)[1] = 2.
 
-Also notice that the two values for ranks increase in opposite directions - this is because a1 is conventionally on the
-bottom-left corner of the board from the perspective of the first player to make a move, whereas when the board is
-printed rank-by-rank, the 0th rank in `state` will print on the top.
+Also notice that the two values for ranks increase in opposite directions—this is because a1 is conventionally on the
+bottom-left corner of the board from the perspective of the first player to make a move (black for Othello), whereas
+when the board is printed rank-by-rank, the 0th rank in `state` will print on the top. Therefore using both naming
+schemes and providing functions to convert moves AN and rank-file forms is convenient for the GUI and backend.
 
-Here's a blank board state (empty Tiles):
+Here's a blank board state for reference (with empty Tiles):
 
         ┌──────┬──────┬──────┬──────┬──────┬──────┬──────┬──────┐
   8/[0] │      │      │      │      │      │      │      │      │
