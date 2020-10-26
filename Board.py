@@ -15,7 +15,9 @@ https://en.wikipedia.org/wiki/Algebraic_notation_(chess)#/media/File:SCD_algebra
 The second numbers represent the index locations in the `Board`'s `state` that would be used to access the `GamePiece`
 object stored there. Recall how double indexing works: ((1, 2), (3, 4))[0][1] = (1, 2)[1] = 2.
 
-Also notice that ranks are ordered
+Also notice that the two values for ranks increase in opposite directions - this is because a1 is conventionally on the
+bottom-left corner of the board from the perspective of the first player to make a move, whereas when the board is
+printed rank-by-rank, the 0th rank in `state` will print on the top.
 
 Here's a blank board state (empty Tiles):
 
@@ -53,8 +55,8 @@ Fields
         B_CHAR : Character to print to terminal in board spaces containing black `GamePieces`
         W_CHAR : Character to print to terminal in board spaces containing white `GamePieces`
         EMPTY_CHAR : Character to print to terminal in board spaces containing no `GamePiece`
-        BLANK_STATE : The board state containing 
-        STARTING_STATE
+        BLANK_STATE : Board state containing only Tiles with empty GamePieces
+        STARTING_STATE : Starting Othello board state - d4/e5 = 'b', d5/e4 = 'w', else empty
     Instance Vars
     -------------
         state : Current state of the board as a 2d list of `Tile` objects, each of which
