@@ -12,6 +12,7 @@ class GamePiece(GUIElement):
     # Used in backend (for easy typing)
     B_CHAR = 'b'
     W_CHAR = 'w'
+    EMPTY_CHAR = ' '
 
     ''' ========== Regular Class Variables ========== '''
 

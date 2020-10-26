@@ -77,9 +77,6 @@ class Board(GUIElement):
 
     ''' ========== Constant Class Variables ========== '''
 
-    B_CHAR = '○'
-    W_CHAR = '●'
-    EMPTY_CHAR = ' '
     BLANK_STATE = [[Tile()] * 8] * 8
     STARTING_STATE = [
         [Tile(GamePiece())] * 8,
@@ -125,11 +122,11 @@ class Board(GUIElement):
         for index, row in enumerate(self.state):
             for col in row:
                 if col is None:
-                    char_to_fill = Board.EMPTY_CHAR
+                    char_to_fill = GamePiece.EMPTY_CHAR
                 elif col.lower() == 'b':
-                    char_to_fill = Board.B_CHAR
+                    char_to_fill = GamePiece.B_CHAR
                 elif col.lower() == 'w':
-                    char_to_fill = Board.W_CHAR
+                    char_to_fill = GamePiece.W_CHAR
                 else:
                     # Should never reach here - will be helpful for debugging later -JH
                     raise Exception('custom error: Bad formatting of Board.state')
@@ -149,17 +146,14 @@ class Board(GUIElement):
     
     @staticmethod
     def is_valid_state(state):
-        """
-            Return true iff given state is an 8x8 2d list with sublists containing 
-            only 'b', 'w', or None.
-        """
-        return all([
+        """ Return true iff given state is an 8x8 2d list with sublists containing only 'b', 'w', or None. """
+        return all((
             type(state) == list,
             len(state) == 8,
-            all([type(row) == list for row in state]),
-            all([len(row) == 8 for row in state]),
-            all([all([col in ['b', 'w', None] for col in row]) for row in state]),
-        ])
+            all((type(row) == list for row in state)),
+            all((len(row) == 8 for row in state)),
+            all((all((col in ['b', 'w', None] for col in row)) for row in state)),
+        ))
 
     ''' ========== Instance Methods ========== '''
 
