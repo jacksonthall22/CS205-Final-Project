@@ -130,8 +130,9 @@ class Game(GUIElement):
                 if not move_was_made:
                     print('That wasn\'t a valid move. ', end='')
 
+        # Show board position after final move and display winner
+        print(game.board)
         black_score, white_score = game.get_winner()
-
         if black_score > white_score:
             print(f'Game over. Black wins {black_score} - {white_score}')
         elif white_score > black_score:
