@@ -5,6 +5,8 @@ Game objects extend GUIElement and store any relevant data about an Othello game
 from Board import Board
 from GamePiece import GamePiece
 from GUIElement import GUIElement
+import random
+import time
 
 
 class Game(GUIElement):
@@ -71,9 +73,26 @@ class Game(GUIElement):
     def game_loop(game):
         """ Docstring for game_loop() - TODO """
 
+        player_color_prompt = input('Would you like to play black or white? Black always moves first. (b/w)\n>>> ')
+
+        while player_color_prompt not in ('b', 'w'):
+            player_color_prompt = input('Please enter "b" or "w":\n>>> ')
+
+        player_moves_first = player_color_prompt == 'b'
+
         # Loop until game ends
         while not game.is_over():
             print(game)
+
+            if game.side_to_move == GamePiece.W_CHAR and player_moves_first \
+                    or game.side_to_move == GamePiece.B_CHAR and not player_moves_first:
+                print('Computer is thinking.', end='')
+                time.sleep(1)
+                print('.', end='')
+                time.sleep(1)
+                print('.', end='')
+                time.sleep(1)
+                print()
 
             move_was_made = False
 
@@ -81,14 +100,23 @@ class Game(GUIElement):
             while not move_was_made:
                 # Get move in algebraic notation
                 if game.side_to_move == GamePiece.B_CHAR:
-                    algebraic_move = input('Enter black\'s move:\n>>> ')
+                    if player_moves_first:
+                        algebraic_move = input('Enter black\'s move:\n>>> ')
+                    else:
+                        r, f = game.get_random_valid_move()
+                        algebraic_move = Board.indices_to_algebraic(r, f)
                 elif game.side_to_move == GamePiece.W_CHAR:
-                    algebraic_move = input('Enter white\'s move:\n>>> ')
+                    if not player_moves_first:
+                        algebraic_move = input('Enter white\'s move:\n>>> ')
+                    else:
+                        r, f = game.get_random_valid_move()
+                        algebraic_move = Board.indices_to_algebraic(r, f)
                 else:
                     raise ValueError('custom error: game.side_to_move not equal to GamePiece.B_CHAR or GamePiece.W_CHAR'
                                      'in Game.game_loop()')
 
                 # Loop until user enters valid move in AN
+                # Note: will never break into this loop for iteration where it's computer's move - no need to validate
                 while not Board.is_valid_algebraic_move(algebraic_move):
                     algebraic_move = input('Please enter a move in Algebraic Notation (like "a1", "e6", '
                                            'etc.):\n>>> ')
@@ -101,13 +129,54 @@ class Game(GUIElement):
                 if not move_was_made:
                     print('That wasn\'t a valid move. ', end='')
 
+        black_score, white_score = game.get_winner()
+
+        if black_score > white_score:
+            print(f'Game over. Black wins {black_score} - {white_score}')
+        elif white_score > black_score:
+            print(f'Game over. White wins {black_score} - {white_score}')
+        else:
+            print(f'It\'s a tie. {black_score} - {white_score}')
+
     ''' ========== Instance Methods ========== '''
+
+    def get_random_valid_move(self):
+        """ Docstring for get_random_valid_move() - TODO """
+
+        return random.choice(self.get_all_valid_moves())
+
+    def get_all_valid_moves(self):
+        """ Docstring for get_all_valid_moves() - TODO """
+
+        valid_moves = []
+
+        for rank in range(8):
+            for file in range(8):
+                if self.is_valid_move(rank, file, self.side_to_move):
+                    valid_moves.append((rank, file))
+
+        return valid_moves
 
     def is_over(self):
         """ Docstring for play_game() - TODO """
 
         # TODO Make this smarter
         return self.moves_played == 60
+
+    def get_winner(self):
+        """ Docstring for get_winner() - TODO """
+
+        black_count = 0
+        white_count = 0
+
+        for rank in range(8):
+            for file in range(8):
+                if self.board.state[rank][file].game_piece.get_side_up() == GamePiece.B_CHAR:
+                    black_count += 1
+                elif self.board.state[rank][file].game_piece.get_side_up() == GamePiece.W_CHAR:
+                    white_count += 1
+
+        return black_count, white_count
 
     def make_move(self, rank, file, color):
         """
@@ -148,7 +217,8 @@ class Game(GUIElement):
 
                         # TODO Can probably make more efficient - may add and remove same element from indices_... list
                         # Remove these indices from indices_with_black_neighbors if it falls to 0 in num_black_neighbors
-                        if self.board.num_black_neighbors[rank + d_rank][file + d_file] == 0:
+                        if self.board.num_black_neighbors[rank + d_rank][file + d_file] == 0\
+                                and (rank + d_rank, file + d_file) in self.board.indices_with_black_neighbors:
                             self.board.indices_with_black_neighbors.remove((rank + d_rank, file + d_file))
 
                     # Remove these indices from indices_with_white_neighbors if it falls to 0 in num_white_neighbors
@@ -168,7 +238,8 @@ class Game(GUIElement):
                         self.board.num_white_neighbors[rank + d_rank][file + d_file] -= 1
 
                         # Remove these indices from indices_with_black_neighbors if it falls to 0 in num_black_neighbors
-                        if self.board.num_white_neighbors[rank + d_rank][file + d_file] == 0:
+                        if self.board.num_white_neighbors[rank + d_rank][file + d_file] == 0 \
+                                and (rank + d_rank, file + d_file) in self.board.indices_with_white_neighbors:
                             self.board.indices_with_white_neighbors.remove((rank + d_rank, file + d_file))
 
 

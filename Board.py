@@ -202,9 +202,9 @@ class Board(GUIElement):
     def indices_to_algebraic(rank, file):
         """ Docstring for indices_to_algebraic() - TODO """
 
-        assert rank in '12345678' and file in 'abcdefgh'
+        # assert rank in '12345678' and file in 'abcdefgh'
 
-        return 'abcdefgh'[file] + '12345678'[rank]
+        return 'abcdefgh'[file] + '87654321'[rank]
 
     @staticmethod
     def get_blank_state():
