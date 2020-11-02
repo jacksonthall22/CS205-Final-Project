@@ -74,10 +74,11 @@ def game_menu():
         SCREEN.blit(TITLE, ((X // 2) - (452 // 2), 50))
 
         # Add buttons
-        create_button('START', (X // 4) - 125, (3 * Y // 4) - 50, 300, 100, play_game)
-        create_button('EXIT', (3 * X // 4) - 125, (3 * Y // 4) - 50, 300, 100, quit_game)
+        create_button('START', (X // 4) - 125, (4 * Y // 5) - 50, 300, 100, play_game)
+        create_button('EXIT', (3 * X // 4) - 125, (4 * Y // 5) - 50, 300, 100, quit_game)
         # TODO remove after full implementation
-        create_button('TEST WIN SCREEN', X // 2 - 250, Y//2 - 50, 500, 100, win_screen)
+        # REMOVE COMMENT TO TEST BUTTON (Causes issues with other buttons)
+        # create_button('TEST WIN SCREEN', X // 2 - 250, Y//2 - 50, 500, 100, win_screen)
 
         pygame.display.update()
         clock.tick(15)
@@ -97,7 +98,7 @@ def play_game():
 
         # TODO change this to be each tile in the board
         draw_board()
-        create_button('EXIT', X // 9, (6 * Y // 8), 300, 100, quit_game)
+        create_button('EXIT', X // 12, (Y // 2), 300, 100, quit_game)
 
         # TODO Having issues with this getting stuck in recursive loop and crashing, implement later if time permits
         #create_button('MENU', X//9, (4 * Y // 8), 300, 100, game_menu)
