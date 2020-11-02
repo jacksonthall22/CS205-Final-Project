@@ -84,16 +84,6 @@ class Game(GUIElement):
         while not game.is_over():
             print(game)
 
-            if game.side_to_move == GamePiece.W_CHAR and player_moves_first \
-                    or game.side_to_move == GamePiece.B_CHAR and not player_moves_first:
-                print('Computer is thinking.', end='')
-                time.sleep(1)
-                print('.', end='')
-                time.sleep(1)
-                print('.', end='')
-                time.sleep(1)
-                print()
-
             move_was_made = False
 
             # Loop until user enters valid move
@@ -120,6 +110,17 @@ class Game(GUIElement):
                 while not Board.is_valid_algebraic_move(algebraic_move):
                     algebraic_move = input('Please enter a move in Algebraic Notation (like "a1", "e6", '
                                            'etc.):\n>>> ')
+
+                # Show that computer is thinking if it's their turn
+                if game.side_to_move == GamePiece.W_CHAR and player_moves_first \
+                        or game.side_to_move == GamePiece.B_CHAR and not player_moves_first:
+                    print('Computer is thinking.', end='')
+                    time.sleep(1)
+                    print('.', end='')
+                    time.sleep(1)
+                    print('.', end='')
+                    time.sleep(1)
+                    print(f' the computer played {algebraic_move}.')
 
                 # Make the move
                 move_rank, move_file = Board.algebraic_to_indices(algebraic_move)

@@ -120,9 +120,18 @@ class Board(GUIElement):
         assert Board.is_valid_state(self.state)
 
         # Build board string
-        output_string = '┌───┬───┬───┬───┬───┬───┬───┬───┐\n'
+        output_string = ''
+
+        # Add left margin padding if coords are being displayed
+        if show_coords:
+            output_string += '   '
+
+        output_string += '┌───┬───┬───┬───┬───┬───┬───┬───┐\n'
 
         for rank_index, rank in enumerate(self.state):
+            if show_coords:
+                output_string += f' {"87654321"[rank_index]} '
+
             for file_index, tile in enumerate(rank):
                 if tile.game_piece.get_side_up() == GamePiece.EMPTY_CHAR:
                     char_to_fill = GamePiece.EMPTY_DISPLAY_CHAR
@@ -139,10 +148,25 @@ class Board(GUIElement):
 
             if rank_index != len(self.state) - 1:
                 # Not the last row, use ├───┼...
-                output_string += '│\n├───┼───┼───┼───┼───┼───┼───┼───┤\n'
+                output_string += '│\n'
+
+                # Add left margin padding if showing coords
+                if show_coords:
+                    output_string += '   '
+
+                output_string += '├───┼───┼───┼───┼───┼───┼───┼───┤\n'
             else:
                 # Last row, use └───┴...
-                output_string += '│\n└───┴───┴───┴───┴───┴───┴───┴───┘\n'
+                output_string += '│\n'
+
+                # Add left margin padding if showing coords
+                if show_coords:
+                    output_string += '   '
+
+                output_string += '└───┴───┴───┴───┴───┴───┴───┴───┘\n'
+
+        if show_coords:
+            output_string += '     a   b   c   d   e   f   g   h\n'
 
         return output_string
 
