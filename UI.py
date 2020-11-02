@@ -77,7 +77,8 @@ def game_menu():
         create_button('START', (X // 4) - 125, (3 * Y // 4) - 50, 300, 100, play_game)
         create_button('EXIT', (3 * X // 4) - 125, (3 * Y // 4) - 50, 300, 100, quit_game)
         # TODO remove after full implementation
-        create_button('TEST WIN SCREEN', X // 2 - 250, Y//2 - 50, 500, 100, win_screen)
+        # REMOVE COMMENT TO TEST BUTTON (Causes issues with other buttons)
+        # create_button('TEST WIN SCREEN', X // 2 - 250, Y//2 - 50, 500, 100, win_screen)
 
         pygame.display.update()
         clock.tick(15)
