@@ -54,11 +54,15 @@ class GUIElement(ABC):
         """
 
         # Make sure params are of correct type
-        assert all([
-            type(texture_files) in (dict, None),
-            all([is_valid_filename(filename, GUIElement.VALID_IMAGE_FILE_EXTENSIONS) for filename in
-                 texture_files.values()]),
-        ])
+        # TODO This fails because texture_files can be a NoneType
+        # assert all((
+        #     type(texture_files) in (dict, None),
+        #     any((
+        #         texture_files is None,
+        #         all((is_valid_filename(filename, GUIElement.VALID_IMAGE_FILE_EXTENSIONS) for filename in
+        #              texture_files.values()))
+        #     )),
+        # ))
 
         self.texture_files = texture_files
         self.x_loc = x_loc
@@ -72,12 +76,9 @@ class GUIElement(ABC):
         r = f'<{self.__class__.__module__}.{self.__class__.__name__} object at {hex(id(self))}'
 
         # Builds string of names and values of all instance variables set in self
-        r += ', vars: '
-        if self.__dict__:
-            r += ', '.join([f'(\'{i}\': {self.__dict__[i]})' for i in self.__dict__.keys()])
-        else:
-            r += '<no instance variables set>'
-        r += '>'
+        r += ', vars: {'
+        r += ', '.join([f'\'{i}\': {self.__dict__[i]}' for i in self.__dict__.keys()])
+        r += '}>'
 
         return r
 
