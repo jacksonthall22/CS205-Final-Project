@@ -1,19 +1,14 @@
-from Game import Game
 from Board import Board
+from Game import Game
 import pygame
+
 
 def main():
     print()
 
-    game = Game(Board.BLANK_STATE)
-    print('Game with Blank Board')
-    print('=====================')
-    print(game)
+    game = Game(Board.get_starting_state())
+    Game.game_loop(game)
 
-    game.board.setState(Board.STARTING_STATE)
-    print('Game with Starting Othello Position')
-    print('===================================')
-    print(game)
 
 if __name__ == '__main__':
     main()
