@@ -42,20 +42,14 @@ def draw_board():
                                              HEIGHT))
 
 
-def create_button(text, x, y, w, h, if_pressed=None):
+def create_button(text, xy_wh, if_pressed=None):
     """ Create a button with: text, x position, y position, width, height, and the function called when pressed """
 
-    mouse_position = pygame.mouse.get_pos()
-    mouse_press = pygame.mouse.get_pressed()
-    pygame.draw.rect(SCREEN, BUTTON_COLOR, (x, y, w, h))
-    if x+w > mouse_position[0] > x and y+h > mouse_position[1] > y:
-        if mouse_press[0] and if_pressed is not None:
-            if_pressed()
-
+    pygame.draw.rect(SCREEN, BUTTON_COLOR, (xy_wh[0], xy_wh[1], xy_wh[2], xy_wh[3]))
     font = pygame.font.Font('freesansbold.ttf', 48)
     t = font.render(text, True, BLACK, BUTTON_COLOR)
     r = t.get_rect()
-    r.center = ((x + (w / 2)), (y + (h / 2)))
+    r.center = ((xy_wh[0] + (xy_wh[2] / 2)), (xy_wh[1] + (xy_wh[3] / 2)))
     SCREEN.blit(t, r)
 
 
@@ -68,17 +62,31 @@ def game_menu():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit_game()
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                mouse_position = pygame.mouse.get_pos()
+                if start_xy_wh[0] < mouse_position[0] < start_xy_wh[0] + start_xy_wh[2] and \
+                        start_xy_wh[1] < mouse_position[1] < start_xy_wh[1] + start_xy_wh[3]:
+                    play_game()
+                if exit_xy_wh[0] < mouse_position[0] < exit_xy_wh[0] + exit_xy_wh[2] and \
+                        exit_xy_wh[1] < mouse_position[1] < exit_xy_wh[1] + exit_xy_wh[3]:
+                    quit_game()
+                if win_xy_wh[0] < mouse_position[0] < win_xy_wh[0] + win_xy_wh[2] and \
+                        win_xy_wh[1] < mouse_position[1] < win_xy_wh[1] + win_xy_wh[3]:
+                    win_screen()
 
         # Add title image
         SCREEN.fill(BACKGROUND)
         SCREEN.blit(TITLE, ((X // 2) - (452 // 2), 50))
 
         # Add buttons
-        create_button('START', (X // 4) - 125, (4 * Y // 5) - 50, 300, 100, play_game)
-        create_button('EXIT', (3 * X // 4) - 125, (4 * Y // 5) - 50, 300, 100, quit_game)
+        start_xy_wh = [(X // 4) - 125, (4 * Y // 5) - 50, 300, 100]
+        create_button('START', start_xy_wh, play_game)
+        exit_xy_wh = [(3 * X // 4) - 125, (4 * Y // 5) - 50, 300, 100]
+        create_button('EXIT', exit_xy_wh, quit_game)
         # TODO remove after full implementation
         # REMOVE COMMENT TO TEST BUTTON (Causes issues with other buttons)
-        # create_button('TEST WIN SCREEN', X // 2 - 250, Y//2 - 50, 500, 100, win_screen)
+        win_xy_wh = [X // 2 - 250, Y//2 - 50, 500, 100]
+        create_button('TEST WIN SCREEN', win_xy_wh, win_screen)
 
         pygame.display.update()
         clock.tick(15)
@@ -92,13 +100,19 @@ def play_game():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit_game()
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                mouse_position = pygame.mouse.get_pos()
+                if exit_xy_wh[0] < mouse_position[0] < exit_xy_wh[0] + exit_xy_wh[2] and \
+                        exit_xy_wh[1] < mouse_position[1] < exit_xy_wh[1] + exit_xy_wh[3]:
+                    quit_game()
 
         SCREEN.fill(BACKGROUND)
         SCREEN.blit(TITLE, (20, 20))
 
         # TODO change this to be each tile in the board
         draw_board()
-        create_button('EXIT', X // 12, (Y // 2), 300, 100, quit_game)
+        exit_xy_wh = [X // 12, (3 * Y // 4), 300, 100]
+        create_button('EXIT', exit_xy_wh, quit_game)
 
         # TODO Having issues with this getting stuck in recursive loop and crashing, implement later if time permits
         #create_button('MENU', X//9, (4 * Y // 8), 300, 100, game_menu)
@@ -121,10 +135,20 @@ def win_screen():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit_game()
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                mouse_position = pygame.mouse.get_pos()
+                if new_game_xy_wh[0] < mouse_position[0] < new_game_xy_wh[0] + new_game_xy_wh[2] and \
+                        new_game_xy_wh[1] < mouse_position[1] < new_game_xy_wh[1] + new_game_xy_wh[3]:
+                    play_game()
+                if exit_xy_wh[0] < mouse_position[0] < exit_xy_wh[0] + exit_xy_wh[2] and \
+                        exit_xy_wh[1] < mouse_position[1] < exit_xy_wh[1] + exit_xy_wh[3]:
+                    quit_game()
 
         SCREEN.blit(TITLE, ((X // 2) - (452 // 2), 50))
-        create_button('NEW GAME', (X // 4) - 125, (3 * Y // 4) - 50, 300, 100, play_game)
-        create_button('EXIT', (3 * X // 4) - 125, (3 * Y // 4) - 50, 300, 100, quit_game)
+        new_game_xy_wh = [(X // 4) - 125, (3 * Y // 4) - 50, 300, 100]
+        create_button('NEW GAME', new_game_xy_wh, play_game)
+        exit_xy_wh = [(3 * X // 4) - 125, (3 * Y // 4) - 50, 300, 100]
+        create_button('EXIT', exit_xy_wh, quit_game)
 
         pygame.display.update()
         clock.tick(15)
