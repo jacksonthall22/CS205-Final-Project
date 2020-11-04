@@ -115,6 +115,7 @@ def play_game():
         create_button('EXIT', exit_xy_wh, quit_game)
 
         # TODO Having issues with this getting stuck in recursive loop and crashing, implement later if time permits
+        # We will also need to determine how to create a fresh new game object to do this
         #create_button('MENU', X//9, (4 * Y // 8), 300, 100, game_menu)
 
         pygame.display.update()
