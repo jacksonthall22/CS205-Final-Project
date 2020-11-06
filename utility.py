@@ -21,7 +21,11 @@ Example
 import re
 
 
-def is_valid_filename(filename, valid_extensions):
+# Textures of any GUIElement should have one of these extensions (case sensitive) - add as needed
+VALID_IMAGE_FILE_EXTENSIONS = ('png', 'jpg', 'jpeg', 'gif')
+
+
+def is_valid_filename(filename, valid_extensions=VALID_IMAGE_FILE_EXTENSIONS):
     """
         Return True iff filename is a valid filename (using Windows standards) with no leading
         or trailing whitespace.
