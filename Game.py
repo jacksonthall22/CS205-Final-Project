@@ -311,14 +311,13 @@ class Game(GUIElement):
                 if not move_was_made:
                     print('That wasn\'t a valid move. ', end='')
 
-        # Print one last time when game ends
-        print(self)
-
-        # Show winner and score
-        if self.black_score > self.white_score:
-            print(f'Game over. Black wins {self.black_score} - {self.white_score}')
-        elif self.white_score > self.black_score:
-            print(f'Game over. White wins {self.black_score} - {self.white_score}')
+        # Show board position after final move and display winner
+        print(game.board)
+        black_score, white_score = game.get_winner()
+        if black_score > white_score:
+            print(f'Game over. Black wins {black_score} - {white_score}')
+        elif white_score > black_score:
+            print(f'Game over. White wins {black_score} - {white_score}')
         else:
             print(f'Game over. It\'s a tie. {self.black_score} - {self.white_score}')
 
