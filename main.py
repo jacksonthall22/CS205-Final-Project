@@ -1,22 +1,38 @@
 from Board import Board
 from Game import Game
 from GamePiece import GamePiece
-import pygame
+# import pygame
+
+
+def welcome():
+    """ Print a welcome message when program is run. """
+
+    print('''
+ ██████╗ ████████╗██╗  ██╗███████╗██╗     ██╗      ██████╗ 
+██╔═══██╗╚══██╔══╝██║  ██║██╔════╝██║     ██║     ██╔═══██╗
+██║   ██║   ██║   ███████║█████╗  ██║     ██║     ██║   ██║
+██║   ██║   ██║   ██╔══██║██╔══╝  ██║     ██║     ██║   ██║
+╚██████╔╝   ██║   ██║  ██║███████╗███████╗███████╗╚██████╔╝
+ ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝ ╚═════╝ 
+Created by Ben Sylvester, Jackson Hall, Jordan Marchese, and Parker Sawbridge
+''')
 
 
 def main():
-    print()
+    welcome()
 
-    game = Game(Board.get_state_from_strings([
-        'ww--b--b',
-        'www-b-bb',
-        'wwwwb-bb',
-        'wwwbwwbb',
-        'wwbwwwbb',
-        'bwwwwbwb',
-        'wbbwwwbb',
-        'bbbwwb-b'
-    ]), GamePiece.B_CHAR)
+    # game = Game(Board.get_state_from_strings([
+    #     'ww--b--b',
+    #     'www-b-bb',
+    #     'wwwwb-bb',
+    #     'wwwbwwbb',
+    #     'wwbwwwbb',
+    #     'bwwwwbwb',
+    #     'wbbwwwbb',
+    #     'bbbwwb-b'
+    # ]), GamePiece.B_CHAR)
+
+    game = Game()
 
     game.game_loop()
 
