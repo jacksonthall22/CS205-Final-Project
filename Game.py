@@ -87,7 +87,7 @@ class Game(GUIElement):
 
         # Show move number
         if self.moves_played == 0:
-            output_string += 'It\'s the first move. '
+            output_string += 'Welcome to Othello. It\'s the first move. '
         else:
             output_string += f'It\'s move {self.moves_played + 1}. '
 
@@ -192,7 +192,7 @@ class Game(GUIElement):
         return ranges_to_flip
 
     @staticmethod
-    def get_all_valid_moves(game, color):
+    def get_all_valid_moves(game):
         """ Docstring for get_all_valid_moves() - TODO """
 
         valid_moves = []
@@ -200,16 +200,22 @@ class Game(GUIElement):
         # TODO Only check
         for rank in range(8):
             for file in range(8):
-                if Game.is_valid_move(game.board, rank, file, color):
+                if Game.is_valid_move(game.board, rank, file, game.side_to_move):
                     valid_moves.append((rank, file))
 
         return valid_moves
 
     @staticmethod
     def get_random_valid_move(game):
-        """ Return a random valid move for the current game.side_to_move as a (rank, file) tuple. """
+        """ Return a random valid move as a (rank, file, is_only_move) tuple for the current game.side_to_move. """
 
-        return random.choice(Game.get_all_valid_moves(game, game.side_to_move))
+        all_valid_moves = Game.get_all_valid_moves(game)
+
+        if all_valid_moves:
+            choice = random.choice(all_valid_moves)
+            return choice[0], choice[1], len(all_valid_moves) == 1
+        else:
+            return None, None, None
 
     @staticmethod
     def is_over(game):
@@ -225,7 +231,7 @@ class Game(GUIElement):
         # Validate that get_flip_ranges() does not return empty list
         # In Python not [] == True
 
-        return not not Game.get_flip_ranges(board.state, rank, file, color)
+        return not not Game.get_flip_ranges(board, rank, file, color)
 
     ''' ========== Instance Methods ========== '''
 
@@ -252,18 +258,21 @@ class Game(GUIElement):
             # Loop until user enters valid move
             while not move_was_made:
                 # Get move in algebraic notation
-                if self.side_to_move == GamePiece.B_CHAR:
-                    if player_moves_first:
+                # Check if there is only one possible move (only used when it's Computer's move)
+                is_only_move = False
+
+                if self.side_to_move == GamePiece.B_CHAR and player_moves_first \
+                        or self.side_to_move == GamePiece.W_CHAR and not player_moves_first:
+                    if Game.get_all_valid_moves(self):
                         algebraic_move = input('Enter black\'s move:\n>>> ')
                     else:
-                        r, f = Game.get_random_valid_move(self)
-                        algebraic_move = Board.indices_to_algebraic(r, f)
-                elif self.side_to_move == GamePiece.W_CHAR:
-                    if not player_moves_first:
-                        algebraic_move = input('Enter white\'s move:\n>>> ')
-                    else:
-                        r, f = Game.get_random_valid_move(self)
-                        algebraic_move = Board.indices_to_algebraic(r, f)
+                        input('You have no legal moves. Press enter to continue.\n>>> ')
+                        self.skip_move()
+                        continue
+                elif self.side_to_move == GamePiece.W_CHAR and player_moves_first \
+                        or self.side_to_move == GamePiece.B_CHAR and not player_moves_first:
+                    r, f, is_only_move = Game.get_random_valid_move(self)
+                    algebraic_move = Board.indices_to_algebraic(r, f)
                 else:
                     raise ValueError('custom error: game.side_to_move not equal to GamePiece.B_CHAR or GamePiece.W_CHAR'
                                      'in Game.game_loop()')
@@ -277,13 +286,22 @@ class Game(GUIElement):
                 # Show that computer is thinking if it's their turn
                 if self.side_to_move == GamePiece.W_CHAR and player_moves_first \
                         or self.side_to_move == GamePiece.B_CHAR and not player_moves_first:
-                    print('Computer is thinking.', end='')
-                    time.sleep(1)
-                    print('.', end='')
-                    time.sleep(1)
-                    print('.', end='')
-                    time.sleep(1)
-                    print(f' the computer played {algebraic_move}.')
+                    if algebraic_move is None:
+                        print('Computer has no moves. It\'s your move again.')
+                        self.skip_move()
+                        continue
+                    elif is_only_move:
+                        print('Computer is thinking...', end='')
+                        time.sleep(1)
+                        print(f' Computer was forced to play {algebraic_move}.')
+                    else:
+                        print('Computer is thinking.', end='')
+                        time.sleep(1)
+                        print('.', end='')
+                        time.sleep(1)
+                        print('.', end='')
+                        time.sleep(1)
+                        print(f' Computer played {algebraic_move}.')
 
                 # Make the move
                 move_rank, move_file = Board.algebraic_to_indices(algebraic_move)
@@ -293,6 +311,10 @@ class Game(GUIElement):
                 if not move_was_made:
                     print('That wasn\'t a valid move. ', end='')
 
+        # Print one last time when game ends
+        print(self)
+
+        # Show winner and score
         if self.black_score > self.white_score:
             print(f'Game over. Black wins {self.black_score} - {self.white_score}')
         elif self.white_score > self.black_score:
@@ -308,10 +330,16 @@ class Game(GUIElement):
 
         for rank in self.board.state:
             for tile in rank:
-                if tile.game_piece.get_side_up() == GamePiece.B_CHAR:
+                if GamePiece.get_side_up(tile.game_piece) == GamePiece.B_CHAR:
                     self.black_score += 1
-                elif tile.game_piece.get_side_up() == GamePiece.W_CHAR:
+                elif GamePiece.get_side_up(tile.game_piece) == GamePiece.W_CHAR:
                     self.white_score += 1
+
+    def skip_move(self):
+        """ Skip the side_to_move's move. """
+
+        # Doesn't actually need to do anything for now
+        pass
 
     def make_move(self, rank, file, color):
         """
@@ -393,7 +421,8 @@ class Game(GUIElement):
         """
 
         self.board.state[rank][file].game_piece.flip()
-        self.update_num_board_meta_lists(rank, file, self.board.state[rank][file].game_piece.get_side_up(), False)
+        self.update_num_board_meta_lists(rank, file, GamePiece.get_side_up(self.board.state[rank][file].game_piece),
+                                         False)
 
     def flip_all_in_range(self, indices_to_flip):
         """
@@ -431,9 +460,9 @@ class Game(GUIElement):
                 # Else stop generation
                 return
 
-    def draw(self):
-        # TODO
-        pass
+    def draw(self, pygame_screen):
+        # TODO Game.draw() identical to Board.draw() for now - not sure if this will need to change -JH
+        self.board.draw(pygame_screen)
 
     def handle_click(self, x_click_loc, y_click_loc):
         """ If the click location was on a Tile in self.board, make a move at that Tile if it is valid. """
@@ -447,3 +476,4 @@ class Game(GUIElement):
                 if GUIElement.click_is_inside(tile, x_click_loc, y_click_loc):
                     if Game.is_valid_move(self.board, rank_index, file_index, self.side_to_move):
                         self.make_move(rank_index, file_index, self.side_to_move)
+                        tile.handle_click(x_click_loc, y_click_loc)

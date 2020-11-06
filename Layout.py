@@ -1,14 +1,17 @@
 """
-A Screen represents the a whole screen layout / view shown to the user. A GameGUI can have multiple Screens, so
+A Layout represents the a whole screen layout / view shown to the user. A GameGUI can have multiple Screens, so
 whenever a new view is needed within a `GameGUI g` (main playing screen, win screen, menu screen, etc.), add a new
-Screen to the `g.screens` list.
+Screen to the `g.layouts` list.
+
+A Layout consists of
+
 """
 
 from GUIElement import GUIElement
 
 
-class Screen:
-    """ A Screen represents a particular screen layout / view shown to the user. See more docs at top of file. """
+class Layout:
+    """ A Layout represents a particular screen layout / view shown to the user. See more docs at top of file. """
 
     ''' ========== Constant Class Variables ========== '''
 
@@ -16,14 +19,14 @@ class Screen:
 
     ''' ========== Constructor ========== '''
 
-    def __init__(self, elements=None):
+    def __init__(self, gui_elements=None):
 
-        if elements is None:
-            elements = []
+        if gui_elements is None:
+            gui_elements = []
 
-        # list of all the GUIElements (could be a Board, Tile, etc. - any type that extends GUIElement) that need to
+        # List of all the GUIElements (could be a Board, Tile, etc. - any type that extends GUIElement) that need to
         # be drawn on this Screen
-        self.elements = elements
+        self.elements = gui_elements
 
     ''' ========== Magic Methods ========== '''
 
@@ -38,8 +41,8 @@ class Screen:
             if GUIElement.click_is_inside(element, x_click_loc, y_click_loc):
                 element.handle_click(x_click_loc, y_click_loc)
 
-    def draw(self, x_loc, y_loc):
-        """ Call draw() on every GUIElement in this screen. """
+    def draw(self, pygame_screen):
+        """ Call draw(pygame_screen) on every GUIElement in this screen. """
 
         for element in self.elements:
-            element.draw()
+            element.draw(pygame_screen)

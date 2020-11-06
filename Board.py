@@ -102,9 +102,9 @@ class Board(GUIElement):
 
     ''' ========== Constructor ========== '''
 
-    def __init__(self, state=None):
+    def __init__(self, state=None, x_loc=0, y_loc=0, width=1000, height=1000):
         # Call parent constructor
-        super().__init__()
+        super().__init__(x_loc, y_loc, width, height)
 
         # All these set to None for now before being set in set_state()
         # If not set to None first PyCharm gives warning for adding instance variables outside __init__()
@@ -137,25 +137,10 @@ class Board(GUIElement):
             if show_coords:
                 output_string += f' {"87654321"[rank_index]} '
 
-            for file_index, tile in enumerate(rank):
-                output_string += f'| {" | ".join(())} |'
-
-                if GamePiece.get_side_up(tile.game_piece) == GamePiece.EMPTY_CHAR:
-                    char_to_fill = GamePiece.EMPTY_DISPLAY_CHAR
-                elif GamePiece.get_side_up(tile.game_piece) == GamePiece.B_CHAR:
-                    char_to_fill = GamePiece.B_DISPLAY_CHAR
-                elif GamePiece.get_side_up(tile.game_piece) == GamePiece.W_CHAR:
-                    char_to_fill = GamePiece.W_DISPLAY_CHAR
-                else:
-                    # Should never reach here - will be helpful for debugging later -JH
-                    raise Exception(f'custom error: Bad formatting of Board.state in Board.__str__() - {tile} at '
-                                    f'state[{rank_index}][{file_index}]')
-
-                output_string += f'│ {char_to_fill} '
+            output_string += f'| {" | ".join((GamePiece.get_display_char(tile.game_piece) for tile in rank))} |\n'
 
             if rank_index != len(self.state) - 1:
-                # Not the last row, use ├───┼...
-                output_string += '│\n'
+                # Not the last row, use ├───┼───...
 
                 # Add left margin padding if showing coords
                 if show_coords:
@@ -163,8 +148,7 @@ class Board(GUIElement):
 
                 output_string += '├───┼───┼───┼───┼───┼───┼───┼───┤\n'
             else:
-                # Last row, use └───┴...
-                output_string += '│\n'
+                # Last row, use └───┴───...
 
                 # Add left margin padding if showing coords
                 if show_coords:
@@ -216,24 +200,31 @@ class Board(GUIElement):
 
     @staticmethod
     def is_valid_algebraic_move(algebraic_move):
-        """ Docstring for is_valid_algebraic_move() - TODO """
+        """ Return True iff given algebraic_move is formatted correctly for an 8x8 board. """
 
         return algebraic_move in (f + r for f in 'abcdefgh' for r in '12345678')
 
     @staticmethod
     def algebraic_to_indices(algebraic_move):
-        """ Docstring for algebraic_to_indices() - TODO """
+        """
+            Return the (rank, file) location corresponding to the given algebraic_move. If algebraic_move is None,
+            return (None, None).
+        """
 
-        # TODO remove later
-        assert Board.is_valid_algebraic_move(algebraic_move)
+        if not algebraic_move:
+            return None, None
 
         return '87654321'.find(algebraic_move[1]), 'abcdefgh'.find(algebraic_move[0])
 
     @staticmethod
     def indices_to_algebraic(rank, file):
-        """ Docstring for indices_to_algebraic() - TODO """
+        """
+            Return the algebraic location corresponding to the given (rank, file) location. If rank and file are None,
+            return None.
+        """
 
-        # assert rank in '12345678' and file in 'abcdefgh'
+        if rank is None and file is None:
+            return None
 
         return 'abcdefgh'[file] + '87654321'[rank]
 
@@ -381,12 +372,14 @@ class Board(GUIElement):
 
     ''' ========== Instance Methods ========== '''
 
-    def set_tile_locations_and_sizes(self, board_width, board_height):
-        """ Docstring for set_tile_locations() - TODO """
-        # Set all tile.x_loc, tile.y_loc for tile in rank for rank in self.state
+    def set_tile_locations_and_sizes(self):
+        """
+            Set the locations and sizes of all Tiles in self.state to align appropriately with the bounding box of self.
+        """
 
-        tile_widths = (board_width - 7 * Board.GUI_TILE_GAP_SIZE) / 8
-        tile_heights = (board_height - 7 * Board.GUI_TILE_GAP_SIZE) / 8
+        # Set all tile.x_loc, tile.y_loc for tile in rank for rank in self.state
+        tile_widths = (self.width - 7 * Board.GUI_TILE_GAP_SIZE) / 8
+        tile_heights = (self.height - 7 * Board.GUI_TILE_GAP_SIZE) / 8
 
         current_y_loc = self.y_loc
 
@@ -434,7 +427,7 @@ class Board(GUIElement):
         else:
             raise ValueError('custom error: invalid [rank][file] location given to Board.place_piece()')
 
-    def draw(self):
+    def draw(self, pygame_screen):
         # TODO
 
         pass

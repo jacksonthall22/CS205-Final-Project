@@ -46,7 +46,7 @@ Methods
 """
 
 from abc import ABC, abstractmethod  # Builtin Python lib to declare abstract classes
-from utility import is_valid_filename
+from utility import is_valid_filename, VALID_IMAGE_FILE_EXTENSIONS
 
 
 class GUIElement(ABC):
@@ -57,20 +57,18 @@ class GUIElement(ABC):
 
     ''' ========== Constant Class Variables ========== '''
 
-    # Textures of any GUIElement should have one of these extensions (case sensitive) - add as needed
-    VALID_IMAGE_FILE_EXTENSIONS = ('png', 'jpg', 'jpeg', 'gif')
-
     ''' ========== Regular Class Variables ========== '''
 
     ''' ========== Constructor ========== '''
 
-    def __init__(self, texture_files=None, x_loc=0, y_loc=0, width=0, height=0):
+    def __init__(self, x_loc=0, y_loc=0, width=100, height=100, color=None, texture_files=None):
         """
-            texture_files : Dictionary containing any image texture filenames related to the object. Keys in the dict
-                            should be short, unique, and descriptive snake_case strings that describe the image or what
-                            it's used for. The values should be the filename (actually the full filepath relative to 
-                            main.py). For example, it might look like this for a GamePiece object:
+            texture_files : Dictionary containing any image texture filenames needed to draw the object. Keys in the
+                            dict should be short, unique, and descriptive snake_case strings that describe the image
+                            or what it's used for. The values should be the filename (actually the full filepath
+                            relative to main.py).
 
+                            For example, texture_files might look like this for a GamePiece object:
                                 texture_files = {
                                     'white_side': 'white-side-texture.png',
                                     'black_side': 'black-side-texture.png',
@@ -81,26 +79,29 @@ class GUIElement(ABC):
                     = pixels). Defaults to 0 (traditionally x=0 is left).
             y_loc : Y-location coordinate of top-left corner of the bounding box of this GUIElement on the screen (units
                     = pixels). Defaults to 0 (traditionally y=0 is top).
-            x_width: TODO
-            y_width: TODO
+            width: Width of this GUIElement in pixels
+            height: Height of this GUIElement in pixels
         """
 
+        if texture_files is None:
+            texture_files = dict()
+
         # Make sure params are of correct type
-        # TODO This fails because texture_files can be a NoneType
-        # assert all((
-        #     type(texture_files) in (dict, None),
-        #     any((
-        #         texture_files is None,
-        #         all((is_valid_filename(filename, GUIElement.VALID_IMAGE_FILE_EXTENSIONS) for filename in
-        #              texture_files.values()))
-        #     )),
-        # ))
+        assert all((
+            type(texture_files) in (dict, type(None)),
+            any((
+                texture_files is None,
+                all((is_valid_filename(filename, VALID_IMAGE_FILE_EXTENSIONS) for filename in
+                     texture_files.values()))
+            )),
+        ))
 
         self.texture_files = texture_files
         self.x_loc = x_loc
         self.y_loc = y_loc
         self.width = width
         self.height = height
+        self.color = color
 
     ''' ========== Magic Methods ========== '''
     
@@ -157,7 +158,7 @@ class GUIElement(ABC):
     ''' ========== Instance Methods ========== '''
 
     @abstractmethod
-    def draw(self):
+    def draw(self, pygame_screen):
         # This method is abstract - don't implement here, only in subclasses
 
         # TODO : Can still change parameters ^ if needed (might need to add a parameter for the pygame screen object

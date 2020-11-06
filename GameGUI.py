@@ -1,12 +1,13 @@
 """
-GameGUI is the all-encompassing object to represent the GUI window instance. A GameGUI may have multiple Screens, so
-there is no need to create new instances of GameGUI when a new screen layout is required.
+GameGUI is the all-encompassing object to represent the GUI window instance. A GameGUI may have multiple Layouts, so
+there is no need to create new instances of GameGUI when a new screen layout is required (menu screen, main playing
+screen, win screen, etc.).
 
 """
 
 from Game import Game
 from GUIElement import GUIElement
-from Screen import Screen
+from Layout import Layout
 
 
 class GameGUI:
@@ -18,19 +19,19 @@ class GameGUI:
 
     ''' ========== Constructor ========== '''
 
-    def __init__(self, game=None, screens=None, active_screen=None):
+    def __init__(self, game=None, screens=None, active_layout=None):
 
         if game is None:
             game = Game()
 
         if screens is None:
-            screens = []
+            screens = set()
 
         # List of Screen objects representing win screen, play screen, end screen, etc.
-        self.screens = screens
+        self.layouts = screens
 
         # Whichever screen should be draw()n in the pygame window
-        self.active_screen = active_screen
+        self.active_layout = active_layout
 
         # Game object taking care of game logic
         self.game = game
@@ -47,20 +48,21 @@ class GameGUI:
 
     ''' ========== Instance Methods ========== '''
 
+    def update_active_screen(self, new_layout):
+        """ Docstring for change_screen() - TODO """
+
+        if new_layout not in self.layouts:
+            self.layouts.add(new_layout)
+
+        self.active_layout = new_layout
+
     def handle_click(self, x_click_loc, y_click_loc):
         """ Docstring for handle_click() - TODO """
 
-        '''
-        pseudocode:
-        
-        based on x_loc, y_loc of mouse click:
-            
-            if click in self.game.board:
-                GameGUI.handle_board_click(x_loc, y_loc)
-            elif click in 
-        '''
+        # Handle the click in the context of the currently-active Layout
+        self.active_layout.handle_click(x_click_loc, y_click_loc)
 
-        # Assuming (0, 0) pixel is top left of the pygame window, not whole screen
-        for e in GameGUI.get_active_screen(self).elements:
-            if GUIElement.click_is_inside(e, x_click_loc, y_click_loc):
-                e.handle_click(x_click_loc, y_click_loc)
+    def draw(self):
+        """ Docstring for draw() - TODO """
+
+        pass

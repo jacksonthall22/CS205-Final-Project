@@ -87,9 +87,19 @@ class GamePiece(GUIElement):
     ''' ========== Static Methods ========== '''
 
     @staticmethod
-    def get_side_up(self):
+    def get_side_up(game_piece):
         """ Return self.side_up. """
-        return self.side_up
+        return game_piece.side_up
+
+    @staticmethod
+    def get_display_char(game_piece):
+        """ Return the constant char as defined in GamePiece corresponding to game_piece.get_side_up(). """
+        if GamePiece.get_side_up(game_piece) == GamePiece.B_CHAR:
+            return GamePiece.B_DISPLAY_CHAR
+        elif GamePiece.get_side_up(game_piece) == GamePiece.W_CHAR:
+            return GamePiece.W_DISPLAY_CHAR
+        else:
+            return GamePiece.EMPTY_DISPLAY_CHAR
 
     ''' ========== Instance Methods ========== '''
 
@@ -108,7 +118,9 @@ class GamePiece(GUIElement):
 
         self.side_up = side_up
 
-    def draw(self):
+    def draw(self, pygame_screen):
+        # TODO
+
         pass
 
     def handle_click(self, x_click_loc, y_click_loc):
