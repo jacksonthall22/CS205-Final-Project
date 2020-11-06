@@ -1,5 +1,5 @@
 """
-Tile extends GUIElement to represent a single square in the board (contains a `GamePiece` and may be highlighted -
+`Tile` extends `GUIElement` to represent a single square in the board (contains a `GamePiece` and may be highlighted -
 see below).
 
 Fields
@@ -19,7 +19,7 @@ class Tile(GUIElement):
     """ Tile extends GUIElement to represent a single square in the board. """
 
     ''' ========== Constant Class Variables ========== '''
-    
+
     ''' ========== Regular Class Variables ========== '''
 
     ''' ========== Constructor ========== '''
@@ -55,3 +55,10 @@ class Tile(GUIElement):
     def draw(self):
         # TODO
         pass
+
+    def handle_click(self, x_click_loc, y_click_loc):
+        """ Docstring for handle_click(self, x_click_loc, y_click_loc):() - TODO """
+
+        # TODO
+
+        self.game_piece.flip()

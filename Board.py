@@ -82,7 +82,7 @@ class Board(GUIElement):
     """ Board extends GUIElement, represents an Othello board and stores  """
 
     ''' ========== Constant Class Variables ========== '''
-    
+
     DEFAULT_BOARD_SIZE = 8
 
     # (delta_r, delta_f) tuples in this list correspond to the cells neighboring a state[r][f]
@@ -95,6 +95,9 @@ class Board(GUIElement):
         ( 1, -1), ( 1,  0), ( 1,  1)   # 5   6   7
     ]
 
+    # Number of pixels gap between ranks/files in the GUI's Board
+    GUI_TILE_GAP_SIZE = 5
+
     ''' ========== Regular Class Variables ========== '''
 
     ''' ========== Constructor ========== '''
@@ -103,13 +106,15 @@ class Board(GUIElement):
         # Call parent constructor
         super().__init__()
 
-
+        # All these set to None for now before being set in set_state()
+        # If not set to None first PyCharm gives warning for adding instance variables outside __init__()
         self.state = None
         self.num_black_neighbors = None
         self.num_white_neighbors = None
         self.indices_with_black_neighbors = None
         self.indices_with_white_neighbors = None
         self.set_state(state)
+        self.set_tile_locations_and_sizes()
 
     ''' ========== Magic Methods ========== '''
 
@@ -133,16 +138,18 @@ class Board(GUIElement):
                 output_string += f' {"87654321"[rank_index]} '
 
             for file_index, tile in enumerate(rank):
-                if tile.game_piece.get_side_up() == GamePiece.EMPTY_CHAR:
+                output_string += f'| {" | ".join(())} |'
+
+                if GamePiece.get_side_up(tile.game_piece) == GamePiece.EMPTY_CHAR:
                     char_to_fill = GamePiece.EMPTY_DISPLAY_CHAR
-                elif tile.game_piece.get_side_up() == GamePiece.B_CHAR:
+                elif GamePiece.get_side_up(tile.game_piece) == GamePiece.B_CHAR:
                     char_to_fill = GamePiece.B_DISPLAY_CHAR
-                elif tile.game_piece.get_side_up() == GamePiece.W_CHAR:
+                elif GamePiece.get_side_up(tile.game_piece) == GamePiece.W_CHAR:
                     char_to_fill = GamePiece.W_DISPLAY_CHAR
                 else:
                     # Should never reach here - will be helpful for debugging later -JH
-                    raise Exception(f'custom error: Bad formatting of Board.state (tile {tile} at '
-                                    f'state[{rank_index}][{file_index}])')
+                    raise Exception(f'custom error: Bad formatting of Board.state in Board.__str__() - {tile} at '
+                                    f'state[{rank_index}][{file_index}]')
 
                 output_string += f'│ {char_to_fill} '
 
@@ -233,7 +240,7 @@ class Board(GUIElement):
     @staticmethod
     def get_blank_state():
         """ Return fully initialized Board where all Tiles' GamePieces are set to GamePiece.EMPTY_CHAR. """
-        
+
         return [[Tile(GamePiece()) for _ in range(Board.DEFAULT_BOARD_SIZE)] for _ in range(Board.DEFAULT_BOARD_SIZE)]
 
     @staticmethod
@@ -245,15 +252,48 @@ class Board(GUIElement):
             [Tile(GamePiece()) for _ in range(Board.DEFAULT_BOARD_SIZE)],
             [Tile(GamePiece()) for _ in range(Board.DEFAULT_BOARD_SIZE)],
             [Tile(GamePiece()) for _ in range(3)]
-                + [Tile(GamePiece(GamePiece.W_CHAR)), Tile(GamePiece(GamePiece.B_CHAR))]
-                + [Tile(GamePiece()) for _ in range((Board.DEFAULT_BOARD_SIZE-2) // 2)],
+            + [Tile(GamePiece(GamePiece.W_CHAR)), Tile(GamePiece(GamePiece.B_CHAR))]
+            + [Tile(GamePiece()) for _ in range((Board.DEFAULT_BOARD_SIZE-2) // 2)],
             [Tile(GamePiece()) for _ in range((Board.DEFAULT_BOARD_SIZE-2) // 2)]
-                + [Tile(GamePiece(GamePiece.B_CHAR)), Tile(GamePiece(GamePiece.W_CHAR))]
-                + [Tile(GamePiece()) for _ in range((Board.DEFAULT_BOARD_SIZE-2) // 2)],
+            + [Tile(GamePiece(GamePiece.B_CHAR)), Tile(GamePiece(GamePiece.W_CHAR))]
+            + [Tile(GamePiece()) for _ in range((Board.DEFAULT_BOARD_SIZE-2) // 2)],
             [Tile(GamePiece()) for _ in range(Board.DEFAULT_BOARD_SIZE)],
             [Tile(GamePiece()) for _ in range(Board.DEFAULT_BOARD_SIZE)],
             [Tile(GamePiece()) for _ in range(Board.DEFAULT_BOARD_SIZE)]
         ]
+
+    @staticmethod
+    def get_state_from_strings(state_str):
+        """
+            Take a list of strings that contain any of GamePiece.B_CHAR, GamePiece.W_CHAR, GamePiece.EMPTY_CHAR and
+            return a 2d list of Tiles with GamePieces corresponding to
+
+            ex. to generate the starting state:
+                state_str = [
+                    '--------',
+                    '--------',
+                    '--------',
+                    '---wb---',
+                    '---bw---',
+                    '--------',
+                    '--------',
+                    '--------'
+                ]
+        """
+
+        assert all((
+            len(state_str) == 8,
+            len(state_str[0]) == 8,
+            all((c in (GamePiece.B_CHAR, GamePiece.W_CHAR, GamePiece.EMPTY_CHAR) for rank in state_str for c in rank))
+        ))
+
+        state = []
+        for rank_index, rank in enumerate(state_str):
+            state.append([])
+            for file_index, file in enumerate(rank):
+                state[rank_index].append(Tile(GamePiece(state_str[rank_index][file_index])))
+
+        return state
 
     @staticmethod
     def is_valid_state(state):
@@ -270,7 +310,7 @@ class Board(GUIElement):
             all((type(rank) == list for rank in state)),
             all((len(rank) == Board.DEFAULT_BOARD_SIZE for rank in state)),
             all((
-                all((tile.game_piece.get_side_up() in (GamePiece.B_CHAR, GamePiece.W_CHAR, GamePiece.EMPTY_CHAR)
+                all((GamePiece.get_side_up(tile.game_piece) in (GamePiece.B_CHAR, GamePiece.W_CHAR, GamePiece.EMPTY_CHAR)
                      for tile in rank))
                 for rank in state
             )),
@@ -307,8 +347,8 @@ class Board(GUIElement):
                     try:
                         # Try indexing the neighbor at given location relative to the Tile in `Loop 1`
                         # Will throw IndexError for any Tile on the perimeter of state
-                        if state[rank_index + d_rank_index][file_index + d_file_index].game_piece.get_side_up() == \
-                                neighbor_color:
+                        if GamePiece.get_side_up(state[rank_index + d_rank_index][file_index + d_file_index].game_piece) \
+                                == neighbor_color:
                             num_neighbors[rank_index][file_index] += 1
                     except IndexError:
                         continue
@@ -328,7 +368,42 @@ class Board(GUIElement):
 
         return indices_with_neighbors
 
+    @staticmethod
+    def is_full(state):
+        """ Return True iff state does not have any Tiles with empty GamePieces. """
+
+        for rank in state:
+            for tile in rank:
+                if GamePiece.get_side_up(tile.game_piece) == GamePiece.EMPTY_CHAR:
+                    return False
+
+        return True
+
     ''' ========== Instance Methods ========== '''
+
+    def set_tile_locations_and_sizes(self, board_width, board_height):
+        """ Docstring for set_tile_locations() - TODO """
+        # Set all tile.x_loc, tile.y_loc for tile in rank for rank in self.state
+
+        tile_widths = (board_width - 7 * Board.GUI_TILE_GAP_SIZE) / 8
+        tile_heights = (board_height - 7 * Board.GUI_TILE_GAP_SIZE) / 8
+
+        current_y_loc = self.y_loc
+
+        for rank_index, rank in enumerate(self.state):
+            # Reset x coord on every new row
+            current_x_loc = self.x_loc
+
+            for file_index, tile in enumerate(rank):
+                tile.x_loc = current_x_loc
+                tile.y_loc = current_y_loc
+                tile.width = tile_widths
+                tile.height = tile_heights
+
+                current_x_loc += tile_widths + Board.GUI_TILE_GAP_SIZE
+
+            # Increment y after every row
+            current_y_loc += tile_heights + Board.GUI_TILE_GAP_SIZE
 
     def set_state(self, new_state):
         """ If new_state is valid, set state to new_state. """
@@ -353,7 +428,7 @@ class Board(GUIElement):
     def place_piece(self, rank, file, color):
         """ Set the GamePiece of the Tile at the given location to the given color. Assumes move already validated. """
 
-        if self.state[rank][file].game_piece.get_side_up() == GamePiece.EMPTY_CHAR:
+        if GamePiece.get_side_up(self.state[rank][file].game_piece) == GamePiece.EMPTY_CHAR:
             self.state[rank][file].game_piece.set_side_up(color)
 
         else:
@@ -361,4 +436,8 @@ class Board(GUIElement):
 
     def draw(self):
         # TODO
+
+        pass
+
+    def handle_click(self, x_click_loc, y_click_loc):
         pass
