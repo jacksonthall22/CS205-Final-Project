@@ -1,3 +1,40 @@
+"""
+`GamePiece` represents a two-colored Othello piece that can be placed in `Tile`s within a `Board`.
+
+==========================
+|||     Class Info     |||
+==========================
+
+Fields
+======
+    Constant Class Vars
+    -------------------
+        TODO
+
+    Regular Class Vars
+    ------------------
+        TODO
+
+Methods
+=======
+    Constructor
+    -----------
+        TODO
+
+    Magic Methods
+    -------------
+        TODO
+
+    Static Methods
+    --------------
+        TODO
+
+    Instance Methods
+    ----------------
+        TODO
+
+"""
+
 from GUIElement import GUIElement
 
 
@@ -29,12 +66,40 @@ class GamePiece(GUIElement):
     ''' ========== Magic Methods ========== '''
 
     def __str__(self):
+        if self.side_up == GamePiece.EMPTY_CHAR or self.side_up is None:
+            return GamePiece.EMPTY_DISPLAY_CHAR
+
+        if self.side_up == GamePiece.B_CHAR:
+            return GamePiece.B_DISPLAY_CHAR
+        elif self.side_up == GamePiece.W_CHAR:
+            return GamePiece.W_DISPLAY_CHAR
+
+        return GamePiece.EMPTY_DISPLAY_CHAR
+
+    def __repr__(self):
+        """ Docstring for __repr__() - TODO """
+
         if self.side_up is None:
             return GamePiece.EMPTY_CHAR
 
         return self.side_up
 
     ''' ========== Static Methods ========== '''
+
+    @staticmethod
+    def get_side_up(game_piece):
+        """ Return self.side_up. """
+        return game_piece.side_up
+
+    @staticmethod
+    def get_display_char(game_piece):
+        """ Return the constant char as defined in GamePiece corresponding to game_piece.get_side_up(). """
+        if GamePiece.get_side_up(game_piece) == GamePiece.B_CHAR:
+            return GamePiece.B_DISPLAY_CHAR
+        elif GamePiece.get_side_up(game_piece) == GamePiece.W_CHAR:
+            return GamePiece.W_DISPLAY_CHAR
+        else:
+            return GamePiece.EMPTY_DISPLAY_CHAR
 
     ''' ========== Instance Methods ========== '''
 
@@ -47,15 +112,18 @@ class GamePiece(GUIElement):
         else:
             print('warning: GamePiece.flip() called on GamePiece set to EMPTY_CHAR')
     
-    def get_side_up(self):
-        """ Return self.side_up. """
-        return self.side_up
-    
     def set_side_up(self, side_up):
         """ Set self.side_up to given value. """
         assert side_up in ('b', 'w')
 
         self.side_up = side_up
 
-    def draw(self):
+    def draw(self, pygame_screen):
+        # TODO
+
+        pass
+
+    def handle_click(self, x_click_loc, y_click_loc):
+        """ Docstring for handle_click() - TODO """
+
         pass

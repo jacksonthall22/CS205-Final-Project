@@ -1,5 +1,39 @@
 """
-Game objects extend GUIElement and store any relevant data about an Othello game.
+Game objects extend GUIElement and store any relevant data about an Othello game. It contains all methods related to
+Othello game logic (making and validating moves, getting AI's move, etc.).
+
+==========================
+|||     Class Info     |||
+==========================
+
+Fields
+======
+    Constant Class Vars
+    -------------------
+        TODO
+
+    Regular Class Vars
+    ------------------
+        TODO
+
+Methods
+=======
+    Constructor
+    -----------
+        TODO
+
+    Magic Methods
+    -------------
+        TODO
+
+    Static Methods
+    --------------
+        TODO
+
+    Instance Methods
+    ----------------
+        TODO
+
 """
 
 from Board import Board
@@ -9,6 +43,7 @@ import random
 import time
 
 
+# noinspection DuplicatedCode
 class Game(GUIElement):
     """ Game extends GUIElement, stores relevant metadata about an Othello game. """
 
@@ -38,6 +73,9 @@ class Game(GUIElement):
         self.board = Board(state)
         self.side_to_move = side_to_move
         self.moves_played = moves_played
+        self.white_score = 0
+        self.black_score = 0
+        self.set_scores()
 
     ''' ========== Magic Methods ========== '''
 
@@ -49,7 +87,7 @@ class Game(GUIElement):
 
         # Show move number
         if self.moves_played == 0:
-            output_string += 'It\'s the first move. '
+            output_string += 'Welcome to Othello. It\'s the first move. '
         else:
             output_string += f'It\'s move {self.moves_played + 1}. '
 
@@ -70,37 +108,171 @@ class Game(GUIElement):
     ''' ========== Static Methods ========== '''
 
     @staticmethod
-    def game_loop(game):
-        """ Docstring for game_loop() - TODO """
+    def get_flip_ranges(board, rank, file, color):
+        """
+            If making move of given color at given location, return list of tuple-generators that generate pairs of
+            indices in self.board.state to flip when making this move. Returns empty list if this move is not valid
+            (cannot flip in any direction).
+        """
 
-        player_color_prompt = input('Would you like to play black or white? Black always moves first. (b/w)\n>>> ')
+        # Add every direction in NEIGHBOR_INDICES_RELATIVE (if any) that is a direction this move should flip
+        ranges_to_flip = []
 
-        while player_color_prompt not in ('b', 'w'):
-            player_color_prompt = input('Please enter "b" or "w":\n>>> ')
+        # Immediately invalid if the square is occupied
+        if GamePiece.get_side_up(board.state[rank][file].game_piece) != GamePiece.EMPTY_CHAR:
+            return ranges_to_flip
 
-        player_moves_first = player_color_prompt == 'b'
+        # Immediately invalid if there's no immediate neighboring GamePieces of opposite color
+        if color == GamePiece.B_CHAR and board.num_white_neighbors[rank][file] == 0:
+            return ranges_to_flip
+        elif color == GamePiece.W_CHAR and board.num_black_neighbors[rank][file] == 0:
+            return ranges_to_flip
+
+        # Valid iff, on any line starting from state[rank][file] and moving in the direction of an element in
+        # NEIGHBOR_INDICES_RELATIVE (treating the tuples like direction vectors), there is 1 or more GamePiece of the
+        # opposite color followed by a GamePiece of the same color.
+        if color == GamePiece.B_CHAR:
+            other_color = GamePiece.W_CHAR
+        elif color == GamePiece.W_CHAR:
+            other_color = GamePiece.B_CHAR
+        else:
+            raise ValueError(f'custom error: invalid color given to Game.is_valid_move() - not GamePiece.B_CHAR '
+                             f'("{GamePiece.B_CHAR}") or GamePiece.W_CHAR ("{GamePiece.W_CHAR}")')
+
+        # Check for line of >= 1 other_color followed by 1 this_color
+        # Check in all 8 directions
+        for d_rank, d_file in Board.NEIGHBOR_INDICES_RELATIVE:
+            current_rank = rank + d_rank
+            current_file = file + d_file
+
+            # Prevent indexing a negative index
+            # ie. '12345'[-1] = '5'
+            if current_rank < 0 or current_file < 0:
+                continue
+
+            try:
+                while GamePiece.get_side_up(board.state[current_rank][current_file].game_piece) == other_color:
+                    # Increment even before first check
+                    current_rank += d_rank
+                    current_file += d_file
+
+                    # Prevent indexing a negative index
+                    if current_rank < 0 or current_file < 0:
+                        continue
+
+                    # Check if flip has been "closed"
+                    if GamePiece.get_side_up(board.state[current_rank][current_file].game_piece) == color:
+                        # If so, add a generator to the list that generates tuples containing the indices to flip for
+                        # this direction
+
+                        # TODO Can probably make more efficient (fewer if/else checks)
+                        if d_rank == 0:
+                            # Can't do a range(start, stop, step) if step is 0
+                            # rank_range below is a generator (rank, rank, rank, rank, ...) with number of "rank"s equal
+                            # to how many tiles are flipping in this direction
+                            rank_range = (rank for _ in range(file + d_file, current_file, d_file))
+                        else:
+                            rank_range = range(rank + d_rank, current_rank, d_rank)
+
+                        if d_file == 0:
+                            # See comment above
+                            file_range = (file for _ in range(rank + d_rank, current_rank, d_rank))
+                        else:
+                            file_range = range(file + d_file, current_file, d_file)
+
+                        ranges_to_flip.append(e for e in zip(rank_range, file_range))
+                        break
+            except IndexError:
+                # Invalid if loop tries to access element at an invalid index before `break`ing
+                continue
+
+        if not ranges_to_flip:
+            return False
+
+        return ranges_to_flip
+
+    @staticmethod
+    def get_all_valid_moves(game):
+        """ Docstring for get_all_valid_moves() - TODO """
+
+        valid_moves = []
+
+        # TODO Only check
+        for rank in range(8):
+            for file in range(8):
+                if Game.is_valid_move(game.board, rank, file, game.side_to_move):
+                    valid_moves.append((rank, file))
+
+        return valid_moves
+
+    @staticmethod
+    def get_random_valid_move(game):
+        """ Return a random valid move as a (rank, file, is_only_move) tuple for the current game.side_to_move. """
+
+        all_valid_moves = Game.get_all_valid_moves(game)
+
+        if all_valid_moves:
+            choice = random.choice(all_valid_moves)
+            return choice[0], choice[1], len(all_valid_moves) == 1
+        else:
+            return None, None, None
+
+    @staticmethod
+    def is_over(game):
+        """ Return True iff the board has no empty Tiles or neither player has valid moves. """
+
+        # TODO Add check for the case when neither player has a move
+        return Board.is_full(game.board.state)
+
+    @staticmethod
+    def is_valid_move(board, rank, file, color):
+        """ Return True iff placing piece of given color at given location in given board is valid. """
+
+        # Validate that get_flip_ranges() does not return empty list
+        # In Python not [] == True
+
+        return not not Game.get_flip_ranges(board, rank, file, color)
+
+    ''' ========== Instance Methods ========== '''
+
+    def game_loop(self):
+        """ Allow user to play this game until completion. """
+
+        if self.side_to_move:
+            player_moves_first = self.side_to_move == 'b'
+        else:
+            # Get side to move
+            player_color_prompt = input('Would you like to play black or white? Black always moves first. (b/w)\n>>> ')
+
+            while player_color_prompt not in ('b', 'w'):
+                player_color_prompt = input('Please enter "b" or "w":\n>>> ')
+
+            player_moves_first = player_color_prompt == 'b'
 
         # Loop until game ends
-        while not game.is_over():
-            print(game)
+        while not Game.is_over(self):
+            print(self)
 
             move_was_made = False
 
             # Loop until user enters valid move
             while not move_was_made:
                 # Get move in algebraic notation
-                if game.side_to_move == GamePiece.B_CHAR:
-                    if player_moves_first:
+                # Check if there is only one possible move (only used when it's Computer's move)
+                is_only_move = False
+
+                if self.side_to_move == GamePiece.B_CHAR and player_moves_first \
+                        or self.side_to_move == GamePiece.W_CHAR and not player_moves_first:
+                    if Game.get_all_valid_moves(self):
                         algebraic_move = input('Enter black\'s move:\n>>> ')
                     else:
-                        r, f = game.get_random_valid_move()
-                        algebraic_move = Board.indices_to_algebraic(r, f)
-                elif game.side_to_move == GamePiece.W_CHAR:
-                    if not player_moves_first:
-                        algebraic_move = input('Enter white\'s move:\n>>> ')
-                    else:
-                        r, f = game.get_random_valid_move()
-                        algebraic_move = Board.indices_to_algebraic(r, f)
+                        input('You have no legal moves. Press enter to continue.\n>>> ')
+                        self.skip_move()
+                        continue
+                elif self.side_to_move == GamePiece.W_CHAR and player_moves_first \
+                        or self.side_to_move == GamePiece.B_CHAR and not player_moves_first:
+                    r, f, is_only_move = Game.get_random_valid_move(self)
+                    algebraic_move = Board.indices_to_algebraic(r, f)
                 else:
                     raise ValueError('custom error: game.side_to_move not equal to GamePiece.B_CHAR or GamePiece.W_CHAR'
                                      'in Game.game_loop()')
@@ -112,72 +284,61 @@ class Game(GUIElement):
                                            'etc.):\n>>> ')
 
                 # Show that computer is thinking if it's their turn
-                if game.side_to_move == GamePiece.W_CHAR and player_moves_first \
-                        or game.side_to_move == GamePiece.B_CHAR and not player_moves_first:
-                    print('Computer is thinking.', end='')
-                    time.sleep(1)
-                    print('.', end='')
-                    time.sleep(1)
-                    print('.', end='')
-                    time.sleep(1)
-                    print(f' the computer played {algebraic_move}.')
+                if self.side_to_move == GamePiece.W_CHAR and player_moves_first \
+                        or self.side_to_move == GamePiece.B_CHAR and not player_moves_first:
+                    if algebraic_move is None:
+                        print('Computer has no moves. It\'s your move again.')
+                        self.skip_move()
+                        continue
+                    elif is_only_move:
+                        print('Computer is thinking...', end='')
+                        time.sleep(1)
+                        print(f' Computer was forced to play {algebraic_move}.')
+                    else:
+                        print('Computer is thinking.', end='')
+                        time.sleep(1)
+                        print('.', end='')
+                        time.sleep(1)
+                        print('.', end='')
+                        time.sleep(1)
+                        print(f' Computer played {algebraic_move}.')
 
                 # Make the move
                 move_rank, move_file = Board.algebraic_to_indices(algebraic_move)
-                move_was_made = game.make_move(move_rank, move_file, game.side_to_move)
+                move_was_made = self.make_move(move_rank, move_file, self.side_to_move)
 
                 # If no move made, it was invalid - continue
                 if not move_was_made:
                     print('That wasn\'t a valid move. ', end='')
 
+        # Show board position after final move and display winner
+        print(game.board)
         black_score, white_score = game.get_winner()
-
         if black_score > white_score:
             print(f'Game over. Black wins {black_score} - {white_score}')
         elif white_score > black_score:
             print(f'Game over. White wins {black_score} - {white_score}')
         else:
-            print(f'It\'s a tie. {black_score} - {white_score}')
+            print(f'Game over. It\'s a tie. {self.black_score} - {self.white_score}')
 
-    ''' ========== Instance Methods ========== '''
+    def set_scores(self):
+        """
+            Set black_score and white_score for the current Board state. Only use on initialization - otherwise values
+            are updated when moves are made.
+        """
 
-    def get_random_valid_move(self):
-        """ Docstring for get_random_valid_move() - TODO """
+        for rank in self.board.state:
+            for tile in rank:
+                if GamePiece.get_side_up(tile.game_piece) == GamePiece.B_CHAR:
+                    self.black_score += 1
+                elif GamePiece.get_side_up(tile.game_piece) == GamePiece.W_CHAR:
+                    self.white_score += 1
 
-        return random.choice(self.get_all_valid_moves())
+    def skip_move(self):
+        """ Skip the side_to_move's move. """
 
-    def get_all_valid_moves(self):
-        """ Docstring for get_all_valid_moves() - TODO """
-
-        valid_moves = []
-
-        for rank in range(8):
-            for file in range(8):
-                if self.is_valid_move(rank, file, self.side_to_move):
-                    valid_moves.append((rank, file))
-
-        return valid_moves
-
-    def is_over(self):
-        """ Docstring for play_game() - TODO """
-
-        # TODO Make this smarter
-        return self.moves_played == 60
-
-    def get_winner(self):
-        """ Docstring for get_winner() - TODO """
-
-        black_count = 0
-        white_count = 0
-
-        for rank in range(8):
-            for file in range(8):
-                if self.board.state[rank][file].game_piece.get_side_up() == GamePiece.B_CHAR:
-                    black_count += 1
-                elif self.board.state[rank][file].game_piece.get_side_up() == GamePiece.W_CHAR:
-                    white_count += 1
-
-        return black_count, white_count
+        # Doesn't actually need to do anything for now
+        pass
 
     def make_move(self, rank, file, color):
         """
@@ -186,7 +347,7 @@ class Game(GUIElement):
         """
 
         # Return if there are no valid directions to flip
-        flip_ranges = self.get_flip_ranges(rank, file, color)
+        flip_ranges = Game.get_flip_ranges(self.board, rank, file, color)
         if not flip_ranges:
             # This move does not flip any other pieces = not valid
             return False
@@ -259,91 +420,8 @@ class Game(GUIElement):
         """
 
         self.board.state[rank][file].game_piece.flip()
-        self.update_num_board_meta_lists(rank, file, self.board.state[rank][file].game_piece.get_side_up(), False)
-
-    def get_flip_ranges(self, rank, file, color):
-        """
-            If making move of given color at given location, return list of tuple-generators that generate pairs of
-            indices in self.board.state to flip when making this move. Returns empty list if this move is not valid
-            (cannot flip in any direction).
-        """
-
-        # Add every direction in NEIGHBOR_INDICES_RELATIVE (if any) that is a direction this move should flip
-        ranges_to_flip = []
-
-        # Immediately invalid if it's not `color`'s turn
-        if self.side_to_move != color:
-            return ranges_to_flip
-
-        # Immediately invalid if the square is occupied
-        if self.board.state[rank][file].game_piece.get_side_up() != GamePiece.EMPTY_CHAR:
-            return ranges_to_flip
-
-        # Immediately invalid if there's no immediate neighboring GamePieces of opposite color
-        if color == GamePiece.B_CHAR and self.board.num_white_neighbors[rank][file] == 0:
-            return ranges_to_flip
-        elif color == GamePiece.W_CHAR and self.board.num_black_neighbors[rank][file] == 0:
-            return ranges_to_flip
-
-        # Valid iff, on any line starting from state[rank][file] and moving in the direction of an element in
-        # NEIGHBOR_INDICES_RELATIVE (treating the tuples like direction vectors), there is 1 or more GamePiece of the
-        # opposite color followed by a GamePiece of the same color.
-        if self.side_to_move == GamePiece.B_CHAR:
-            other_color = GamePiece.W_CHAR
-        elif self.side_to_move == GamePiece.W_CHAR:
-            other_color = GamePiece.B_CHAR
-        else:
-            raise ValueError(f'custom error: self.side_to_move not GamePiece.B_CHAR ("{GamePiece.B_CHAR}") or '
-                             f'GamePiece.W_CHAR ("{GamePiece.W_CHAR}") in Game.is_valid_move()')
-
-        # Check for line of >= 1 other_color followed by 1 this_color
-        # Check in all 8 directions
-        for d_rank, d_file in Board.NEIGHBOR_INDICES_RELATIVE:
-            current_rank = rank + d_rank
-            current_file = file + d_file
-
-            try:
-                while self.board.state[current_rank][current_file].game_piece.get_side_up() == other_color:
-                    # Increment even before first check
-                    current_rank += d_rank
-                    current_file += d_file
-
-                    # Check if flip has been "closed"
-                    if self.board.state[current_rank][current_file].game_piece.get_side_up() == self.side_to_move:
-                        # If so, add a generator that generates tuples containing the indices to flip for this direction
-
-                        # TODO Can probably make more efficient (fewer if/else checks)
-                        if d_rank == 0:
-                            # Can't do a range(start, stop, step) if step is 0
-                            # rank_range below is a generator (rank, rank, rank, rank, ...) with number of "rank"s equal
-                            # to how many tiles are flipping in this direction
-                            rank_range = (rank for _ in range(file + d_file, current_file, d_file))
-                        else:
-                            rank_range = range(rank + d_rank, current_rank, d_rank)
-
-                        if d_file == 0:
-                            # See comment above
-                            file_range = (file for _ in range(rank + d_rank, current_rank, d_rank))
-                        else:
-                            file_range = range(file + d_file, current_file, d_file)
-
-                        ranges_to_flip.append(e for e in zip(rank_range, file_range))
-                        break
-            except IndexError:
-                # Invalid if loop tries to access element at an invalid index before `break`ing
-                continue
-
-        if not ranges_to_flip:
-            return False
-
-        return ranges_to_flip
-
-    def is_valid_move(self, rank, file, color):
-        """ Return True iff placing piece of given color at given location in self.board.state is valid. """
-
-        # Validate that get_flip_ranges() does not return empty list
-        # In Python empty list = False
-        return not not self.get_flip_ranges(rank, file, color)
+        self.update_num_board_meta_lists(rank, file, GamePiece.get_side_up(self.board.state[rank][file].game_piece),
+                                         False)
 
     def flip_all_in_range(self, indices_to_flip):
         """
@@ -381,6 +459,20 @@ class Game(GUIElement):
                 # Else stop generation
                 return
 
-    def draw(self):
-        # TODO
-        pass
+    def draw(self, pygame_screen):
+        # TODO Game.draw() identical to Board.draw() for now - not sure if this will need to change -JH
+        self.board.draw(pygame_screen)
+
+    def handle_click(self, x_click_loc, y_click_loc):
+        """ If the click location was on a Tile in self.board, make a move at that Tile if it is valid. """
+
+        # Check every Tile in the board to see if click occurred inside its bounding box (might have occurred in a gap
+        # between them - in this case loop ends and nothing more is handled, as expected)
+        for rank_index, rank in enumerate(self.board.state):
+            for file_index, tile in enumerate(rank):
+                # If the click is inside this Tile and making a move there is a valid move, make move there
+                # TODO : Might cause bug where user can place moves for itself and for the computer
+                if GUIElement.click_is_inside(tile, x_click_loc, y_click_loc):
+                    if Game.is_valid_move(self.board, rank_index, file_index, self.side_to_move):
+                        self.make_move(rank_index, file_index, self.side_to_move)
+                        tile.handle_click(x_click_loc, y_click_loc)
