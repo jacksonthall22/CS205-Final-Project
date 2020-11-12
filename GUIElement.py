@@ -129,21 +129,21 @@ class GUIElement(ABC):
     def get_top_right_coord(gui_element):
         """ Return the coordinates of the top-right corner of the bounding box of the given GUIElement as a tuple. """
 
-        return gui_element.x_loc + gui_element.x_width, gui_element.y_loc
+        return gui_element.x_loc + gui_element.width, gui_element.y_loc
 
-    @staticmethod    
+    @staticmethod
     def get_bottom_right_coord(gui_element):
         """
             Return the coordinates of the bottom-right corner of the bounding box of the given GUIElement as a tuple.
         """
 
-        return gui_element.x_loc + gui_element.x_width, gui_element.y_loc + gui_element.y_width
+        return gui_element.x_loc + gui_element.width, gui_element.y_loc + gui_element.height
 
     @staticmethod
     def get_bottom_left_coord(gui_element):
         """ Return the coordinates of the bottom-left corner of the bounding box of this GUIElement as a tuple. """
 
-        return gui_element.x_loc, gui_element.y_loc + gui_element.y_width
+        return gui_element.x_loc, gui_element.y_loc + gui_element.height
 
     @staticmethod
     def click_is_inside(gui_element, x_click_loc, y_click_loc):
@@ -152,13 +152,13 @@ class GUIElement(ABC):
             GUIElement.
         """
 
-        return gui_element.x_loc <= x_click_loc < gui_element.x_loc + gui_element.x_width \
-            and gui_element.y_loc <= y_click_loc < gui_element.y_loc + gui_element.y_width
+        return gui_element.x_loc <= x_click_loc < gui_element.x_loc + gui_element.width \
+            and gui_element.y_loc <= y_click_loc < gui_element.y_loc + gui_element.height
 
     ''' ========== Instance Methods ========== '''
 
     @abstractmethod
-    def draw(self, pygame_screen):
+    def draw(self, pygame_screen, row, column):
         # This method is abstract - don't implement here, only in subclasses
 
         # TODO : Can still change parameters ^ if needed (might need to add a parameter for the pygame screen object
