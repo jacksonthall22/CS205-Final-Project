@@ -476,3 +476,5 @@ class Game(GUIElement):
                     if Game.is_valid_move(self.board, rank_index, file_index, self.side_to_move):
                         self.make_move(rank_index, file_index, self.side_to_move)
                         tile.handle_click(x_click_loc, y_click_loc)
+        print('game')
+        return None

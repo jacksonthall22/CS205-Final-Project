@@ -36,6 +36,7 @@ Methods
 """
 
 from GUIElement import GUIElement
+import pygame
 
 
 class GamePiece(GUIElement):
@@ -51,6 +52,9 @@ class GamePiece(GUIElement):
     B_CHAR = 'b'
     W_CHAR = 'w'
     EMPTY_CHAR = '-'
+
+    BLACK = [0, 0, 0]
+    WHITE = [255, 255, 255]
 
     ''' ========== Regular Class Variables ========== '''
 
@@ -118,12 +122,16 @@ class GamePiece(GUIElement):
 
         self.side_up = side_up
 
-    def draw(self, pygame_screen):
-        # TODO
-
-        pass
+    def draw(self, pygame_screen, row, column):
+        if self.side_up == GamePiece.B_CHAR:
+            #TODO draw balck circle
+            #pygame.draw.circle(pygame_screen, GamePiece.BLACK, )
+            pass
+        elif self.side_up == GamePiece.W_CHAR:
+            #TODO draw white circle
+            pass
 
     def handle_click(self, x_click_loc, y_click_loc):
         """ Docstring for handle_click() - TODO """
-
-        pass
+        print("piece")
+        return None

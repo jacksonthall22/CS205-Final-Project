@@ -1,5 +1,9 @@
 import pygame, sys
 from pygame.locals import *
+from Button import Button
+from GameGUI import GameGUI
+from Layout import Layout
+from Board import Board
 
 ''' Initialize pygame and clock'''
 pygame.init()
@@ -55,6 +59,34 @@ def create_button(text, xy_wh, if_pressed=None):
 
 def game_menu():
     """ Wait for event on game menu screen: either start a game or exit """
+    gui = GameGUI()
+
+
+    start = Button(text="START")
+    start.x_loc = (X // 4) - 125
+    start.y_loc = (4 * Y // 5) - 50
+    start.width = 300
+    start.height = 100
+    e_menu = Button(text="EXIT")
+    e_menu.x_loc = (3 * X // 4) - 125
+    e_menu.y_loc = (4 * Y // 5) - 50
+    e_menu.width = 300
+    e_menu.height = 100
+    menu_layout = Layout([start, e_menu])
+
+
+
+    e_in_game = Button(text="EXIT")
+    e_in_game.x_loc = X // 12
+    e_in_game.y_loc = (3 * Y // 4)
+    e_in_game.width = 300
+    e_in_game.height = 100
+    board = Board(state=Board.get_starting_state())
+
+    in_game_layout = Layout([board, e_in_game])
+    gui.update_active_screen(menu_layout)
+
+    title_location = ((X // 2) - (452 // 2), 50)
 
     menu = True
 
@@ -64,29 +96,42 @@ def game_menu():
                 quit_game()
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 mouse_position = pygame.mouse.get_pos()
-                if start_xy_wh[0] < mouse_position[0] < start_xy_wh[0] + start_xy_wh[2] and \
-                        start_xy_wh[1] < mouse_position[1] < start_xy_wh[1] + start_xy_wh[3]:
-                    play_game()
-                if exit_xy_wh[0] < mouse_position[0] < exit_xy_wh[0] + exit_xy_wh[2] and \
-                        exit_xy_wh[1] < mouse_position[1] < exit_xy_wh[1] + exit_xy_wh[3]:
+                action = gui.handle_click(mouse_position[0], mouse_position[1])
+                if action == "EXIT":
                     quit_game()
-                if win_xy_wh[0] < mouse_position[0] < win_xy_wh[0] + win_xy_wh[2] and \
-                        win_xy_wh[1] < mouse_position[1] < win_xy_wh[1] + win_xy_wh[3]:
-                    win_screen()
-
-        # Add title image
+                elif action == "START":
+                    gui.update_active_screen(in_game_layout)
+                    title_location = (20, 20)
+                elif action == 'NEW GAME':
+                    # TODO create new game object
+                    gui.update_active_screen(in_game_layout)
+                    title_location = ((X // 2) - (452 // 2), 50)
+                #GameGUI.get_active_screen().handle_click(mouse_position[0], mouse_position[1])
+        #         if start_xy_wh[0] < mouse_position[0] < start_xy_wh[0] + start_xy_wh[2] and \
+        #                 start_xy_wh[1] < mouse_position[1] < start_xy_wh[1] + start_xy_wh[3]:
+        #             play_game()
+        #         if exit_xy_wh[0] < mouse_position[0] < exit_xy_wh[0] + exit_xy_wh[2] and \
+        #                 exit_xy_wh[1] < mouse_position[1] < exit_xy_wh[1] + exit_xy_wh[3]:
+        #             quit_game()
+        #         if win_xy_wh[0] < mouse_position[0] < win_xy_wh[0] + win_xy_wh[2] and \
+        #                 win_xy_wh[1] < mouse_position[1] < win_xy_wh[1] + win_xy_wh[3]:
+        #             win_screen()
+        #
+        # # Add title image
         SCREEN.fill(BACKGROUND)
-        SCREEN.blit(TITLE, ((X // 2) - (452 // 2), 50))
+        SCREEN.blit(TITLE, title_location)
+        gui.draw(SCREEN)
 
-        # Add buttons
-        start_xy_wh = [(X // 4) - 125, (4 * Y // 5) - 50, 300, 100]
-        create_button('START', start_xy_wh, play_game)
-        exit_xy_wh = [(3 * X // 4) - 125, (4 * Y // 5) - 50, 300, 100]
-        create_button('EXIT', exit_xy_wh, quit_game)
-        # TODO remove after full implementation
-        # REMOVE COMMENT TO TEST BUTTON (Causes issues with other buttons)
-        win_xy_wh = [X // 2 - 250, Y//2 - 50, 500, 100]
-        create_button('TEST WIN SCREEN', win_xy_wh, win_screen)
+        # # Add buttons
+        # start_xy_wh = [(X // 4) - 125, (4 * Y // 5) - 50, 300, 100]
+        # create_button('START', start_xy_wh, play_game)
+        # exit_xy_wh = [(3 * X // 4) - 125, (4 * Y // 5) - 50, 300, 100]
+        # create_button('EXIT', exit_xy_wh, quit_game)
+        # # TODO remove after full implementation
+        # # REMOVE COMMENT TO TEST BUTTON (Causes issues with other buttons)
+        # win_xy_wh = [X // 2 - 250, Y//2 - 50, 500, 100]
+        # create_button('TEST WIN SCREEN', win_xy_wh, win_screen)
+
 
         pygame.display.update()
         clock.tick(15)
