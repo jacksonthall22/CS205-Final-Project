@@ -38,7 +38,10 @@ class Layout:
         """ Docstring for handle_window_click() - TODO """
 
         for element in self.elements:
+            # print("ELEMENT: ", type(element), "LOCATION: ", element.x_loc, element.y_loc)
+            # print("MOUSE CLICK LOCATION: ", x_click_loc, y_click_loc)
             if GUIElement.click_is_inside(element, x_click_loc, y_click_loc):
+
                 return element.handle_click(x_click_loc, y_click_loc)
 
     def draw(self, pygame_screen):

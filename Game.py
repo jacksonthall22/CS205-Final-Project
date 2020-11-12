@@ -76,6 +76,10 @@ class Game(GUIElement):
         self.white_score = 0
         self.black_score = 0
         self.set_scores()
+        self.x_loc = self.board.x_loc
+        self.y_loc = self.board.y_loc
+        self.width = self.board.width
+        self.height = self.board.height
 
     ''' ========== Magic Methods ========== '''
 
@@ -472,9 +476,12 @@ class Game(GUIElement):
             for file_index, tile in enumerate(rank):
                 # If the click is inside this Tile and making a move there is a valid move, make move there
                 # TODO : Might cause bug where user can place moves for itself and for the computer
+                print(tile)
                 if GUIElement.click_is_inside(tile, x_click_loc, y_click_loc):
                     if Game.is_valid_move(self.board, rank_index, file_index, self.side_to_move):
+                        print(self.board)
                         self.make_move(rank_index, file_index, self.side_to_move)
                         tile.handle_click(x_click_loc, y_click_loc)
+                        print(self.board)
         print('game')
         return None

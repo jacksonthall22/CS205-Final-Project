@@ -4,7 +4,7 @@ from Button import Button
 from GameGUI import GameGUI
 from Layout import Layout
 from Board import Board
-
+from Game import  Game
 ''' Initialize pygame and clock'''
 pygame.init()
 clock = pygame.time.Clock()
@@ -60,7 +60,7 @@ def create_button(text, xy_wh, if_pressed=None):
 def game_menu():
     """ Wait for event on game menu screen: either start a game or exit """
     gui = GameGUI()
-
+    game = Game()
 
     start = Button(text="START")
     start.x_loc = (X // 4) - 125
@@ -83,7 +83,7 @@ def game_menu():
     e_in_game.height = 100
     board = Board(state=Board.get_starting_state())
 
-    in_game_layout = Layout([board, e_in_game])
+    in_game_layout = Layout([game, e_in_game])
     gui.update_active_screen(menu_layout)
 
     title_location = ((X // 2) - (452 // 2), 50)

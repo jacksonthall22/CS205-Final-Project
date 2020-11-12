@@ -151,7 +151,7 @@ class GUIElement(ABC):
             Return True iff the (x_click_loc, y_click_loc) pixel coordinate is located inside the bounding box of this
             GUIElement.
         """
-
+        #print(gui_element, gui_element.x_loc, gui_element.y_loc)
         return gui_element.x_loc <= x_click_loc < gui_element.x_loc + gui_element.width \
             and gui_element.y_loc <= y_click_loc < gui_element.y_loc + gui_element.height
 

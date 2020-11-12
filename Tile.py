@@ -117,12 +117,14 @@ class Tile(GUIElement):
 
     def draw(self, pygame_screen, row, column):
         """ Docstring for draw(self, pygame_screen, color, x, y, w, h) """
+        self.set_game_piece_locations_and_sizes()
         pygame.draw.rect(pygame_screen, Tile.GREEN, (self.x_loc,
                                                      self.y_loc,
                                                      self.width,
                                                      self.height))
         if not self.is_empty():
-            self.game_piece.draw(pygame_screen, row, column)
+            #print(self.game_piece.x_loc, self.game_piece.y_loc)
+            self.game_piece.draw(pygame_screen)
 
     def handle_click(self, x_click_loc, y_click_loc):
         """ Docstring for handle_click(self, x_click_loc, y_click_loc):() - TODO """
