@@ -128,10 +128,8 @@ class GamePiece(GUIElement):
         position = (x_center, y_center)
         if self.side_up == GamePiece.B_CHAR:
             pygame.draw.circle(pygame_screen, GamePiece.BLACK, position, int(self.width / 2))
-
         elif self.side_up == GamePiece.W_CHAR:
             pygame.draw.circle(pygame_screen, GamePiece.WHITE, position, int(self.width / 2))
-
 
     def handle_click(self, x_click_loc, y_click_loc):
         """ Docstring for handle_click() - TODO """

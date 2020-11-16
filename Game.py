@@ -469,19 +469,17 @@ class Game(GUIElement):
 
     def handle_click(self, x_click_loc, y_click_loc):
         """ If the click location was on a Tile in self.board, make a move at that Tile if it is valid. """
-
         # Check every Tile in the board to see if click occurred inside its bounding box (might have occurred in a gap
         # between them - in this case loop ends and nothing more is handled, as expected)
         for rank_index, rank in enumerate(self.board.state):
             for file_index, tile in enumerate(rank):
                 # If the click is inside this Tile and making a move there is a valid move, make move there
                 # TODO : Might cause bug where user can place moves for itself and for the computer
-                print(tile)
                 if GUIElement.click_is_inside(tile, x_click_loc, y_click_loc):
                     if Game.is_valid_move(self.board, rank_index, file_index, self.side_to_move):
-                        print(self.board)
                         self.make_move(rank_index, file_index, self.side_to_move)
                         tile.handle_click(x_click_loc, y_click_loc)
-                        print(self.board)
+                        return "valid"
+
         print('game')
         return None

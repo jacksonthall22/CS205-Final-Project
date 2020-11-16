@@ -115,7 +115,7 @@ class Tile(GUIElement):
         """ Return True iff the self.game_piece.side_up is None. """
         return self.game_piece.side_up is None
 
-    def draw(self, pygame_screen, row, column):
+    def draw(self, pygame_screen):
         """ Docstring for draw(self, pygame_screen, color, x, y, w, h) """
         self.set_game_piece_locations_and_sizes()
         pygame.draw.rect(pygame_screen, Tile.GREEN, (self.x_loc,
@@ -123,7 +123,6 @@ class Tile(GUIElement):
                                                      self.width,
                                                      self.height))
         if not self.is_empty():
-            #print(self.game_piece.x_loc, self.game_piece.y_loc)
             self.game_piece.draw(pygame_screen)
 
     def handle_click(self, x_click_loc, y_click_loc):

@@ -428,15 +428,9 @@ class Board(GUIElement):
             raise ValueError('custom error: invalid [rank][file] location given to Board.place_piece()')
 
     def draw(self, pygame_screen):
-        r = 1
-        c = 1
         for row in self.state:
             for column in row:
-                column.draw(pygame_screen, r, c)
-                c += 1
-            r += 1
-            c = 1
-
+                column.draw(pygame_screen)
 
     def handle_click(self, x_click_loc, y_click_loc):
         print('board')
