@@ -39,7 +39,7 @@ class Layout:
 
         for element in self.elements:
             if GUIElement.click_is_inside(element, x_click_loc, y_click_loc):
-                element.handle_click(x_click_loc, y_click_loc)
+                return element.handle_click(x_click_loc, y_click_loc)
 
     def draw(self, pygame_screen):
         """ Call draw(pygame_screen) on every GUIElement in this screen. """

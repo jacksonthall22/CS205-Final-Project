@@ -76,6 +76,10 @@ class Game(GUIElement):
         self.white_score = 0
         self.black_score = 0
         self.set_scores()
+        self.x_loc = self.board.x_loc
+        self.y_loc = self.board.y_loc
+        self.width = self.board.width
+        self.height = self.board.height
 
     ''' ========== Magic Methods ========== '''
 
@@ -465,7 +469,6 @@ class Game(GUIElement):
 
     def handle_click(self, x_click_loc, y_click_loc):
         """ If the click location was on a Tile in self.board, make a move at that Tile if it is valid. """
-
         # Check every Tile in the board to see if click occurred inside its bounding box (might have occurred in a gap
         # between them - in this case loop ends and nothing more is handled, as expected)
         for rank_index, rank in enumerate(self.board.state):
@@ -476,3 +479,7 @@ class Game(GUIElement):
                     if Game.is_valid_move(self.board, rank_index, file_index, self.side_to_move):
                         self.make_move(rank_index, file_index, self.side_to_move)
                         tile.handle_click(x_click_loc, y_click_loc)
+                        return "valid"
+
+        print('game')
+        return None

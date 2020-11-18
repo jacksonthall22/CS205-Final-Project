@@ -60,9 +60,8 @@ class GameGUI:
         """ Docstring for handle_click() - TODO """
 
         # Handle the click in the context of the currently-active Layout
-        self.active_layout.handle_click(x_click_loc, y_click_loc)
+        return self.active_layout.handle_click(x_click_loc, y_click_loc)
 
-    def draw(self):
+    def draw(self, screen):
         """ Docstring for draw() - TODO """
-
-        pass
+        self.active_layout.draw(screen)

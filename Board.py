@@ -96,13 +96,13 @@ class Board(GUIElement):
     ]
 
     # Number of pixels gap between ranks/files in the GUI's Board
-    GUI_TILE_GAP_SIZE = 5
+    GUI_TILE_GAP_SIZE = 2.5
 
     ''' ========== Regular Class Variables ========== '''
 
     ''' ========== Constructor ========== '''
 
-    def __init__(self, state=None, x_loc=0, y_loc=0, width=1000, height=1000):
+    def __init__(self, state=None, x_loc=500, y_loc=15, width=528, height=528):
         # Call parent constructor
         super().__init__(x_loc, y_loc, width, height)
 
@@ -428,9 +428,10 @@ class Board(GUIElement):
             raise ValueError('custom error: invalid [rank][file] location given to Board.place_piece()')
 
     def draw(self, pygame_screen):
-        # TODO
-
-        pass
+        for row in self.state:
+            for column in row:
+                column.draw(pygame_screen)
 
     def handle_click(self, x_click_loc, y_click_loc):
-        pass
+        print('board')
+        return None

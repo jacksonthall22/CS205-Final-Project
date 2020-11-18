@@ -13,6 +13,7 @@ Fields
 
 from GamePiece import GamePiece
 from GUIElement import GUIElement
+import pygame
 
 
 class Tile(GUIElement):
@@ -32,6 +33,10 @@ class Tile(GUIElement):
     #     game_piece.x_loc = tile.x_loc + tile.width * (1 - 0.75) / 2
     #     game_piece.y_loc = tile.y_loc + tile.width * (1 - 0.75) / 2
     GAME_PIECE_SCALE_FACTOR = 0.75
+
+    GREEN = [15, 85, 15]
+
+    SPACING = 1
 
     ''' ========== Regular Class Variables ========== '''
 
@@ -112,8 +117,13 @@ class Tile(GUIElement):
 
     def draw(self, pygame_screen):
         """ Docstring for draw(self, pygame_screen, color, x, y, w, h) """
-        # TODO
-        pass
+        self.set_game_piece_locations_and_sizes()
+        pygame.draw.rect(pygame_screen, Tile.GREEN, (self.x_loc,
+                                                     self.y_loc,
+                                                     self.width,
+                                                     self.height))
+        if not self.is_empty():
+            self.game_piece.draw(pygame_screen)
 
     def handle_click(self, x_click_loc, y_click_loc):
         """ Docstring for handle_click(self, x_click_loc, y_click_loc):() - TODO """
@@ -123,5 +133,5 @@ class Tile(GUIElement):
         #       `handle_click()` of the containing Board has been called - all piece placement logic is
         #       located in Board.handle_click(). It cannot be implemented here because from this scope, we don't have
         #       access to the Board's Game object and therefore can't know what color piece to place.
-
-        pass
+        print("tile")
+        return None
