@@ -471,6 +471,8 @@ class Game(GUIElement):
         """ If the click location was on a Tile in self.board, make a move at that Tile if it is valid. """
         # Check every Tile in the board to see if click occurred inside its bounding box (might have occurred in a gap
         # between them - in this case loop ends and nothing more is handled, as expected)
+        # TODO check self.no_moves
+
         for rank_index, rank in enumerate(self.board.state):
             for file_index, tile in enumerate(rank):
                 # If the click is inside this Tile and making a move there is a valid move, make move there

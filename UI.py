@@ -61,6 +61,7 @@ def game_menu():
     in_game = True
 
     while in_game:
+        action = None
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit_game()
@@ -76,11 +77,6 @@ def game_menu():
                     # TODO create new game object
                     gui.update_active_screen(in_game_layout)
                     title_location = ((X // 2) - (452 // 2), 50)
-                elif action == "valid":
-                    time.sleep(2)
-                    # TODO make computer move
-                    # use rank, file, only_move = game.get_random_valid_move
-                    # call make move with white piece and above location
 
         # # Add title image
         SCREEN.fill(BACKGROUND)
@@ -88,6 +84,12 @@ def game_menu():
         gui.draw(SCREEN)
 
         pygame.display.update()
+        if action == "valid":
+            time.sleep(2)
+            # TODO make computer move
+            # use rank, file, only_move = game.get_random_valid_move
+            # call make move with white piece and above location
+            pygame.display.update()
         clock.tick(15)
 
 
