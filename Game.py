@@ -348,7 +348,6 @@ class Game(GUIElement):
             If move is valid, update state, num_<black/white>_neighbors, indices_with_<black/white>_neighbors,
             and side_to_move, then return True. If move does not flip any tiles, don't make the move and return False.
         """
-
         # Return if there are no valid directions to flip
         flip_ranges = Game.get_flip_ranges(self.board, rank, file, color)
         if not flip_ranges:
@@ -459,6 +458,16 @@ class Game(GUIElement):
             except ValueError:
                 # Else stop generation
                 return
+
+    def computer_move(self):
+        """ :return True iff computer makes a move, makes move for computer """
+
+        if self.side_to_move == GamePiece.W_CHAR:
+            # TODO change here based on difficulty when implemented
+            rank, file, only_move = Game.get_random_valid_move(self)
+            self.make_move(rank, file, self.side_to_move)
+            return True
+        return False
 
     def draw(self, pygame_screen):
         for row in self.board.state:

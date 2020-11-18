@@ -87,9 +87,7 @@ def game_menu():
 
         if GameGUI.get_active_screen(gui) == in_game_layout:
             current_game = Layout.get_game(GameGUI.get_active_screen(gui))
-            if current_game.side_to_move == GamePiece.W_CHAR:
-                rank, file, only_move = Game.get_random_valid_move(current_game)
-                current_game.make_move(rank, file, current_game.side_to_move)
+            if current_game.computer_move():
                 time.sleep(1)
                 gui.draw(SCREEN)
                 pygame.display.update()
