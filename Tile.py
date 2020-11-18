@@ -35,6 +35,7 @@ class Tile(GUIElement):
     GAME_PIECE_SCALE_FACTOR = 0.75
 
     GREEN = [15, 85, 15]
+    HIGHLIGHT = [255, 255, 0]
 
     SPACING = 1
 
@@ -68,9 +69,19 @@ class Tile(GUIElement):
     ''' ========== Instance Methods ========== '''
 
     def set_game_piece(self, game_piece):
-        """ Docstring for set_game_piece() - TODO """
+        """ :param game_piece to make game_piece of the tile """
 
         self.game_piece = game_piece
+
+    def highlight_tile(self):
+        """ Set highlight_valid_move to True """
+
+        self.highlight_valid_move = True
+
+    def remove_highlight(self):
+        """ Set highlight_valid_move to False """
+
+        self.highlight_valid_move = False
 
     def set_game_piece_locations_and_sizes(self):
         """
@@ -112,16 +123,25 @@ class Tile(GUIElement):
         self.game_piece.y_loc = self.y_loc + self.height * (1 - Tile.GAME_PIECE_SCALE_FACTOR) / 2
 
     def is_empty(self):
-        """ Return True iff the self.game_piece.side_up is None. """
+        """ :return True iff there is no game piece in the tile """
         return self.game_piece.side_up is None
 
     def draw(self, pygame_screen):
-        """ Docstring for draw(self, pygame_screen, color, x, y, w, h) """
         self.set_game_piece_locations_and_sizes()
-        pygame.draw.rect(pygame_screen, Tile.GREEN, (self.x_loc,
-                                                     self.y_loc,
-                                                     self.width,
-                                                     self.height))
+        if self.highlight_valid_move:
+            pygame.draw.rect(pygame_screen, Tile.HIGHLIGHT, (self.x_loc,
+                                                          self.y_loc,
+                                                          self.width,
+                                                          self.height))
+            pygame.draw.rect(pygame_screen, Tile.GREEN, (self.x_loc + 6,
+                                                         self.y_loc + 6,
+                                                         self.width - 12,
+                                                         self.height - 12))
+        else:
+            pygame.draw.rect(pygame_screen, Tile.GREEN, (self.x_loc,
+                                                         self.y_loc,
+                                                         self.width,
+                                                         self.height))
         if not self.is_empty():
             self.game_piece.draw(pygame_screen)
 

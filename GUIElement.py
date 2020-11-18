@@ -159,14 +159,6 @@ class GUIElement(ABC):
     @abstractmethod
     def draw(self, pygame_screen):
         # This method is abstract - don't implement here, only in subclasses
-
-        # TODO : Can still change parameters ^ if needed (might need to add a parameter for the pygame screen object
-        # TODO : on which the object should be drawn (not sure how that works -JH)
-
-        # Important: Whatever changes in the signature here (def display(self))
-        # will also need to be updated in signatures of display() in all child
-        # classes. Interpreter does not seem to throw warnings if signatures do not
-        # match so make sure to keep the same manually
         pass
     
     @abstractmethod

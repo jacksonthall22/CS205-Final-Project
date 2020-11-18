@@ -8,6 +8,7 @@ A Layout consists of
 """
 
 from GUIElement import GUIElement
+from Game import Game
 
 
 class Layout:
@@ -31,6 +32,13 @@ class Layout:
     ''' ========== Magic Methods ========== '''
 
     ''' ========== Static Methods ========== '''
+
+    @staticmethod
+    def get_game(layout):
+        """ :return game object in the current layout """
+        for e in layout.elements:
+            if type(e) == Game:
+                return e
 
     ''' ========== Instance Methods ========== '''
 

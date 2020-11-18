@@ -433,5 +433,4 @@ class Board(GUIElement):
                 column.draw(pygame_screen)
 
     def handle_click(self, x_click_loc, y_click_loc):
-        print('board')
         return None

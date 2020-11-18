@@ -92,7 +92,7 @@ class GamePiece(GUIElement):
 
     @staticmethod
     def get_side_up(game_piece):
-        """ Return self.side_up. """
+        """ :return side_up of GamePiece """
         return game_piece.side_up
 
     @staticmethod

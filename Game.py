@@ -206,7 +206,6 @@ class Game(GUIElement):
             for file in range(8):
                 if Game.is_valid_move(game.board, rank, file, game.side_to_move):
                     valid_moves.append((rank, file))
-
         return valid_moves
 
     @staticmethod
@@ -365,7 +364,6 @@ class Game(GUIElement):
 
         self.moves_played += 1
         self.side_to_move = (GamePiece.B_CHAR, GamePiece.W_CHAR)[self.side_to_move == GamePiece.B_CHAR]
-
         return True
 
     def update_num_board_meta_lists(self, rank, file, color, is_new_piece):
@@ -407,7 +405,6 @@ class Game(GUIElement):
                         if self.board.num_white_neighbors[rank + d_rank][file + d_file] == 0 \
                                 and (rank + d_rank, file + d_file) in self.board.indices_with_white_neighbors:
                             self.board.indices_with_white_neighbors.remove((rank + d_rank, file + d_file))
-
 
                     # Remove these indices from indices_with_white_neighbors if it falls to 0 in num_white_neighbors
                     if self.board.num_black_neighbors[rank + d_rank][file + d_file] > 0:
@@ -464,7 +461,14 @@ class Game(GUIElement):
                 return
 
     def draw(self, pygame_screen):
-        # TODO Game.draw() identical to Board.draw() for now - not sure if this will need to change -JH
+        for row in self.board.state:
+            for tile in row:
+                tile.remove_highlight()
+        if self.side_to_move == GamePiece.B_CHAR:
+            valid_moves = Game.get_all_valid_moves(self)
+            for valid in valid_moves:
+                self.board.state[valid[0]][valid[1]].highlight_tile()
+
         self.board.draw(pygame_screen)
 
     def handle_click(self, x_click_loc, y_click_loc):
@@ -472,16 +476,14 @@ class Game(GUIElement):
         # Check every Tile in the board to see if click occurred inside its bounding box (might have occurred in a gap
         # between them - in this case loop ends and nothing more is handled, as expected)
         # TODO check self.no_moves
-
-        for rank_index, rank in enumerate(self.board.state):
-            for file_index, tile in enumerate(rank):
-                # If the click is inside this Tile and making a move there is a valid move, make move there
-                # TODO : Might cause bug where user can place moves for itself and for the computer
-                if GUIElement.click_is_inside(tile, x_click_loc, y_click_loc):
-                    if Game.is_valid_move(self.board, rank_index, file_index, self.side_to_move):
-                        self.make_move(rank_index, file_index, self.side_to_move)
-                        tile.handle_click(x_click_loc, y_click_loc)
-                        return "valid"
+        if self.side_to_move == GamePiece.B_CHAR:
+            for rank_index, rank in enumerate(self.board.state):
+                for file_index, tile in enumerate(rank):
+                    # If the click is inside this Tile and making a move there is a valid move, make move there
+                    if GUIElement.click_is_inside(tile, x_click_loc, y_click_loc):
+                        if Game.is_valid_move(self.board, rank_index, file_index, self.side_to_move):
+                            self.make_move(rank_index, file_index, self.side_to_move)
+                            tile.handle_click(x_click_loc, y_click_loc)
 
         print('game')
         return None

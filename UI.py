@@ -3,6 +3,7 @@ from Button import Button
 from GameGUI import GameGUI
 from Layout import Layout
 from Game import Game
+from GamePiece import GamePiece
 import time
 
 ''' Initialize pygame and clock'''
@@ -61,7 +62,6 @@ def game_menu():
     in_game = True
 
     while in_game:
-        action = None
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit_game()
@@ -84,12 +84,16 @@ def game_menu():
         gui.draw(SCREEN)
 
         pygame.display.update()
-        if action == "valid":
-            time.sleep(2)
-            # TODO make computer move
-            # use rank, file, only_move = game.get_random_valid_move
-            # call make move with white piece and above location
-            pygame.display.update()
+
+        if GameGUI.get_active_screen(gui) == in_game_layout:
+            current_game = Layout.get_game(GameGUI.get_active_screen(gui))
+            if current_game.side_to_move == GamePiece.W_CHAR:
+                rank, file, only_move = Game.get_random_valid_move(current_game)
+                current_game.make_move(rank, file, current_game.side_to_move)
+                time.sleep(1)
+                gui.draw(SCREEN)
+                pygame.display.update()
+
         clock.tick(15)
 
 

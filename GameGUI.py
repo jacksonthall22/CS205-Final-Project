@@ -5,11 +5,6 @@ screen, win screen, etc.).
 
 """
 
-from Game import Game
-from GUIElement import GUIElement
-from Layout import Layout
-
-
 class GameGUI:
     """ GameGUI is the all-encompassing object to represent the GUI window instance. See docs at top of file. """
 
@@ -19,10 +14,7 @@ class GameGUI:
 
     ''' ========== Constructor ========== '''
 
-    def __init__(self, game=None, screens=None, active_layout=None):
-
-        if game is None:
-            game = Game()
+    def __init__(self, screens=None, active_layout=None):
 
         if screens is None:
             screens = set()
@@ -33,23 +25,20 @@ class GameGUI:
         # Whichever screen should be draw()n in the pygame window
         self.active_layout = active_layout
 
-        # Game object taking care of game logic
-        self.game = game
-
     ''' ========== Magic Methods ========== '''
 
     ''' ========== Static Methods ========== '''
 
     @staticmethod
     def get_active_screen(game_gui):
-        """ Docstring for get_active_window() - TODO """
+        """ :return active layout """
 
-        return game_gui.active_screen
+        return game_gui.active_layout
 
     ''' ========== Instance Methods ========== '''
 
     def update_active_screen(self, new_layout):
-        """ Docstring for change_screen() - TODO """
+        """ :param new_layout to be made the active layout """
 
         if new_layout not in self.layouts:
             self.layouts.add(new_layout)
