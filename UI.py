@@ -122,7 +122,17 @@ def game_menu():
                 elif action == "RANDOM" or action == "BEGINNER" or action == "AMATEUR" or action == "CLUB" or action == "EXPERT":
                     gui.update_active_screen(in_game_layout)
                     current_game = Layout.Layout.get_game(GameGUI.GameGUI.get_active_screen(gui))
-                    # current_game.computer_ai.set_difficulty(action)
+                    if action == "RANDOM":
+                        current_game.computer_ai.set_difficulty(1)
+                    if action == "BEGINNER":
+                        current_game.computer_ai.set_difficulty(2)
+                    if action == "AMATEUR":
+                        current_game.computer_ai.set_difficulty(3)
+                    if action == "CLUB":
+                        current_game.computer_ai.set_difficulty(4)
+                    if action == "EXPERT":
+                        current_game.computer_ai.set_difficulty(5)
+
                     title_location = (20, 20)
 
                 elif action == 'NEW GAME':
