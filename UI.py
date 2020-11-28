@@ -47,7 +47,45 @@ def game_menu():
     e_menu.height = 100
     menu_layout = Layout.Layout([s_menu, e_menu])
 
+    # random, beginner, amateur, club, expert
+    random_button = Button.Button(text="RANDOM")
+    random_button.x_loc = (X // 4) - 125
+    random_button.y_loc = (3 * Y // 5) - 50
+    random_button.width = 150
+    random_button.height = 50
+
+    beginner_button = Button(text="BEGINNER")
+    beginner_button.x_loc = (3 * X // 4) - 125
+    beginner_button.y_loc = (3 * Y // 5) - 50
+    beginner_button.width = 150
+    beginner_button.height = 50
+
+    amateur_button = Button.Button(text="AMATEUR")
+    amateur_button.x_loc = (X // 4) - 125
+    amateur_button.y_loc = (4 * Y // 5) - 50
+    amateur_button.width = 150
+    amateur_button.height = 50
+
+    club_button = Button.Button(text="CLUB")
+    club_button.x_loc = (3 * X // 4) - 125
+    club_button.y_loc = (4 * Y // 5) - 50
+    club_button.width = 150
+    club_button.height = 50
+
+    expert_button = Button.Button(text="EXPERT")
+    expert_button.x_loc = (X // 4) - 125
+    expert_button.y_loc = (4.5 * Y // 5) - 50
+    expert_button.width = 150
+    expert_button.height = 50
+
+
+
+
+    difficulty_layout = Layout([random_button,beginner_button,amateur_button, club_button,expert_button])
+
+
     e_in_game = Button.Button(text="EXIT")
+
     e_in_game.x_loc = X // 12
     e_in_game.y_loc = (3 * Y // 4)
     e_in_game.width = 300
@@ -84,8 +122,13 @@ def game_menu():
                 if action == "EXIT":
                     quit_game()
                 elif action == "START":
+                    gui.update_active_screen(difficulty_layout)
+                elif action == "RANDOM" or action == "BEGINNER" or action == "AMATEUR" or action == "CLUB" or action == "EXPERT":
                     gui.update_active_screen(in_game_layout)
+                    current_game = Layout.get_game(GameGUI.get_active_screen(gui))
+                    #current_game.computer_ai.set_difficulty(action)
                     title_location = (20, 20)
+
                 elif action == 'NEW GAME':
                     gui.update_active_screen(in_game_layout)
                     in_game_layout.new_game()
