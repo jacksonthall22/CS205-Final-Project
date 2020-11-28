@@ -78,7 +78,7 @@ def game_menu():
     expert_button.width = 150
     expert_button.height = 50
 
-    difficulty_layout = Layout.Layout([random_button,beginner_button,amateur_button, club_button,expert_button])
+    difficulty_layout = Layout.Layout([random_button, beginner_button, amateur_button, club_button, expert_button])
 
     e_in_game = Button.Button(text="EXIT")
 
@@ -121,8 +121,8 @@ def game_menu():
                     gui.update_active_screen(difficulty_layout)
                 elif action == "RANDOM" or action == "BEGINNER" or action == "AMATEUR" or action == "CLUB" or action == "EXPERT":
                     gui.update_active_screen(in_game_layout)
-                    current_game = Layout.get_game(GameGUI.get_active_screen(gui))
-                    #current_game.computer_ai.set_difficulty(action)
+                    current_game = Layout.Layout.get_game(GameGUI.GameGUI.get_active_screen(gui))
+                    # current_game.computer_ai.set_difficulty(action)
                     title_location = (20, 20)
 
                 elif action == 'NEW GAME':
