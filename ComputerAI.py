@@ -35,7 +35,7 @@ Methods
 
 """
 
-import Board
+import Game
 
 
 class ComputerAI:
@@ -57,7 +57,8 @@ class ComputerAI:
     ''' ========== Constructor ========== '''
 
     def __init__(self, difficulty=None):
-        ComputerAI.setDifficulty(difficulty)
+        self.difficulty = None
+        self.set_difficulty(difficulty)
 
     ''' ========== Magic Methods ========== '''
 
@@ -68,37 +69,37 @@ class ComputerAI:
 
     ''' ========== Static Methods ========== '''
     @staticmethod
-    def make_move_random(board: Board.Board, side_to_move):
+    def make_move_random(game: Game):
         """ Return a random valid move from given Board, or None if no valid moves exist. """
 
         pass
 
     @staticmethod
-    def make_move_beginner(board: Board.Board, side_to_move):
+    def make_move_beginner(game: Game):
         """ Docstring for make_move_() - TODO """
 
         pass
 
     @staticmethod
-    def make_move_amateur(board: Board.Board, side_to_move):
+    def make_move_amateur(game: Game):
         """ Docstring for make_move_() - TODO """
 
         pass
 
     @staticmethod
-    def make_move_club(board: Board.Board, side_to_move):
+    def make_move_club(game: Game):
         """ Docstring for make_move_() - TODO """
 
         pass
 
     @staticmethod
-    def make_move_expert(board: Board.Board, side_to_move):
+    def make_move_expert(game: Game):
         """ Return best move using alpha-beta search DEFAULT_DEPTH moves deep. """
 
         pass
 
     @staticmethod
-    def static_eval(board: Board.Board, side_to_move):
+    def static_eval(game: Game):
         """
             Return a float value representing the positional evaluation of the current Board state
             (without look-ahead). Positive numbers mean black is better, positive numbers mean
@@ -112,9 +113,24 @@ class ComputerAI:
         pass
 
     ''' ========== Instance Methods ========== '''
-
-    def setDifficulty(self, difficulty):
+    def set_difficulty(self, difficulty):
         if difficulty not in ComputerAI.DIFFICULTY_LEVELS:
             raise ValueError('custom error: Invalid difficulty in ComputerAI.__init__()')
 
         self.difficulty = difficulty
+
+    def make_move(self, game: Game):
+        """ Docstring for make_move() - TODO """
+
+        if self.difficulty == 1:
+            self.make_move_random(game)
+        elif self.difficulty == 2:
+            self.make_move_beginner(game)
+        elif self.difficulty == 3:
+            self.make_move_amateur(game)
+        elif self.difficulty == 4:
+            self.make_move_club(game)
+        elif self.difficulty == 5:
+            self.make_move_expert(game)
+        else:
+            raise ValueError('custom error: Invalid difficulty in ComputerAI.make_move()')

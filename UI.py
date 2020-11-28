@@ -1,9 +1,8 @@
 import pygame
-from Button import Button
-from GameGUI import GameGUI
-from Layout import Layout
-from Game import Game
-from GamePiece import GamePiece
+import Button
+import GameGUI
+import Layout
+import Game
 import time
 
 ''' Initialize pygame and clock'''
@@ -32,24 +31,24 @@ pygame.display.set_caption('Othello')
 
 def game_menu():
     """ Wait for event on game menu screen: either start a game or exit """
-    gui = GameGUI()
-    game = Game()
+    gui = GameGUI.GameGUI()
+    game = Game.Game()
 
-    s_menu = Button(text="START")
+    s_menu = Button.Button(text="START")
     s_menu.x_loc = (X // 4) - 125
     s_menu.y_loc = (4 * Y // 5) - 50
     s_menu.width = 300
     s_menu.height = 100
 
-    e_menu = Button(text="EXIT")
+    e_menu = Button.Button(text="EXIT")
     e_menu.x_loc = (3 * X // 4) - 125
     e_menu.y_loc = (4 * Y // 5) - 50
     e_menu.width = 300
     e_menu.height = 100
-    menu_layout = Layout([s_menu, e_menu])
+    menu_layout = Layout.Layout([s_menu, e_menu])
 
     # random, beginner, amateur, club, expert
-    random_button = Button(text="RANDOM")
+    random_button = Button.Button(text="RANDOM")
     random_button.x_loc = (X // 4) - 125
     random_button.y_loc = (3 * Y // 5) - 50
     random_button.width = 150
@@ -61,19 +60,19 @@ def game_menu():
     beginner_button.width = 150
     beginner_button.height = 50
 
-    amateur_button = Button(text="AMATEUR")
+    amateur_button = Button.Button(text="AMATEUR")
     amateur_button.x_loc = (X // 4) - 125
     amateur_button.y_loc = (4 * Y // 5) - 50
     amateur_button.width = 150
     amateur_button.height = 50
 
-    club_button = Button(text="CLUB")
+    club_button = Button.Button(text="CLUB")
     club_button.x_loc = (3 * X // 4) - 125
     club_button.y_loc = (4 * Y // 5) - 50
     club_button.width = 150
     club_button.height = 50
 
-    expert_button = Button(text="EXPERT")
+    expert_button = Button.Button(text="EXPERT")
     expert_button.x_loc = (X // 4) - 125
     expert_button.y_loc = (4.5 * Y // 5) - 50
     expert_button.width = 150
@@ -82,31 +81,30 @@ def game_menu():
 
 
 
-
     difficulty_layout = Layout([random_button,beginner_button,amateur_button, club_button,expert_button])
 
 
+    e_in_game = Button.Button(text="EXIT")
 
-    e_in_game = Button(text="EXIT")
     e_in_game.x_loc = X // 12
     e_in_game.y_loc = (3 * Y // 4)
     e_in_game.width = 300
     e_in_game.height = 100
 
-    in_game_layout = Layout([game, e_in_game])
+    in_game_layout = Layout.Layout([game, e_in_game])
 
-    e_end = Button(text="EXIT")
+    e_end = Button.Button(text="EXIT")
     e_end.x_loc = (3 * X // 4) - 125
     e_end.y_loc = (4 * Y // 5) - 50
     e_end.width = 300
     e_end.height = 100
 
-    ng_end = Button(text="NEW GAME")
+    ng_end = Button.Button(text="NEW GAME")
     ng_end.x_loc = (X // 4) - 125
     ng_end.y_loc = (4 * Y // 5) - 50
     ng_end.width = 300
     ng_end.height = 100
-    end_layout = Layout([ng_end, e_end])
+    end_layout = Layout.Layout([ng_end, e_end])
 
     gui.update_active_screen(menu_layout)
 
@@ -138,7 +136,7 @@ def game_menu():
 
         # Add title image
         SCREEN.fill(BACKGROUND)
-        if GameGUI.get_active_screen(gui) == in_game_layout:
+        if GameGUI.GameGUI.get_active_screen(gui) == in_game_layout:
             font = pygame.font.Font('freesansbold.ttf', 65)
             text_surf = font.render("\'s Turn", True, BLACK)
             text_pos = [180, 265]
@@ -146,8 +144,8 @@ def game_menu():
         SCREEN.blit(TITLE, title_location)
         gui.draw(SCREEN)
 
-        if GameGUI.get_active_screen(gui) == end_layout:
-            b_score, w_score = Game.get_winner(current_game)
+        if GameGUI.GameGUI.get_active_screen(gui) == end_layout:
+            b_score, w_score = Game.Game.get_winner(current_game)
             if w_score > b_score:
                 dif = w_score - b_score
                 text = "You lost by: " + str(dif) + " points"
@@ -157,17 +155,17 @@ def game_menu():
             else:
                 text = "Tie game"
             font = pygame.font.Font('freesansbold.ttf', 60)
-            text_surf = font.render(text, True, Button.TEXT_COLOR)
+            text_surf = font.render(text, True, Button.Button.TEXT_COLOR)
             text_pos = [(X // 2) - 300, (Y // 2)]
             SCREEN.blit(text_surf, text_pos)
 
         pygame.display.update()
 
-        if GameGUI.get_active_screen(gui) == in_game_layout:
-            current_game = Layout.get_game(GameGUI.get_active_screen(gui))
-            if len(Game.get_all_valid_moves(current_game)) == 0:
+        if GameGUI.GameGUI.get_active_screen(gui) == in_game_layout:
+            current_game = Layout.Layout.get_game(GameGUI.GameGUI.get_active_screen(gui))
+            if len(Game.Game.get_all_valid_moves(current_game)) == 0:
                 current_game.skip_move()
-            if Game.is_over(current_game):
+            if Game.Game.is_over(current_game):
                 gui.update_active_screen(end_layout)
                 title_location = ((X // 2) - (452 // 2), 50)
             if current_game.computer_move():
