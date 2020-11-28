@@ -41,6 +41,7 @@ from GamePiece import GamePiece
 from GUIElement import GUIElement
 import random
 import time
+import pygame
 
 
 # noinspection DuplicatedCode
@@ -69,8 +70,7 @@ class Game(GUIElement):
             type(moves_played) == int,
             moves_played >= 0,
         ))
-
-        self.board = Board(state)
+        self.board = Board(Board.get_starting_state())
         self.side_to_move = side_to_move
         self.moves_played = moves_played
         self.white_score = 0
@@ -221,6 +221,10 @@ class Game(GUIElement):
             return None, None, None
 
     @staticmethod
+    def get_winner(game):
+        return game.black_score, game.white_score
+
+    @staticmethod
     def is_over(game):
         """ Return True iff the board has no empty Tiles or neither player has valid moves. """
 
@@ -339,9 +343,7 @@ class Game(GUIElement):
 
     def skip_move(self):
         """ Skip the side_to_move's move. """
-
-        # Doesn't actually need to do anything for now
-        pass
+        self.side_to_move = (GamePiece.B_CHAR, GamePiece.W_CHAR)[self.side_to_move == GamePiece.B_CHAR]
 
     def make_move(self, rank, file, color):
         """
@@ -462,7 +464,7 @@ class Game(GUIElement):
     def computer_move(self):
         """ :return True iff computer makes a move, makes move for computer """
 
-        if self.side_to_move == GamePiece.W_CHAR:
+        if self.side_to_move == GamePiece.W_CHAR and not Game.is_over(self):
             # TODO change here based on difficulty when implemented
             rank, file, only_move = Game.get_random_valid_move(self)
             self.make_move(rank, file, self.side_to_move)
@@ -479,12 +481,18 @@ class Game(GUIElement):
                 self.board.state[valid[0]][valid[1]].highlight_tile()
 
         self.board.draw(pygame_screen)
+        position = (150, 300)
+        if self.side_to_move == GamePiece.B_CHAR:
+            pygame.draw.circle(pygame_screen, GamePiece.BLACK, position, 25)
+        elif self.side_to_move == GamePiece.W_CHAR:
+            pygame.draw.circle(pygame_screen, GamePiece.WHITE, position, 25)
 
     def handle_click(self, x_click_loc, y_click_loc):
         """ If the click location was on a Tile in self.board, make a move at that Tile if it is valid. """
         # Check every Tile in the board to see if click occurred inside its bounding box (might have occurred in a gap
         # between them - in this case loop ends and nothing more is handled, as expected)
         # TODO check self.no_moves
+
         if self.side_to_move == GamePiece.B_CHAR:
             for rank_index, rank in enumerate(self.board.state):
                 for file_index, tile in enumerate(rank):
@@ -494,5 +502,4 @@ class Game(GUIElement):
                             self.make_move(rank_index, file_index, self.side_to_move)
                             tile.handle_click(x_click_loc, y_click_loc)
 
-        print('game')
         return None

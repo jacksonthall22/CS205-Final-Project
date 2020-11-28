@@ -153,5 +153,4 @@ class Tile(GUIElement):
         #       `handle_click()` of the containing Board has been called - all piece placement logic is
         #       located in Board.handle_click(). It cannot be implemented here because from this scope, we don't have
         #       access to the Board's Game object and therefore can't know what color piece to place.
-        print("tile")
         return None

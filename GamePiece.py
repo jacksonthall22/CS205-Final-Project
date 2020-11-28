@@ -133,5 +133,4 @@ class GamePiece(GUIElement):
 
     def handle_click(self, x_click_loc, y_click_loc):
         """ Docstring for handle_click() - TODO """
-        print("piece")
         return None
