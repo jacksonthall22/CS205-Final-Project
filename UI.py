@@ -13,7 +13,7 @@ clock = pygame.time.Clock()
 GREEN = [15, 85, 15]
 BLACK = [0, 0, 0]
 BACKGROUND = [146, 196, 125]
-Button.Button_COLOR = [239, 239, 239]
+BUTTON_COLOR = [239, 239, 239]
 
 ''' Load images '''
 programIcon = pygame.image.load('icon.png')
