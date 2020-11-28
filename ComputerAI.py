@@ -71,31 +71,42 @@ class ComputerAI:
 
     @staticmethod
     def make_move_random(game: Game):
-        """ Return a random valid move from given Board, or None if no valid moves exist. """
+        """ Make a random valid move from given Board, or None if no valid moves exist. """
+        r, f, was_only_move = Game.Game.get_random_valid_move(game)
+        if None in (r, f):
+            return
 
-        pass
+        game.make_move(r, f, game.side_to_move)
 
     @staticmethod
     def make_move_beginner(game: Game):
         """ Docstring for make_move_() - TODO """
+        # TODO Comment out when implemented
+        ComputerAI.make_move_random(game)
 
         pass
 
     @staticmethod
     def make_move_amateur(game: Game):
         """ Docstring for make_move_() - TODO """
+        # TODO Comment out when implemented
+        ComputerAI.make_move_random(game)
 
         pass
 
     @staticmethod
     def make_move_club(game: Game):
         """ Docstring for make_move_() - TODO """
+        # TODO Comment out when implemented
+        ComputerAI.make_move_random(game)
 
         pass
 
     @staticmethod
     def make_move_expert(game: Game):
         """ Return best move using alpha-beta search DEFAULT_DEPTH moves deep. """
+        # TODO Comment out when implemented
+        ComputerAI.make_move_random(game)
 
         pass
 
