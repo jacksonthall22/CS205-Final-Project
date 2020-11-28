@@ -54,7 +54,7 @@ def game_menu():
     random_button.width = 150
     random_button.height = 50
 
-    beginner_button = Button(text="BEGINNER")
+    beginner_button = Button.Button(text="BEGINNER")
     beginner_button.x_loc = (3 * X // 4) - 125
     beginner_button.y_loc = (3 * Y // 5) - 50
     beginner_button.width = 150
@@ -78,11 +78,7 @@ def game_menu():
     expert_button.width = 150
     expert_button.height = 50
 
-
-
-
-    difficulty_layout = Layout([random_button,beginner_button,amateur_button, club_button,expert_button])
-
+    difficulty_layout = Layout.Layout([random_button,beginner_button,amateur_button, club_button,expert_button])
 
     e_in_game = Button.Button(text="EXIT")
 
