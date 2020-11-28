@@ -38,8 +38,6 @@ Methods
 import Board
 
 
-
-
 class ComputerAI:
     """ Container for all methods used to choose good Othello moves. """
 
@@ -58,8 +56,8 @@ class ComputerAI:
 
     ''' ========== Constructor ========== '''
 
-    def __init__(self, difficulty):
-        self.difficulty = difficulty
+    def __init__(self, difficulty=None):
+        ComputerAI.setDifficulty(difficulty)
 
     ''' ========== Magic Methods ========== '''
 
@@ -69,7 +67,6 @@ class ComputerAI:
         s = f'<ComputerAI with difficulty = {self.difficulty}>'
 
     ''' ========== Static Methods ========== '''
-
     @staticmethod
     def make_move_random(board: Board.Board, side_to_move):
         """ Return a random valid move from given Board, or None if no valid moves exist. """
@@ -116,3 +113,8 @@ class ComputerAI:
 
     ''' ========== Instance Methods ========== '''
 
+    def setDifficulty(self, difficulty):
+        if difficulty not in ComputerAI.DIFFICULTY_LEVELS:
+            raise ValueError('custom error: Invalid difficulty in ComputerAI.__init__()')
+
+        self.difficulty = difficulty
