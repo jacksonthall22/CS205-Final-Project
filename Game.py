@@ -222,7 +222,15 @@ class Game(GUIElement):
 
     @staticmethod
     def get_winner(game):
-        return game.black_score, game.white_score
+        black_score = 0
+        white_score = 0
+        for rank in game.board.state:
+            for tile in rank:
+                if GamePiece.get_side_up(tile.game_piece) == GamePiece.B_CHAR:
+                    black_score += 1
+                elif GamePiece.get_side_up(tile.game_piece) == GamePiece.W_CHAR:
+                    white_score += 1
+        return black_score, white_score
 
     @staticmethod
     def is_over(game):
@@ -463,12 +471,15 @@ class Game(GUIElement):
 
     def computer_move(self):
         """ :return True iff computer makes a move, makes move for computer """
-
-        if self.side_to_move == GamePiece.W_CHAR and not Game.is_over(self):
-            # TODO change here based on difficulty when implemented
-            rank, file, only_move = Game.get_random_valid_move(self)
-            self.make_move(rank, file, self.side_to_move)
-            return True
+        setting = "EASY"
+        if setting == "EASY":
+            if self.side_to_move == GamePiece.W_CHAR and not Game.is_over(self):
+                # TODO change here based on difficulty when implemented
+                rank, file, only_move = Game.get_random_valid_move(self)
+                self.make_move(rank, file, self.side_to_move)
+                return True
+        else:
+            pass
         return False
 
     def draw(self, pygame_screen):
