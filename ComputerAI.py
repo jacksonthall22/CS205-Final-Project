@@ -35,7 +35,6 @@ Methods
 
 """
 
-import Board
 import Game
 
 
@@ -70,37 +69,37 @@ class ComputerAI:
 
     ''' ========== Static Methods ========== '''
     @staticmethod
-    def make_move_random(game: Game.Game):
+    def make_move_random(game: Game):
         """ Return a random valid move from given Board, or None if no valid moves exist. """
 
         pass
 
     @staticmethod
-    def make_move_beginner(game: Game.Game):
+    def make_move_beginner(game: Game):
         """ Docstring for make_move_() - TODO """
 
         pass
 
     @staticmethod
-    def make_move_amateur(game: Game.Game):
+    def make_move_amateur(game: Game):
         """ Docstring for make_move_() - TODO """
 
         pass
 
     @staticmethod
-    def make_move_club(game: Game.Game):
+    def make_move_club(game: Game):
         """ Docstring for make_move_() - TODO """
 
         pass
 
     @staticmethod
-    def make_move_expert(game: Game.Game):
+    def make_move_expert(game: Game):
         """ Return best move using alpha-beta search DEFAULT_DEPTH moves deep. """
 
         pass
 
     @staticmethod
-    def static_eval(game: Game.Game):
+    def static_eval(game: Game):
         """
             Return a float value representing the positional evaluation of the current Board state
             (without look-ahead). Positive numbers mean black is better, positive numbers mean
@@ -120,7 +119,7 @@ class ComputerAI:
 
         self.difficulty = difficulty
 
-    def make_move(self, game: Game.Game):
+    def make_move(self, game: Game):
         """ Docstring for make_move() - TODO """
 
         if self.difficulty == 1:
