@@ -480,15 +480,11 @@ class Game(GUIElement.GUIElement):
 
     def computer_move(self):
         """ :return True iff computer makes a move, makes move for computer """
-        setting = "EASY"
-        if setting == "EASY":
-            if self.side_to_move == GamePiece.GamePiece.W_CHAR and not Game.is_over(self):
-                # TODO change here based on difficulty when implemented
-                rank, file, only_move = Game.get_random_valid_move(self)
-                self.make_move(rank, file, self.side_to_move)
-                return True
-        else:
-            pass
+
+        if self.side_to_move == GamePiece.GamePiece.W_CHAR and not Game.is_over(self):
+            self.computer_ai.make_move(self)
+            return True
+
         return False
 
     def draw(self, pygame_screen):
