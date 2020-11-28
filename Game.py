@@ -55,7 +55,7 @@ class Game(GUIElement):
     ''' ========== Constructor ========== '''
 
     def __init__(self, state=Board.Board.get_starting_state(), side_to_move=GamePiece.GamePiece.B_CHAR, moves_played=0,
-                 difficulty=5):
+                 ai_difficulty=5):
         super().__init__()
 
         # Make sure params are of correct types
@@ -66,7 +66,7 @@ class Game(GUIElement):
             side_to_move in (GamePiece.GamePiece.B_CHAR, GamePiece.GamePiece.W_CHAR),
             type(moves_played) == int,
             moves_played >= 0,
-            difficulty in ComputerAI.ComputerAI.DIFFICULTY_LEVELS
+            ai_difficulty in ComputerAI.ComputerAI.DIFFICULTY_LEVELS
         ))
 
         self.board = Board.Board(state)
@@ -79,7 +79,7 @@ class Game(GUIElement):
         self.y_loc = self.board.y_loc
         self.width = self.board.width
         self.height = self.board.height
-        self.difficulty = difficulty
+        self.computer_ai = ComputerAI.ComputerAI(ai_difficulty)
 
     ''' ========== Magic Methods ========== '''
 

@@ -57,7 +57,8 @@ class ComputerAI:
     ''' ========== Constructor ========== '''
 
     def __init__(self, difficulty=None):
-        ComputerAI.setDifficulty(difficulty)
+        self.difficulty = None
+        self.set_difficulty(difficulty)
 
     ''' ========== Magic Methods ========== '''
 
@@ -112,9 +113,24 @@ class ComputerAI:
         pass
 
     ''' ========== Instance Methods ========== '''
-
-    def setDifficulty(self, difficulty):
+    def set_difficulty(self, difficulty):
         if difficulty not in ComputerAI.DIFFICULTY_LEVELS:
             raise ValueError('custom error: Invalid difficulty in ComputerAI.__init__()')
 
         self.difficulty = difficulty
+
+    def make_move(self, board: Board.Board, side_to_move):
+        """ Docstring for make_move() - TODO """
+
+        if self.difficulty == 1:
+            self.make_move_random(board, side_to_move)
+        elif self.difficulty == 2:
+            self.make_move_beginner(board, side_to_move)
+        elif self.difficulty == 3:
+            self.make_move_amateur(board, side_to_move)
+        elif self.difficulty == 4:
+            self.make_move_club(board, side_to_move)
+        elif self.difficulty == 5:
+            self.make_move_expert(board, side_to_move)
+        else:
+            raise ValueError('custom error: Invalid difficulty in ComputerAI.make_move()')
