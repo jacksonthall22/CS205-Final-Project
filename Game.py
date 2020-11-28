@@ -218,6 +218,7 @@ class Game(GUIElement.GUIElement):
         if all_valid_moves:
             choice = random.choice(all_valid_moves)
             return choice[0], choice[1], len(all_valid_moves) == 1
+            #                            ^ indicates whether move was only move
         else:
             return None, None, None
 
