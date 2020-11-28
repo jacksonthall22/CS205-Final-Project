@@ -42,6 +42,12 @@ class Layout:
 
     ''' ========== Instance Methods ========== '''
 
+    def new_game(self):
+        for index, item in enumerate(self.elements):
+            if type(item) == Game:
+                g = Game()
+                self.elements[index] = g
+
     def handle_click(self, x_click_loc, y_click_loc):
         """ Docstring for handle_window_click() - TODO """
 

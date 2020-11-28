@@ -90,9 +90,9 @@ class Board(GUIElement):
     # When checking for neighbors using this list, must use try/except to catch index errors for any cells on the
     # perimeter of board
     NEIGHBOR_INDICES_RELATIVE = [
-        (-1, -1), (-1,  0), (-1,  1),  # 0   1   2
-        ( 0, -1),           ( 0,  1),  # 3       4
-        ( 1, -1), ( 1,  0), ( 1,  1)   # 5   6   7
+        (-1, -1), (-1, 0), (-1, 1),  # 0   1   2
+        (0, -1), (0, 1),  # 3       4
+        (1, -1), (1, 0), (1, 1)  # 5   6   7
     ]
 
     # Number of pixels gap between ranks/files in the GUI's Board
@@ -244,10 +244,10 @@ class Board(GUIElement):
             [Tile(GamePiece()) for _ in range(Board.DEFAULT_BOARD_SIZE)],
             [Tile(GamePiece()) for _ in range(3)]
             + [Tile(GamePiece(GamePiece.W_CHAR)), Tile(GamePiece(GamePiece.B_CHAR))]
-            + [Tile(GamePiece()) for _ in range((Board.DEFAULT_BOARD_SIZE-2) // 2)],
-            [Tile(GamePiece()) for _ in range((Board.DEFAULT_BOARD_SIZE-2) // 2)]
+            + [Tile(GamePiece()) for _ in range((Board.DEFAULT_BOARD_SIZE - 2) // 2)],
+            [Tile(GamePiece()) for _ in range((Board.DEFAULT_BOARD_SIZE - 2) // 2)]
             + [Tile(GamePiece(GamePiece.B_CHAR)), Tile(GamePiece(GamePiece.W_CHAR))]
-            + [Tile(GamePiece()) for _ in range((Board.DEFAULT_BOARD_SIZE-2) // 2)],
+            + [Tile(GamePiece()) for _ in range((Board.DEFAULT_BOARD_SIZE - 2) // 2)],
             [Tile(GamePiece()) for _ in range(Board.DEFAULT_BOARD_SIZE)],
             [Tile(GamePiece()) for _ in range(Board.DEFAULT_BOARD_SIZE)],
             [Tile(GamePiece()) for _ in range(Board.DEFAULT_BOARD_SIZE)]
@@ -301,8 +301,9 @@ class Board(GUIElement):
             all((type(rank) == list for rank in state)),
             all((len(rank) == Board.DEFAULT_BOARD_SIZE for rank in state)),
             all((
-                all((GamePiece.get_side_up(tile.game_piece) in (GamePiece.B_CHAR, GamePiece.W_CHAR, GamePiece.EMPTY_CHAR)
-                     for tile in rank))
+                all((
+                    GamePiece.get_side_up(tile.game_piece) in (GamePiece.B_CHAR, GamePiece.W_CHAR, GamePiece.EMPTY_CHAR)
+                    for tile in rank))
                 for rank in state
             )),
         ))

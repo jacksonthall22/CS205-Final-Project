@@ -42,6 +42,7 @@ import GamePiece
 import GUIElement
 import random
 import time
+import pygame
 
 
 # noinspection DuplicatedCode
@@ -68,8 +69,7 @@ class Game(GUIElement):
             moves_played >= 0,
             ai_difficulty in ComputerAI.ComputerAI.DIFFICULTY_LEVELS
         ))
-
-        self.board = Board.Board(state)
+        self.board = Board(Board.get_starting_state())
         self.side_to_move = side_to_move
         self.moves_played = moves_played
         self.white_score = 0
@@ -221,6 +221,18 @@ class Game(GUIElement):
             return None, None, None
 
     @staticmethod
+    def get_winner(game):
+        black_score = 0
+        white_score = 0
+        for rank in game.board.state:
+            for tile in rank:
+                if GamePiece.get_side_up(tile.game_piece) == GamePiece.B_CHAR:
+                    black_score += 1
+                elif GamePiece.get_side_up(tile.game_piece) == GamePiece.W_CHAR:
+                    white_score += 1
+        return black_score, white_score
+
+    @staticmethod
     def is_over(game):
         """ Return True iff the board has no empty Tiles or neither player has valid moves. """
 
@@ -343,9 +355,7 @@ class Game(GUIElement):
 
     def skip_move(self):
         """ Skip the side_to_move's move. """
-
-        # Doesn't actually need to do anything for now
-        pass
+        self.side_to_move = (GamePiece.B_CHAR, GamePiece.W_CHAR)[self.side_to_move == GamePiece.B_CHAR]
 
     def make_move(self, rank, file, color):
         """
@@ -385,7 +395,7 @@ class Game(GUIElement):
 
                         # TODO Can probably make more efficient - may add and remove same element from indices_... list
                         # Remove these indices from indices_with_black_neighbors if it falls to 0 in num_black_neighbors
-                        if self.board.num_black_neighbors[rank + d_rank][file + d_file] == 0\
+                        if self.board.num_black_neighbors[rank + d_rank][file + d_file] == 0 \
                                 and (rank + d_rank, file + d_file) in self.board.indices_with_black_neighbors:
                             self.board.indices_with_black_neighbors.remove((rank + d_rank, file + d_file))
 
@@ -467,12 +477,15 @@ class Game(GUIElement):
 
     def computer_move(self):
         """ :return True iff computer makes a move, makes move for computer """
-
-        if self.side_to_move == GamePiece.GamePiece.W_CHAR:
-            # TODO change here based on difficulty when implemented
-            rank, file, only_move = Game.get_random_valid_move(self)
-            self.make_move(rank, file, self.side_to_move)
-            return True
+        setting = "EASY"
+        if setting == "EASY":
+            if self.side_to_move == GamePiece.W_CHAR and not Game.is_over(self):
+                # TODO change here based on difficulty when implemented
+                rank, file, only_move = Game.get_random_valid_move(self)
+                self.make_move(rank, file, self.side_to_move)
+                return True
+        else:
+            pass
         return False
 
     def draw(self, pygame_screen):
@@ -485,13 +498,19 @@ class Game(GUIElement):
                 self.board.state[valid[0]][valid[1]].highlight_tile()
 
         self.board.draw(pygame_screen)
+        position = (150, 300)
+        if self.side_to_move == GamePiece.B_CHAR:
+            pygame.draw.circle(pygame_screen, GamePiece.BLACK, position, 25)
+        elif self.side_to_move == GamePiece.W_CHAR:
+            pygame.draw.circle(pygame_screen, GamePiece.WHITE, position, 25)
 
     def handle_click(self, x_click_loc, y_click_loc):
         """ If the click location was on a Tile in self.board, make a move at that Tile if it is valid. """
         # Check every Tile in the board to see if click occurred inside its bounding box (might have occurred in a gap
         # between them - in this case loop ends and nothing more is handled, as expected)
         # TODO check self.no_moves
-        if self.side_to_move == GamePiece.GamePiece.B_CHAR:
+
+        if self.side_to_move == GamePiece.B_CHAR:
             for rank_index, rank in enumerate(self.board.state):
                 for file_index, tile in enumerate(rank):
                     # If the click is inside this Tile and making a move there is a valid move, make move there
