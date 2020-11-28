@@ -11,12 +11,12 @@ Fields
                 board is currently a valid move
 """
 
-from GamePiece import GamePiece
-from GUIElement import GUIElement
+import GamePiece
+import GUIElement
 import pygame
 
 
-class Tile(GUIElement):
+class Tile(GUIElement.GUIElement):
     """ Tile extends GUIElement to represent a single square in the board. """
 
     ''' ========== Constant Class Variables ========== '''
@@ -49,11 +49,11 @@ class Tile(GUIElement):
 
         # Make a new empty GamePiece if appropriate
         if game_piece is None:
-            game_piece = GamePiece()
+            game_piece = GamePiece.GamePiece()
 
         # Make sure params are of correct type
         assert all((
-            type(game_piece) in (GamePiece, type(None)),
+            type(game_piece) in (GamePiece.GamePiece, type(None)),
             type(highlight_circle) in (bool, type(None)),
             # TODO Might want to add more later
         ))

@@ -7,8 +7,8 @@ A Layout consists of
 
 """
 
-from GUIElement import GUIElement
-from Game import Game
+import GUIElement
+import Game
 
 
 class Layout:
@@ -37,22 +37,22 @@ class Layout:
     def get_game(layout):
         """ :return game object in the current layout """
         for e in layout.elements:
-            if type(e) == Game:
+            if type(e) == Game.Game:
                 return e
 
     ''' ========== Instance Methods ========== '''
 
     def new_game(self):
         for index, item in enumerate(self.elements):
-            if type(item) == Game:
-                g = Game()
+            if type(item) == Game.Game:
+                g = Game.Game()
                 self.elements[index] = g
 
     def handle_click(self, x_click_loc, y_click_loc):
         """ Docstring for handle_window_click() - TODO """
 
         for element in self.elements:
-            if GUIElement.click_is_inside(element, x_click_loc, y_click_loc):
+            if GUIElement.GUIElement.click_is_inside(element, x_click_loc, y_click_loc):
                 return element.handle_click(x_click_loc, y_click_loc)
 
     def draw(self, pygame_screen):

@@ -35,11 +35,11 @@ Methods
 
 """
 
-from GUIElement import GUIElement
+import GUIElement
 import pygame
 
 
-class GamePiece(GUIElement):
+class GamePiece(GUIElement.GUIElement):
     """ """
 
     ''' ========== Constant Class Variables ========== '''

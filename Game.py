@@ -46,7 +46,7 @@ import pygame
 
 
 # noinspection DuplicatedCode
-class Game(GUIElement):
+class Game(GUIElement.GUIElement):
     """ Game extends GUIElement, stores relevant metadata about an Othello game. """
 
     ''' ========== Constant Class Variables ========== '''
@@ -69,7 +69,7 @@ class Game(GUIElement):
             moves_played >= 0,
             difficulty in ComputerAI.ComputerAI.DIFFICULTY_LEVELS
         ))
-        self.board = Board(Board.get_starting_state())
+        self.board = Board.Board(Board.Board.get_starting_state())
         self.side_to_move = side_to_move
         self.moves_played = moves_played
         self.white_score = 0
@@ -155,7 +155,8 @@ class Game(GUIElement):
                 continue
 
             try:
-                while GamePiece.GamePiece.get_side_up(board.state[current_rank][current_file].game_piece) == other_color:
+                while GamePiece.GamePiece.get_side_up(
+                        board.state[current_rank][current_file].game_piece) == other_color:
                     # Increment even before first check
                     current_rank += d_rank
                     current_file += d_file
@@ -226,9 +227,9 @@ class Game(GUIElement):
         white_score = 0
         for rank in game.board.state:
             for tile in rank:
-                if GamePiece.get_side_up(tile.game_piece) == GamePiece.B_CHAR:
+                if GamePiece.GamePiece.get_side_up(tile.game_piece) == GamePiece.GamePiece.B_CHAR:
                     black_score += 1
-                elif GamePiece.get_side_up(tile.game_piece) == GamePiece.W_CHAR:
+                elif GamePiece.GamePiece.get_side_up(tile.game_piece) == GamePiece.GamePiece.W_CHAR:
                     white_score += 1
         return black_score, white_score
 
@@ -355,7 +356,8 @@ class Game(GUIElement):
 
     def skip_move(self):
         """ Skip the side_to_move's move. """
-        self.side_to_move = (GamePiece.B_CHAR, GamePiece.W_CHAR)[self.side_to_move == GamePiece.B_CHAR]
+        self.side_to_move = (GamePiece.GamePiece.B_CHAR, GamePiece.GamePiece.W_CHAR)[
+            self.side_to_move == GamePiece.GamePiece.B_CHAR]
 
     def make_move(self, rank, file, color):
         """
@@ -377,7 +379,7 @@ class Game(GUIElement):
 
         self.moves_played += 1
         self.side_to_move = (GamePiece.GamePiece.B_CHAR, GamePiece.GamePiece.W_CHAR)[
-                self.side_to_move == GamePiece.GamePiece.B_CHAR]
+            self.side_to_move == GamePiece.GamePiece.B_CHAR]
         return True
 
     def update_num_board_meta_lists(self, rank, file, color, is_new_piece):
@@ -435,7 +437,8 @@ class Game(GUIElement):
         """
 
         self.board.state[rank][file].game_piece.flip()
-        self.update_num_board_meta_lists(rank, file, GamePiece.GamePiece.get_side_up(self.board.state[rank][file].game_piece),
+        self.update_num_board_meta_lists(rank, file,
+                                         GamePiece.GamePiece.get_side_up(self.board.state[rank][file].game_piece),
                                          False)
 
     def flip_all_in_range(self, indices_to_flip):
@@ -479,7 +482,7 @@ class Game(GUIElement):
         """ :return True iff computer makes a move, makes move for computer """
         setting = "EASY"
         if setting == "EASY":
-            if self.side_to_move == GamePiece.W_CHAR and not Game.is_over(self):
+            if self.side_to_move == GamePiece.GamePiece.W_CHAR and not Game.is_over(self):
                 # TODO change here based on difficulty when implemented
                 rank, file, only_move = Game.get_random_valid_move(self)
                 self.make_move(rank, file, self.side_to_move)
@@ -499,10 +502,10 @@ class Game(GUIElement):
 
         self.board.draw(pygame_screen)
         position = (150, 300)
-        if self.side_to_move == GamePiece.B_CHAR:
-            pygame.draw.circle(pygame_screen, GamePiece.BLACK, position, 25)
-        elif self.side_to_move == GamePiece.W_CHAR:
-            pygame.draw.circle(pygame_screen, GamePiece.WHITE, position, 25)
+        if self.side_to_move == GamePiece.GamePiece.B_CHAR:
+            pygame.draw.circle(pygame_screen, GamePiece.GamePiece.BLACK, position, 25)
+        elif self.side_to_move == GamePiece.GamePiece.W_CHAR:
+            pygame.draw.circle(pygame_screen, GamePiece.GamePiece.WHITE, position, 25)
 
     def handle_click(self, x_click_loc, y_click_loc):
         """ If the click location was on a Tile in self.board, make a move at that Tile if it is valid. """
@@ -510,7 +513,7 @@ class Game(GUIElement):
         # between them - in this case loop ends and nothing more is handled, as expected)
         # TODO check self.no_moves
 
-        if self.side_to_move == GamePiece.B_CHAR:
+        if self.side_to_move == GamePiece.GamePiece.B_CHAR:
             for rank_index, rank in enumerate(self.board.state):
                 for file_index, tile in enumerate(rank):
                     # If the click is inside this Tile and making a move there is a valid move, make move there

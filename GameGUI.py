@@ -5,6 +5,7 @@ screen, win screen, etc.).
 
 """
 
+
 class GameGUI:
     """ GameGUI is the all-encompassing object to represent the GUI window instance. See docs at top of file. """
 
