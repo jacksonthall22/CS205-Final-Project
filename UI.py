@@ -146,22 +146,20 @@ def game_menu():
         SCREEN.blit(TITLE, title_location)
         gui.draw(SCREEN)
 
-        # if GameGUI.get_active_screen(gui) == end_layout:
-        #     b_score, w_score = Game.get_winner(current_game)
-        #     print(b_score, w_score)
-        #     if w_score > b_score:
-        #         dif = w_score - b_score
-        #         text = "You lost by: " + str(dif) + " points"
-        #     elif w_score < b_score:
-        #         dif = b_score - w_score
-        #         text = "You won by: " + str(dif) + " points"
-        #     else:
-        #         text = "Tie game"
-        #     font = pygame.font.Font('freesansbold.ttf', 60)
-        #     print(text)
-        #     text_surf = font.render(text, True, Button.TEXT_COLOR)
-        #     text_pos = [(X // 2) - 50, (Y//2)]
-        #     SCREEN.blit(text_surf, text_pos)
+        if GameGUI.get_active_screen(gui) == end_layout:
+            b_score, w_score = Game.get_winner(current_game)
+            if w_score > b_score:
+                dif = w_score - b_score
+                text = "You lost by: " + str(dif) + " points"
+            elif w_score < b_score:
+                dif = b_score - w_score
+                text = "You won by: " + str(dif) + " points"
+            else:
+                text = "Tie game"
+            font = pygame.font.Font('freesansbold.ttf', 60)
+            text_surf = font.render(text, True, Button.TEXT_COLOR)
+            text_pos = [(X // 2) - 300, (Y // 2)]
+            SCREEN.blit(text_surf, text_pos)
 
         pygame.display.update()
 

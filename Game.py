@@ -36,9 +36,10 @@ Methods
 
 """
 
-from Board import Board
-from GamePiece import GamePiece
-from GUIElement import GUIElement
+import Board
+import ComputerAI
+import GamePiece
+import GUIElement
 import random
 import time
 import pygame
@@ -54,11 +55,8 @@ class Game(GUIElement):
 
     ''' ========== Constructor ========== '''
 
-    def __init__(self, state=Board.get_starting_state(), side_to_move=GamePiece.B_CHAR, moves_played=0):
-        # Explanation of default parameters as used above      ^here                          ^and here
-        # https://www.programiz.com/python-programming/function-argument
-
-        # Call parent constructor
+    def __init__(self, state=Board.Board.get_starting_state(), side_to_move=GamePiece.GamePiece.B_CHAR, moves_played=0,
+                 difficulty=5):
         super().__init__()
 
         # Make sure params are of correct types
@@ -66,9 +64,10 @@ class Game(GUIElement):
             type(state) in (list, None),
             state,  # Checks that state isn't empty
             all((len(sublist) == len(state) for sublist in state)),
-            side_to_move in (GamePiece.B_CHAR, GamePiece.W_CHAR),
+            side_to_move in (GamePiece.GamePiece.B_CHAR, GamePiece.GamePiece.W_CHAR),
             type(moves_played) == int,
             moves_played >= 0,
+            difficulty in ComputerAI.ComputerAI.DIFFICULTY_LEVELS
         ))
         self.board = Board(Board.get_starting_state())
         self.side_to_move = side_to_move
@@ -80,6 +79,7 @@ class Game(GUIElement):
         self.y_loc = self.board.y_loc
         self.width = self.board.width
         self.height = self.board.height
+        self.difficulty = difficulty
 
     ''' ========== Magic Methods ========== '''
 
@@ -96,9 +96,9 @@ class Game(GUIElement):
             output_string += f'It\'s move {self.moves_played + 1}. '
 
         # Show who's turn it is
-        if self.side_to_move == GamePiece.B_CHAR:
+        if self.side_to_move == GamePiece.GamePiece.B_CHAR:
             output_string += 'Black to move.\n'
-        elif self.side_to_move == GamePiece.W_CHAR:
+        elif self.side_to_move == GamePiece.GamePiece.W_CHAR:
             output_string += 'White to move.\n'
         else:
             # Should never reach here - will be helpful for debugging later -JH
@@ -123,29 +123,29 @@ class Game(GUIElement):
         ranges_to_flip = []
 
         # Immediately invalid if the square is occupied
-        if GamePiece.get_side_up(board.state[rank][file].game_piece) != GamePiece.EMPTY_CHAR:
+        if GamePiece.GamePiece.get_side_up(board.state[rank][file].game_piece) != GamePiece.GamePiece.EMPTY_CHAR:
             return ranges_to_flip
 
         # Immediately invalid if there's no immediate neighboring GamePieces of opposite color
-        if color == GamePiece.B_CHAR and board.num_white_neighbors[rank][file] == 0:
+        if color == GamePiece.GamePiece.B_CHAR and board.num_white_neighbors[rank][file] == 0:
             return ranges_to_flip
-        elif color == GamePiece.W_CHAR and board.num_black_neighbors[rank][file] == 0:
+        elif color == GamePiece.GamePiece.W_CHAR and board.num_black_neighbors[rank][file] == 0:
             return ranges_to_flip
 
         # Valid iff, on any line starting from state[rank][file] and moving in the direction of an element in
         # NEIGHBOR_INDICES_RELATIVE (treating the tuples like direction vectors), there is 1 or more GamePiece of the
         # opposite color followed by a GamePiece of the same color.
-        if color == GamePiece.B_CHAR:
-            other_color = GamePiece.W_CHAR
-        elif color == GamePiece.W_CHAR:
-            other_color = GamePiece.B_CHAR
+        if color == GamePiece.GamePiece.B_CHAR:
+            other_color = GamePiece.GamePiece.W_CHAR
+        elif color == GamePiece.GamePiece.W_CHAR:
+            other_color = GamePiece.GamePiece.B_CHAR
         else:
             raise ValueError(f'custom error: invalid color given to Game.is_valid_move() - not GamePiece.B_CHAR '
-                             f'("{GamePiece.B_CHAR}") or GamePiece.W_CHAR ("{GamePiece.W_CHAR}")')
+                             f'("{GamePiece.GamePiece.B_CHAR}") or GamePiece.W_CHAR ("{GamePiece.GamePiece.W_CHAR}")')
 
         # Check for line of >= 1 other_color followed by 1 this_color
         # Check in all 8 directions
-        for d_rank, d_file in Board.NEIGHBOR_INDICES_RELATIVE:
+        for d_rank, d_file in Board.Board.NEIGHBOR_INDICES_RELATIVE:
             current_rank = rank + d_rank
             current_file = file + d_file
 
@@ -155,7 +155,7 @@ class Game(GUIElement):
                 continue
 
             try:
-                while GamePiece.get_side_up(board.state[current_rank][current_file].game_piece) == other_color:
+                while GamePiece.GamePiece.get_side_up(board.state[current_rank][current_file].game_piece) == other_color:
                     # Increment even before first check
                     current_rank += d_rank
                     current_file += d_file
@@ -165,7 +165,7 @@ class Game(GUIElement):
                         continue
 
                     # Check if flip has been "closed"
-                    if GamePiece.get_side_up(board.state[current_rank][current_file].game_piece) == color:
+                    if GamePiece.GamePiece.get_side_up(board.state[current_rank][current_file].game_piece) == color:
                         # If so, add a generator to the list that generates tuples containing the indices to flip for
                         # this direction
 
@@ -222,14 +222,22 @@ class Game(GUIElement):
 
     @staticmethod
     def get_winner(game):
-        return game.black_score, game.white_score
+        black_score = 0
+        white_score = 0
+        for rank in game.board.state:
+            for tile in rank:
+                if GamePiece.get_side_up(tile.game_piece) == GamePiece.B_CHAR:
+                    black_score += 1
+                elif GamePiece.get_side_up(tile.game_piece) == GamePiece.W_CHAR:
+                    white_score += 1
+        return black_score, white_score
 
     @staticmethod
     def is_over(game):
         """ Return True iff the board has no empty Tiles or neither player has valid moves. """
 
         # TODO Add check for the case when neither player has a move
-        return Board.is_full(game.board.state)
+        return Board.Board.is_full(game.board.state)
 
     @staticmethod
     def is_valid_move(board, rank, file, color):
@@ -268,31 +276,31 @@ class Game(GUIElement):
                 # Check if there is only one possible move (only used when it's Computer's move)
                 is_only_move = False
 
-                if self.side_to_move == GamePiece.B_CHAR and player_moves_first \
-                        or self.side_to_move == GamePiece.W_CHAR and not player_moves_first:
+                if self.side_to_move == GamePiece.GamePiece.B_CHAR and player_moves_first \
+                        or self.side_to_move == GamePiece.GamePiece.W_CHAR and not player_moves_first:
                     if Game.get_all_valid_moves(self):
                         algebraic_move = input('Enter black\'s move:\n>>> ')
                     else:
                         input('You have no legal moves. Press enter to continue.\n>>> ')
                         self.skip_move()
                         continue
-                elif self.side_to_move == GamePiece.W_CHAR and player_moves_first \
-                        or self.side_to_move == GamePiece.B_CHAR and not player_moves_first:
+                elif self.side_to_move == GamePiece.GamePiece.W_CHAR and player_moves_first \
+                        or self.side_to_move == GamePiece.GamePiece.B_CHAR and not player_moves_first:
                     r, f, is_only_move = Game.get_random_valid_move(self)
-                    algebraic_move = Board.indices_to_algebraic(r, f)
+                    algebraic_move = Board.Board.indices_to_algebraic(r, f)
                 else:
                     raise ValueError('custom error: game.side_to_move not equal to GamePiece.B_CHAR or GamePiece.W_CHAR'
                                      'in Game.game_loop()')
 
                 # Loop until user enters valid move in AN
                 # Note: will never break into this loop for iteration where it's computer's move - no need to validate
-                while not Board.is_valid_algebraic_move(algebraic_move):
+                while not Board.Board.is_valid_algebraic_move(algebraic_move):
                     algebraic_move = input('Please enter a move in Algebraic Notation (like "a1", "e6", '
                                            'etc.):\n>>> ')
 
                 # Show that computer is thinking if it's their turn
-                if self.side_to_move == GamePiece.W_CHAR and player_moves_first \
-                        or self.side_to_move == GamePiece.B_CHAR and not player_moves_first:
+                if self.side_to_move == GamePiece.GamePiece.W_CHAR and player_moves_first \
+                        or self.side_to_move == GamePiece.GamePiece.B_CHAR and not player_moves_first:
                     if algebraic_move is None:
                         print('Computer has no moves. It\'s your move again.')
                         self.skip_move()
@@ -311,20 +319,24 @@ class Game(GUIElement):
                         print(f' Computer played {algebraic_move}.')
 
                 # Make the move
-                move_rank, move_file = Board.algebraic_to_indices(algebraic_move)
+                move_rank, move_file = Board.Board.algebraic_to_indices(algebraic_move)
                 move_was_made = self.make_move(move_rank, move_file, self.side_to_move)
 
                 # If no move made, it was invalid - continue
                 if not move_was_made:
                     print('That wasn\'t a valid move. ', end='')
 
+            # Update scores after a move was made
+            self.set_scores()
+
         # Show board position after final move and display winner
-        print(game.board)
-        black_score, white_score = game.get_winner()
-        if black_score > white_score:
-            print(f'Game over. Black wins {black_score} - {white_score}')
-        elif white_score > black_score:
-            print(f'Game over. White wins {black_score} - {white_score}')
+        print(self.board)
+
+        # Set the final scores
+        if self.black_score > self.white_score:
+            print(f'Game over. Black wins {self.black_score} - {self.white_score}')
+        elif self.white_score > self.black_score:
+            print(f'Game over. White wins {self.black_score} - {self.white_score}')
         else:
             print(f'Game over. It\'s a tie. {self.black_score} - {self.white_score}')
 
@@ -336,9 +348,9 @@ class Game(GUIElement):
 
         for rank in self.board.state:
             for tile in rank:
-                if GamePiece.get_side_up(tile.game_piece) == GamePiece.B_CHAR:
+                if GamePiece.GamePiece.get_side_up(tile.game_piece) == GamePiece.GamePiece.B_CHAR:
                     self.black_score += 1
-                elif GamePiece.get_side_up(tile.game_piece) == GamePiece.W_CHAR:
+                elif GamePiece.GamePiece.get_side_up(tile.game_piece) == GamePiece.GamePiece.W_CHAR:
                     self.white_score += 1
 
     def skip_move(self):
@@ -364,15 +376,16 @@ class Game(GUIElement):
             self.flip_all_in_range(flip_range)
 
         self.moves_played += 1
-        self.side_to_move = (GamePiece.B_CHAR, GamePiece.W_CHAR)[self.side_to_move == GamePiece.B_CHAR]
+        self.side_to_move = (GamePiece.GamePiece.B_CHAR, GamePiece.GamePiece.W_CHAR)[
+                self.side_to_move == GamePiece.GamePiece.B_CHAR]
         return True
 
     def update_num_board_meta_lists(self, rank, file, color, is_new_piece):
         """ Docstring for update_num_neighbors_lists() - TODO """
 
-        if color == GamePiece.W_CHAR:
+        if color == GamePiece.GamePiece.W_CHAR:
             # Flipping black -> white
-            for d_rank, d_file in Board.NEIGHBOR_INDICES_RELATIVE:
+            for d_rank, d_file in Board.Board.NEIGHBOR_INDICES_RELATIVE:
                 try:
                     self.board.num_white_neighbors[rank + d_rank][file + d_file] += 1
 
@@ -392,9 +405,9 @@ class Game(GUIElement):
                 except IndexError:
                     continue
 
-        elif color == GamePiece.B_CHAR:
+        elif color == GamePiece.GamePiece.B_CHAR:
             # Flipping white -> black
-            for d_rank, d_file in Board.NEIGHBOR_INDICES_RELATIVE:
+            for d_rank, d_file in Board.Board.NEIGHBOR_INDICES_RELATIVE:
                 try:
                     self.board.num_black_neighbors[rank + d_rank][file + d_file] += 1
 
@@ -422,7 +435,7 @@ class Game(GUIElement):
         """
 
         self.board.state[rank][file].game_piece.flip()
-        self.update_num_board_meta_lists(rank, file, GamePiece.get_side_up(self.board.state[rank][file].game_piece),
+        self.update_num_board_meta_lists(rank, file, GamePiece.GamePiece.get_side_up(self.board.state[rank][file].game_piece),
                                          False)
 
     def flip_all_in_range(self, indices_to_flip):
@@ -446,7 +459,8 @@ class Game(GUIElement):
         current_rank = rank + d_rank
         current_file = file + d_file
 
-        while current_rank in range(Board.DEFAULT_BOARD_SIZE) and current_file in range(Board.DEFAULT_BOARD_SIZE):
+        while current_rank in range(Board.Board.DEFAULT_BOARD_SIZE) and current_file in range(
+                Board.Board.DEFAULT_BOARD_SIZE):
             try:
                 # See if indexing this location throws ValueError
                 # noinspection PyStatementEffect
@@ -463,19 +477,22 @@ class Game(GUIElement):
 
     def computer_move(self):
         """ :return True iff computer makes a move, makes move for computer """
-
-        if self.side_to_move == GamePiece.W_CHAR and not Game.is_over(self):
-            # TODO change here based on difficulty when implemented
-            rank, file, only_move = Game.get_random_valid_move(self)
-            self.make_move(rank, file, self.side_to_move)
-            return True
+        setting = "EASY"
+        if setting == "EASY":
+            if self.side_to_move == GamePiece.W_CHAR and not Game.is_over(self):
+                # TODO change here based on difficulty when implemented
+                rank, file, only_move = Game.get_random_valid_move(self)
+                self.make_move(rank, file, self.side_to_move)
+                return True
+        else:
+            pass
         return False
 
     def draw(self, pygame_screen):
         for row in self.board.state:
             for tile in row:
                 tile.remove_highlight()
-        if self.side_to_move == GamePiece.B_CHAR:
+        if self.side_to_move == GamePiece.GamePiece.B_CHAR:
             valid_moves = Game.get_all_valid_moves(self)
             for valid in valid_moves:
                 self.board.state[valid[0]][valid[1]].highlight_tile()
@@ -497,7 +514,7 @@ class Game(GUIElement):
             for rank_index, rank in enumerate(self.board.state):
                 for file_index, tile in enumerate(rank):
                     # If the click is inside this Tile and making a move there is a valid move, make move there
-                    if GUIElement.click_is_inside(tile, x_click_loc, y_click_loc):
+                    if GUIElement.GUIElement.click_is_inside(tile, x_click_loc, y_click_loc):
                         if Game.is_valid_move(self.board, rank_index, file_index, self.side_to_move):
                             self.make_move(rank_index, file_index, self.side_to_move)
                             tile.handle_click(x_click_loc, y_click_loc)
