@@ -59,6 +59,7 @@ class GamePiece(GUIElement):
     ''' ========== Regular Class Variables ========== '''
 
     ''' ========== Constructor ========== '''
+
     def __init__(self, side_up=EMPTY_CHAR):
         # Call parent constructor
         super().__init__()
@@ -115,7 +116,7 @@ class GamePiece(GUIElement):
             self.side_up = GamePiece.B_CHAR
         else:
             print('warning: GamePiece.flip() called on GamePiece set to EMPTY_CHAR')
-    
+
     def set_side_up(self, side_up):
         """ Set self.side_up to given value. """
         assert side_up in ('b', 'w')
@@ -133,5 +134,4 @@ class GamePiece(GUIElement):
 
     def handle_click(self, x_click_loc, y_click_loc):
         """ Docstring for handle_click() - TODO """
-        print("piece")
         return None
