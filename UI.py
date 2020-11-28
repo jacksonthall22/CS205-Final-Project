@@ -169,12 +169,12 @@ def game_menu():
 
         if GameGUI.GameGUI.get_active_screen(gui) == in_game_layout:
             current_game = Layout.Layout.get_game(GameGUI.GameGUI.get_active_screen(gui))
-            if len(Game.Game.get_all_valid_moves(current_game)) == 0:
-                current_game.skip_move()
-                time.sleep(1)
             if Game.Game.is_over(current_game):
                 gui.update_active_screen(end_layout)
                 title_location = ((X // 2) - (452 // 2), 50)
+            if len(Game.Game.get_all_valid_moves(current_game)) == 0 and not Game.Game.is_over(current_game):
+                current_game.skip_move()
+                time.sleep(1)
             if current_game.computer_move():
                 time.sleep(1)
                 gui.draw(SCREEN)
