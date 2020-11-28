@@ -98,7 +98,6 @@ def game_menu():
             font = pygame.font.Font('freesansbold.ttf', 65)
             text_surf = font.render("\'s Turn", True, BLACK)
             text_pos = [180, 265]
-            text_pos = [180, 265]
             SCREEN.blit(text_surf, text_pos)
         SCREEN.blit(TITLE, title_location)
         gui.draw(SCREEN)

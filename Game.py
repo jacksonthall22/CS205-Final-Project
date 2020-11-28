@@ -382,7 +382,7 @@ class Game(GUIElement):
 
                         # TODO Can probably make more efficient - may add and remove same element from indices_... list
                         # Remove these indices from indices_with_black_neighbors if it falls to 0 in num_black_neighbors
-                        if self.board.num_black_neighbors[rank + d_rank][file + d_file] == 0\
+                        if self.board.num_black_neighbors[rank + d_rank][file + d_file] == 0 \
                                 and (rank + d_rank, file + d_file) in self.board.indices_with_black_neighbors:
                             self.board.indices_with_black_neighbors.remove((rank + d_rank, file + d_file))
 

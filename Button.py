@@ -28,6 +28,7 @@ class Button(GUIElement):
     ''' ========== Static Methods ========== '''
 
     ''' ========== Instance Methods ========== '''
+
     def draw(self, screen):
         x = self.x_loc
         y = self.y_loc

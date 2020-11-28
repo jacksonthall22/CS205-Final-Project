@@ -130,9 +130,9 @@ class Tile(GUIElement):
         self.set_game_piece_locations_and_sizes()
         if self.highlight_valid_move:
             pygame.draw.rect(pygame_screen, Tile.HIGHLIGHT, (self.x_loc,
-                                                          self.y_loc,
-                                                          self.width,
-                                                          self.height))
+                                                             self.y_loc,
+                                                             self.width,
+                                                             self.height))
             pygame.draw.rect(pygame_screen, Tile.GREEN, (self.x_loc + 6,
                                                          self.y_loc + 6,
                                                          self.width - 12,

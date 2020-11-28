@@ -104,7 +104,7 @@ class GUIElement(ABC):
         self.color = color
 
     ''' ========== Magic Methods ========== '''
-    
+
     def __repr__(self):
         """ Create a formal string representation of this GUIElement. """
 
@@ -152,7 +152,7 @@ class GUIElement(ABC):
             GUIElement.
         """
         return gui_element.x_loc <= x_click_loc < gui_element.x_loc + gui_element.width \
-            and gui_element.y_loc <= y_click_loc < gui_element.y_loc + gui_element.height
+               and gui_element.y_loc <= y_click_loc < gui_element.y_loc + gui_element.height
 
     ''' ========== Instance Methods ========== '''
 
@@ -160,7 +160,7 @@ class GUIElement(ABC):
     def draw(self, pygame_screen):
         # This method is abstract - don't implement here, only in subclasses
         pass
-    
+
     @abstractmethod
     def handle_click(self, x_click_loc, y_click_loc):
         # This method is abstract - don't implement here, only in subclasses
