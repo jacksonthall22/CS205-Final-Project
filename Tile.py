@@ -64,6 +64,11 @@ class Tile(GUIElement.GUIElement):
 
     ''' ========== Magic Methods ========== '''
 
+    def __repr__(self):
+        """ Docstring for __repr__() - TODO """
+
+        return f'[{self.game_piece.side_up}]'
+
     ''' ========== Static Methods ========== '''
 
     ''' ========== Instance Methods ========== '''

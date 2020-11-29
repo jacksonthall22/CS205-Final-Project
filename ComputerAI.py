@@ -34,9 +34,11 @@ Methods
         TODO
 
 """
+import random
 
 import Game
 import GamePiece
+import utility
 
 
 class ComputerAI:
@@ -45,13 +47,37 @@ class ComputerAI:
     ''' ========== Constant Class Variables ========== '''
 
     DIFFICULTY_LEVELS = {
-        1: 'Random',
-        2: 'Beginner',
-        3: 'Amateur',
-        4: 'Club',
-        5: 'Expert'
+        1:
+            {
+                'name': 'Random',
+                'search_depth': None,
+                'probability_returning_random': 1
+            },
+        2:
+            {
+                'name': 'Beginner',
+                'search_depth': 4,
+                'probability_returning_random': 0.75
+            },
+        3:
+            {
+                'name': 'Amateur',
+                'search_depth': 4,
+                'probability_returning_random': 0.5
+            },
+        4:
+            {
+                'name': 'Club',
+                'search_depth': 6,
+                'probability_returning_random': 0.25
+            },
+        5:
+            {
+                'name': 'Expert',
+                'search_depth': 6,
+                'probability_returning_random': 0
+            }
     }
-    DEFAULT_DEPTH = 15
 
     ''' ========== Regular Class Variables ========== '''
 
@@ -71,7 +97,7 @@ class ComputerAI:
     ''' ========== Static Methods ========== '''
 
     @staticmethod
-    def make_move_random(game: Game):
+    def make_move_random(game: Game, ai: 'ComputerAI'):
         """ Make a random valid move from given Board, or None if no valid moves exist. """
         r, f, was_only_move = Game.Game.get_random_valid_move(game)
         if None in (r, f):
@@ -80,50 +106,61 @@ class ComputerAI:
         game.make_move(r, f, game.side_to_move)
 
     @staticmethod
-    def make_move_beginner(game: Game):
+    def make_move_beginner(game: Game, ai: 'ComputerAI'):
         """ Docstring for make_move_() - TODO """
         # TODO Comment out when implemented
-        ComputerAI.make_move_random(game)
+        ComputerAI.make_move_random(game, ai)
 
         pass
 
     @staticmethod
-    def make_move_amateur(game: Game):
+    def make_move_amateur(game: Game, ai: 'ComputerAI'):
         """ Docstring for make_move_() - TODO """
         # TODO Comment out when implemented
-        ComputerAI.make_move_random(game)
+        ComputerAI.make_move_random(game, ai)
 
         pass
 
     @staticmethod
-    def make_move_club(game: Game):
+    def make_move_club(game: Game, ai: 'ComputerAI'):
         """ Docstring for make_move_() - TODO """
         # TODO Comment out when implemented
-        ComputerAI.make_move_random(game)
+        ComputerAI.make_move_random(game, ai)
 
         pass
 
     @staticmethod
-    def make_move_expert(game: Game):
-        """ Return best move using alpha-beta search DEFAULT_DEPTH moves deep. """
+    def make_move_expert(game: Game, ai: 'ComputerAI'):
+        """ Make the best move using alpha-beta search. Return True iff move was made successfully. """
         # TODO Comment out when implemented
-        ComputerAI.make_move_random(game)
+        # ComputerAI.make_move_random(game, ai)
 
-        pass
+        r, f, _ = ComputerAI.minimax(game, ComputerAI.DIFFICULTY_LEVELS[ai.difficulty]['search_depth'],
+                                     float('-inf'), float('+inf'), False)
+
+        if None not in (r, f):
+            move_made = game.make_move(r, f, game.side_to_move)
+            if not move_made:
+                raise RuntimeError('custom error: CompuerAI.minimax() did not generate a valid move')
+            return True
+        else:
+            print('test: no moves found in ComputerAI.minimax()')
+
+        return False
 
     @staticmethod
-    def static_eval(game: Game):
+    def static_eval():
         """
             Return a float value representing the positional evaluation of the current Board state
             (without look-ahead). Positive numbers mean black is better, positive numbers mean
             white is better.
 
-            # TODO Figure out how to do this
             # Othello strategy series
             # https://www.youtube.com/watch?v=5uwQPpfwSKs
         """
 
-        pass
+        # Generate float from normal distribution (mean = 0, sd = 1)
+        return random.normalvariate(0, 1)
 
     @staticmethod
     def minimax(game, depth, alpha, beta, maximizing_player):
@@ -136,9 +173,8 @@ class ComputerAI:
             https://www.youtube.com/watch?v=l-hh51ncgDI&list=TLPQMjkxMTIwMjBN_bodUBpAxQ&index=1
             (@ 10:26)
         """
-
-        if depth == 0 or game.is_over():
-            return ComputerAI.static_eval(game)
+        if depth == 0 or Game.Game.is_over(game):
+            return None, None, ComputerAI.static_eval()
 
         # Without the following check this function would return +/- infinity in positions
         # where no moves are yielded from generate_all_valid_moves() - no future static eval would
@@ -146,21 +182,16 @@ class ComputerAI:
         # to skip a move regardless of future outcomes
         children = ((r, f, Game.Game.get_position_after_move(game, r, f))
                     for r, f in Game.Game.generate_all_valid_moves(game))
-        for _ in children:
-            # For/else behavior: execute else iff loop terminates without hitting a break
-            break
-        else:
+
+        if Game.Game.has_no_valid_moves(game):
             # TODO Make sure skipping moves here produces expected results
             #  Credit to: https://stackoverflow.com/a/51323433/7304977
             # No children (this side has no moves). If opponent also has no moves
             # in this position, game is over - return static_eval(). Else, return
             # the best minimax move from perspective of opponent (at same depth)
-            children = ((r, f, Game.Game.get_position_after_move(game, r, f))
-                        for r, f in Game.Game.generate_all_valid_moves(game, True))
-            for _ in children:
-                break
-            else:
-                return ComputerAI.static_eval(game)
+            if Game.Game.has_no_valid_moves(game, True):
+                # No moves for opponent in this position either
+                return None, None, ComputerAI.static_eval()
 
             return ComputerAI.minimax(game, depth, alpha, beta, not maximizing_player)
 
@@ -206,17 +237,17 @@ class ComputerAI:
         self.difficulty = difficulty
 
     def make_move(self, game: Game):
-        """ Docstring for make_move() - TODO """
+        """ Call appropriate make_move_...() function based on self.difficulty. """
 
         if self.difficulty == 1:
-            self.make_move_random(game)
+            return self.make_move_random(game, game.computer_ai)
         elif self.difficulty == 2:
-            self.make_move_beginner(game)
+            return self.make_move_beginner(game, game.computer_ai)
         elif self.difficulty == 3:
-            self.make_move_amateur(game)
+            return self.make_move_amateur(game, game.computer_ai)
         elif self.difficulty == 4:
-            self.make_move_club(game)
+            return self.make_move_club(game, game.computer_ai)
         elif self.difficulty == 5:
-            self.make_move_expert(game)
+            return self.make_move_expert(game, game.computer_ai)
         else:
             raise ValueError('custom error: Invalid difficulty in ComputerAI.make_move()')

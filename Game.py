@@ -273,7 +273,7 @@ class Game(GUIElement.GUIElement):
         return black_score, white_score
 
     @staticmethod
-    def is_over(game):
+    def is_over(game: 'Game'):
         """ Return True iff the board has no empty Tiles or neither player has valid moves. """
 
         # TODO Add check for the case when neither player has a move
@@ -405,8 +405,8 @@ class Game(GUIElement.GUIElement):
         """
         # Return if there are no valid directions to flip
         flip_ranges = Game.get_flip_ranges(self.board, rank, file, color)
-        if not flip_ranges:
-            # This move does not flip any other pieces = not valid
+
+        if list(flip_ranges) == 0:
             return False
 
         self.board.place_piece(rank, file, color)
@@ -428,7 +428,9 @@ class Game(GUIElement.GUIElement):
 
         new_game = deepcopy(game)
 
-        return new_game.make_move(rank, file, side_to_move)
+        new_game.make_move(rank, file, side_to_move)
+
+        return new_game
 
     def update_num_board_meta_lists(self, rank, file, color, is_new_piece):
         """ Docstring for update_num_neighbors_lists() - TODO """
@@ -529,11 +531,11 @@ class Game(GUIElement.GUIElement):
     def computer_move(self):
         """ :return True iff computer makes a move, makes move for computer """
 
+        move_made = False
         if self.side_to_move == GamePiece.GamePiece.W_CHAR and not Game.is_over(self):
-            self.computer_ai.make_move(self)
-            return True
+            move_made = self.computer_ai.make_move(self)
 
-        return False
+        return move_made
 
     def draw(self, pygame_screen):
         for row in self.board.state:
