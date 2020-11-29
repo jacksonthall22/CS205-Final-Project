@@ -40,9 +40,11 @@ import Board
 import ComputerAI
 import GamePiece
 import GUIElement
+
+from copy import deepcopy
+import pygame
 import random
 import time
-import pygame
 
 
 # noinspection DuplicatedCode
@@ -197,17 +199,53 @@ class Game(GUIElement.GUIElement):
         return ranges_to_flip
 
     @staticmethod
-    def get_all_valid_moves(game):
-        """ Docstring for get_all_valid_moves() - TODO """
+    def has_valid_moves(game, opponent_to_move: bool = False):
+        """
+            Return True iff there are no moves for the side_to_move. If
+            opponent_to_move is True, return True iff there are no moves
+            for the opponent.
+        """
+        for _ in Game.generate_all_valid_moves(game, opponent_to_move):
+            return True
+        return False
 
-        valid_moves = []
+    @staticmethod
+    def has_no_valid_moves(game, opponent_to_move: bool = False):
+        """
+            Return False iff there are no moves for the side_to_move. If
+            opponent_to_move is True, return False iff there are no moves
+            for the opponent.
+        """
+        return not Game.has_valid_moves(game, opponent_to_move)
 
-        # TODO Only check
+    @staticmethod
+    def get_all_valid_moves(game, opponent_to_move: bool = False):
+        """
+            Return list of all valid moves for the given game. If opponent_to_move
+            is True, return list of legal moves as if it were opponent's turn.
+        """
+        return list(Game.generate_all_valid_moves(game, opponent_to_move))
+
+    @staticmethod
+    def generate_all_valid_moves(game, opponent_to_move: bool = False):
+        """
+            Yield all valid moves for the given game. If opponent_to_move is true,
+            yield legal moves if it were opponent's turn.
+        """
+
+        if opponent_to_move:
+            if game.side_to_move == GamePiece.GamePiece.B_CHAR:
+                side_to_move = GamePiece.GamePiece.W_CHAR
+            else:
+                side_to_move = GamePiece.GamePiece.B_CHAR
+        else:
+            side_to_move = game.side_to_move
+
+        # TODO Only check moves in neighboring_white_... lists etc for efficiency
         for rank in range(8):
             for file in range(8):
-                if Game.is_valid_move(game.board, rank, file, game.side_to_move):
-                    valid_moves.append((rank, file))
-        return valid_moves
+                if Game.is_valid_move(game.board, rank, file, side_to_move):
+                    yield rank, file
 
     @staticmethod
     def get_random_valid_move(game):
@@ -280,7 +318,7 @@ class Game(GUIElement.GUIElement):
 
                 if self.side_to_move == GamePiece.GamePiece.B_CHAR and player_moves_first \
                         or self.side_to_move == GamePiece.GamePiece.W_CHAR and not player_moves_first:
-                    if Game.get_all_valid_moves(self):
+                    if Game.has_valid_moves(self):
                         algebraic_move = input('Enter black\'s move:\n>>> ')
                     else:
                         input('You have no legal moves. Press enter to continue.\n>>> ')
@@ -382,6 +420,15 @@ class Game(GUIElement.GUIElement):
         self.side_to_move = (GamePiece.GamePiece.B_CHAR, GamePiece.GamePiece.W_CHAR)[
             self.side_to_move == GamePiece.GamePiece.B_CHAR]
         return True
+
+    @staticmethod
+    def get_position_after_move(game, rank, file, side_to_move=None):
+        if side_to_move is None:
+            side_to_move = game.side_to_move
+
+        new_game = deepcopy(game)
+
+        return new_game.make_move(rank, file, side_to_move)
 
     def update_num_board_meta_lists(self, rank, file, color, is_new_piece):
         """ Docstring for update_num_neighbors_lists() - TODO """
@@ -493,9 +540,8 @@ class Game(GUIElement.GUIElement):
             for tile in row:
                 tile.remove_highlight()
         if self.side_to_move == GamePiece.GamePiece.B_CHAR:
-            valid_moves = Game.get_all_valid_moves(self)
-            for valid in valid_moves:
-                self.board.state[valid[0]][valid[1]].highlight_tile()
+            for r, f in Game.generate_all_valid_moves(self):
+                self.board.state[r][f].highlight_tile()
 
         self.board.draw(pygame_screen)
         position = (150, 300)

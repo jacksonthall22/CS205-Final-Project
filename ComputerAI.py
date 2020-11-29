@@ -36,6 +36,7 @@ Methods
 """
 
 import Game
+import GamePiece
 
 
 class ComputerAI:
@@ -123,6 +124,78 @@ class ComputerAI:
         """
 
         pass
+
+    @staticmethod
+    def minimax(game, depth, alpha, beta, maximizing_player):
+        """
+            Preform minimax search on the given Game (return
+            move with highest static evaluation `depth` moves
+            in the future. Maximizing player must be True or False.
+
+            Credit to:
+            https://www.youtube.com/watch?v=l-hh51ncgDI&list=TLPQMjkxMTIwMjBN_bodUBpAxQ&index=1
+            (@ 10:26)
+        """
+
+        if depth == 0 or game.is_over():
+            return ComputerAI.static_eval(game)
+
+        # Without the following check this function would return +/- infinity in positions
+        # where no moves are yielded from generate_all_valid_moves() - no future static eval would
+        # beat infinity so computer would always preference first line it finds that forces opponent
+        # to skip a move regardless of future outcomes
+        children = ((r, f, Game.Game.get_position_after_move(game, r, f))
+                    for r, f in Game.Game.generate_all_valid_moves(game))
+        for _ in children:
+            # For/else behavior: execute else iff loop terminates without hitting a break
+            break
+        else:
+            # TODO Make sure skipping moves here produces expected results
+            #  Credit to: https://stackoverflow.com/a/51323433/7304977
+            # No children (this side has no moves). If opponent also has no moves
+            # in this position, game is over - return static_eval(). Else, return
+            # the best minimax move from perspective of opponent (at same depth)
+            children = ((r, f, Game.Game.get_position_after_move(game, r, f))
+                        for r, f in Game.Game.generate_all_valid_moves(game, True))
+            for _ in children:
+                break
+            else:
+                return ComputerAI.static_eval(game)
+
+            return ComputerAI.minimax(game, depth, alpha, beta, not maximizing_player)
+
+        best_move_r = None
+        best_move_f = None
+        if maximizing_player:
+            # -infinity = worst score for maximizing player
+            max_eval = float('-inf')
+            for r, f, child in children:
+                # Best move at next depth irrelevant at this depth (only eval matters)
+                _, _, current_eval = ComputerAI.minimax(child, depth-1, alpha, beta, False)
+                if current_eval > max_eval:
+                    max_eval = current_eval
+                    best_move_r = r
+                    best_move_f = f
+                alpha = max(alpha, current_eval)
+                if beta <= alpha:
+                    break
+            return best_move_r, best_move_f, max_eval
+        else:
+            # +infinity = worst score for minimizing player
+            min_eval = float('+inf')
+            children = ((r, f, Game.Game.get_position_after_move(game, r, f))
+                        for r, f in Game.Game.generate_all_valid_moves(game))
+            for r, f, child in children:
+                # Best move at next depth irrelevant at this depth (only eval matters)
+                _, _, current_eval = ComputerAI.minimax(child, depth-1, alpha, beta, True)
+                if current_eval < min_eval:
+                    min_eval = current_eval
+                    best_move_r = r
+                    best_move_f = f
+                beta = min(beta, current_eval)
+                if beta <= alpha:
+                    break
+            return best_move_r, best_move_f, min_eval
 
     ''' ========== Instance Methods ========== '''
 
