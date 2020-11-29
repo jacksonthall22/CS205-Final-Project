@@ -107,46 +107,86 @@ class ComputerAI:
 
     @staticmethod
     def make_move_beginner(game: Game, ai: 'ComputerAI'):
-        """ Docstring for make_move_() - TODO """
-        # TODO Comment out when implemented
-        ComputerAI.make_move_random(game, ai)
+        """
+            Either make the minimax-best move or a random move, given the AI's difficulty level (see
+            ComputerAI.DIFFICULTY_LEVELS).
+        """
 
-        pass
+        if ComputerAI.DIFFICULTY_LEVELS[ai.difficulty]['probability_returning_random'] > random.random():
+            # Make a random move
+            ComputerAI.make_move_random(game, ai)
+        else:
+            # Make a minimax-best move
+            r, f, _ = ComputerAI.minimax(game, ComputerAI.DIFFICULTY_LEVELS[ai.difficulty]['search_depth'],
+                                         float('-inf'), float('+inf'), False)
+
+            if None not in (r, f):
+                move_made = game.make_move(r, f, game.side_to_move)
+                if not move_made:
+                    raise RuntimeError('custom error: ComputerAI.minimax() did not generate a valid move')
+                return True
+            else:
+                raise RuntimeError('custom error: no moves found in ComputerAI.minimax()')
 
     @staticmethod
     def make_move_amateur(game: Game, ai: 'ComputerAI'):
-        """ Docstring for make_move_() - TODO """
-        # TODO Comment out when implemented
-        ComputerAI.make_move_random(game, ai)
+        """
+            Either make the minimax-best move or a random move, given the AI's difficulty level (see
+            ComputerAI.DIFFICULTY_LEVELS).
+        """
 
-        pass
+        if ComputerAI.DIFFICULTY_LEVELS[ai.difficulty]['probability_returning_random'] > random.random():
+            # Make a random move
+            ComputerAI.make_move_random(game, ai)
+        else:
+            # Make a minimax-best move
+            r, f, _ = ComputerAI.minimax(game, ComputerAI.DIFFICULTY_LEVELS[ai.difficulty]['search_depth'],
+                                         float('-inf'), float('+inf'), False)
+
+            if None not in (r, f):
+                move_made = game.make_move(r, f, game.side_to_move)
+                if not move_made:
+                    raise RuntimeError('custom error: ComputerAI.minimax() did not generate a valid move')
+                return True
+            else:
+                raise RuntimeError('custom error: no moves found in ComputerAI.minimax()')
 
     @staticmethod
     def make_move_club(game: Game, ai: 'ComputerAI'):
-        """ Docstring for make_move_() - TODO """
-        # TODO Comment out when implemented
-        ComputerAI.make_move_random(game, ai)
+        """
+            Either make the minimax-best move or a random move, given the AI's difficulty level (see
+            ComputerAI.DIFFICULTY_LEVELS).
+        """
 
-        pass
+        if ComputerAI.DIFFICULTY_LEVELS[ai.difficulty]['probability_returning_random'] > random.random():
+            # Make a random move
+            ComputerAI.make_move_random(game, ai)
+        else:
+            # Make a minimax-best move
+            r, f, _ = ComputerAI.minimax(game, ComputerAI.DIFFICULTY_LEVELS[ai.difficulty]['search_depth'],
+                                         float('-inf'), float('+inf'), False)
+
+            if None not in (r, f):
+                move_made = game.make_move(r, f, game.side_to_move)
+                if not move_made:
+                    raise RuntimeError('custom error: ComputerAI.minimax() did not generate a valid move')
+                return True
+            else:
+                raise RuntimeError('custom error: no moves found in ComputerAI.minimax()')
 
     @staticmethod
     def make_move_expert(game: Game, ai: 'ComputerAI'):
         """ Make the best move using alpha-beta search. Return True iff move was made successfully. """
-        # TODO Comment out when implemented
-        # ComputerAI.make_move_random(game, ai)
-
         r, f, _ = ComputerAI.minimax(game, ComputerAI.DIFFICULTY_LEVELS[ai.difficulty]['search_depth'],
                                      float('-inf'), float('+inf'), False)
 
         if None not in (r, f):
             move_made = game.make_move(r, f, game.side_to_move)
             if not move_made:
-                raise RuntimeError('custom error: CompuerAI.minimax() did not generate a valid move')
+                raise RuntimeError('custom error: ComputerAI.minimax() did not generate a valid move')
             return True
         else:
-            print('test: no moves found in ComputerAI.minimax()')
-
-        return False
+            raise RuntimeError('custom error: no moves found in ComputerAI.minimax()')
 
     @staticmethod
     def static_eval():
