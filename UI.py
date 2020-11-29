@@ -142,6 +142,11 @@ def game_menu():
 
         # Add title image
         SCREEN.fill(BACKGROUND)
+        if GameGUI.GameGUI.get_active_screen(gui) == difficulty_layout:
+            font = pygame.font.Font('freesansbold.ttf', 40)
+            text_surf = font.render("Choose a Difficulty", True, BLACK)
+            text_pos = [300, 230]
+            SCREEN.blit(text_surf, text_pos)
         if GameGUI.GameGUI.get_active_screen(gui) == in_game_layout:
             font = pygame.font.Font('freesansbold.ttf', 65)
             text_surf = font.render("\'s Turn", True, BLACK)
