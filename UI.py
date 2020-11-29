@@ -49,35 +49,34 @@ def game_menu():
 
     # random, beginner, amateur, club, expert
     random_button = Button.Button(text="RANDOM")
-    random_button.x_loc = (X // 4) - 125
+    random_button.x_loc = (X // 4) - 100
     random_button.y_loc = (3 * Y // 5) - 50
-    random_button.width = 150
-    random_button.height = 50
+    random_button.width = 300
+    random_button.height = 65
 
     beginner_button = Button.Button(text="BEGINNER")
-    beginner_button.x_loc = (3 * X // 4) - 125
+    beginner_button.x_loc = (3 * X // 4) - 175
     beginner_button.y_loc = (3 * Y // 5) - 50
-    beginner_button.width = 150
-    beginner_button.height = 50
+    beginner_button.width = 300
+    beginner_button.height = 65
 
     amateur_button = Button.Button(text="AMATEUR")
-    amateur_button.x_loc = (X // 4) - 125
-    amateur_button.y_loc = (4 * Y // 5) - 50
-    amateur_button.width = 150
-    amateur_button.height = 50
+    amateur_button.x_loc = (X // 4) - 100
+    amateur_button.y_loc = (4 * Y // 5) - 65
+    amateur_button.width = 300
+    amateur_button.height = 65
 
     club_button = Button.Button(text="CLUB")
-    club_button.x_loc = (3 * X // 4) - 125
-    club_button.y_loc = (4 * Y // 5) - 50
-    club_button.width = 150
-    club_button.height = 50
+    club_button.x_loc = (3 * X // 4) - 175
+    club_button.y_loc = (4 * Y // 5) - 65
+    club_button.width = 300
+    club_button.height = 65
 
     expert_button = Button.Button(text="EXPERT")
-    expert_button.x_loc = (X // 4) - 125
-    expert_button.y_loc = (4.5 * Y // 5) - 50
-    expert_button.width = 150
-    expert_button.height = 50
-
+    expert_button.x_loc = (X // 2) - 150
+    expert_button.y_loc = (4.5 * Y // 5) - 35
+    expert_button.width = 300
+    expert_button.height = 65
     difficulty_layout = Layout.Layout([random_button, beginner_button, amateur_button, club_button, expert_button])
 
     e_in_game = Button.Button(text="EXIT")
@@ -132,16 +131,18 @@ def game_menu():
                         current_game.computer_ai.set_difficulty(4)
                     if action == "EXPERT":
                         current_game.computer_ai.set_difficulty(5)
-
-                    title_location = (20, 20)
-
-                elif action == 'NEW GAME':
-                    gui.update_active_screen(in_game_layout)
                     in_game_layout.new_game()
                     title_location = (20, 20)
+                elif action == 'NEW GAME':
+                    gui.update_active_screen(difficulty_layout)
 
         # Add title image
         SCREEN.fill(BACKGROUND)
+        if GameGUI.GameGUI.get_active_screen(gui) == difficulty_layout:
+            font = pygame.font.Font('freesansbold.ttf', 40)
+            text_surf = font.render("Choose a Difficulty", True, BLACK)
+            text_pos = [300, 230]
+            SCREEN.blit(text_surf, text_pos)
         if GameGUI.GameGUI.get_active_screen(gui) == in_game_layout:
             font = pygame.font.Font('freesansbold.ttf', 65)
             text_surf = font.render("\'s Turn", True, BLACK)
