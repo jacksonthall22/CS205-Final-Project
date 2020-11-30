@@ -46,7 +46,6 @@ Methods
 """
 
 from abc import ABC, abstractmethod  # Builtin Python lib to declare abstract classes
-from utility import is_valid_filename, VALID_IMAGE_FILE_EXTENSIONS
 
 
 class GUIElement(ABC):
@@ -61,20 +60,8 @@ class GUIElement(ABC):
 
     ''' ========== Constructor ========== '''
 
-    def __init__(self, x_loc=0, y_loc=0, width=100, height=100, color=None, texture_files=None):
+    def __init__(self, x_loc=0, y_loc=0, width=100, height=100, color=None):
         """
-            texture_files : Dictionary containing any image texture filenames needed to draw the object. Keys in the
-                            dict should be short, unique, and descriptive snake_case strings that describe the image
-                            or what it's used for. The values should be the filename (actually the full filepath
-                            relative to main.py).
-
-                            For example, texture_files might look like this for a GamePiece object:
-                                texture_files = {
-                                    'white_side': 'white-side-texture.png',
-                                    'black_side': 'black-side-texture.png',
-                                    'flip_to_black': 'flip-white-to-black-animation.gif',
-                                    'flip_to_white': 'flip-black-to-white-animation.gif'
-                                }
             x_loc : X-location coordinate of top-left corner of the bounding box of this GUIElement on the screen (units
                     = pixels). Defaults to 0 (traditionally x=0 is left).
             y_loc : Y-location coordinate of top-left corner of the bounding box of this GUIElement on the screen (units
@@ -83,20 +70,7 @@ class GUIElement(ABC):
             height: Height of this GUIElement in pixels
         """
 
-        if texture_files is None:
-            texture_files = dict()
-
         # Make sure params are of correct type
-        assert all((
-            type(texture_files) in (dict, type(None)),
-            any((
-                texture_files is None,
-                all((is_valid_filename(filename, VALID_IMAGE_FILE_EXTENSIONS) for filename in
-                     texture_files.values()))
-            )),
-        ))
-
-        self.texture_files = texture_files
         self.x_loc = x_loc
         self.y_loc = y_loc
         self.width = width
