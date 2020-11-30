@@ -37,8 +37,6 @@ Methods
 import random
 
 import Game
-import GamePiece
-import utility
 
 
 class ComputerAI:
@@ -50,31 +48,31 @@ class ComputerAI:
         1:
             {
                 'name': 'Random',
-                'search_depth': None,
+                'max_depth': None,
                 'probability_returning_random': 1
             },
         2:
             {
                 'name': 'Beginner',
-                'search_depth': 4,
+                'max_depth': 3,  # 10
                 'probability_returning_random': 0.75
             },
         3:
             {
                 'name': 'Moderate',
-                'search_depth': 4,
+                'max_depth': 3,  # 15
                 'probability_returning_random': 0.5
             },
         4:
             {
                 'name': 'Hard',
-                'search_depth': 6,
+                'max_depth': 4,  # 20
                 'probability_returning_random': 0.25
             },
         5:
             {
                 'name': 'Expert',
-                'search_depth': 6,
+                'max_depth': 4,  # 30
                 'probability_returning_random': 0
             }
     }
@@ -116,14 +114,13 @@ class ComputerAI:
             return ComputerAI.make_move_random(game, ai)
         else:
             # Make a minimax-best move
-            r, f, _ = ComputerAI.minimax(game, ComputerAI.DIFFICULTY_LEVELS[ai.difficulty]['search_depth'],
+            r, f, _ = ComputerAI.minimax(game, ComputerAI.DIFFICULTY_LEVELS[ai.difficulty]['max_depth'],
                                          float('-inf'), float('+inf'), False)
 
             if None not in (r, f):
                 move_made = game.make_move(r, f, game.side_to_move)
                 if not move_made:
                     raise RuntimeError('custom error: ComputerAI.minimax() did not generate a valid move')
-                print('Here')
                 return True
             else:
                 raise RuntimeError('custom error: no moves found in ComputerAI.minimax()')
@@ -140,7 +137,7 @@ class ComputerAI:
             return ComputerAI.make_move_random(game, ai)
         else:
             # Make a minimax-best move
-            r, f, _ = ComputerAI.minimax(game, ComputerAI.DIFFICULTY_LEVELS[ai.difficulty]['search_depth'],
+            r, f, _ = ComputerAI.minimax(game, ComputerAI.DIFFICULTY_LEVELS[ai.difficulty]['max_depth'],
                                          float('-inf'), float('+inf'), False)
 
             if None not in (r, f):
@@ -162,7 +159,7 @@ class ComputerAI:
             return ComputerAI.make_move_random(game, ai)
         else:
             # Make a minimax-best move
-            r, f, _ = ComputerAI.minimax(game, ComputerAI.DIFFICULTY_LEVELS[ai.difficulty]['search_depth'],
+            r, f, _ = ComputerAI.minimax(game, ComputerAI.DIFFICULTY_LEVELS[ai.difficulty]['max_depth'],
                                          float('-inf'), float('+inf'), False)
 
             if None not in (r, f):
@@ -176,7 +173,7 @@ class ComputerAI:
     @staticmethod
     def make_move_expert(game: Game, ai: 'ComputerAI'):
         """ Make the best move using alpha-beta search. Return True iff move was made successfully. """
-        r, f, _ = ComputerAI.minimax(game, ComputerAI.DIFFICULTY_LEVELS[ai.difficulty]['search_depth'],
+        r, f, _ = ComputerAI.minimax(game, ComputerAI.DIFFICULTY_LEVELS[ai.difficulty]['max_depth'],
                                      float('-inf'), float('+inf'), False)
 
         if None not in (r, f):
@@ -219,12 +216,8 @@ class ComputerAI:
         # where no moves are yielded from generate_all_valid_moves() - no future static eval would
         # beat infinity so computer would always preference first line it finds that forces opponent
         # to skip a move regardless of future outcomes
-        children = ((r, f, Game.Game.get_position_after_move(game, r, f))
-                    for r, f in Game.Game.generate_all_valid_moves(game))
-
         if Game.Game.has_no_valid_moves(game):
-            # TODO Make sure skipping moves here produces expected results
-            #  Credit to: https://stackoverflow.com/a/51323433/7304977
+            # Credit to: https://stackoverflow.com/a/51323433/7304977
             # No children (this side has no moves). If opponent also has no moves
             # in this position, game is over - return static_eval(). Else, return
             # the best minimax move from perspective of opponent (at same depth)
@@ -233,6 +226,9 @@ class ComputerAI:
                 return None, None, ComputerAI.static_eval()
 
             return ComputerAI.minimax(game, depth, alpha, beta, not maximizing_player)
+
+        children = ((r, f, Game.Game.get_position_after_move(game, r, f))
+                    for r, f in Game.Game.generate_all_valid_moves(game))
 
         best_move_r = None
         best_move_f = None
@@ -253,8 +249,6 @@ class ComputerAI:
         else:
             # +infinity = worst score for minimizing player
             min_eval = float('+inf')
-            children = ((r, f, Game.Game.get_position_after_move(game, r, f))
-                        for r, f in Game.Game.generate_all_valid_moves(game))
             for r, f, child in children:
                 # Best move at next depth irrelevant at this depth (only eval matters)
                 _, _, current_eval = ComputerAI.minimax(child, depth-1, alpha, beta, True)
@@ -267,6 +261,23 @@ class ComputerAI:
                     break
             return best_move_r, best_move_f, min_eval
 
+    @staticmethod
+    def make_move(ai: 'ComputerAI', game: Game):
+        """ Call appropriate make_move_...() function based on self.difficulty. """
+
+        if ai.difficulty == 1:
+            return ai.make_move_random(game, game.computer_ai)
+        elif ai.difficulty == 2:
+            return ai.make_move_beginner(game, game.computer_ai)
+        elif ai.difficulty == 3:
+            return ai.make_move_moderate(game, game.computer_ai)
+        elif ai.difficulty == 4:
+            return ai.make_move_hard(game, game.computer_ai)
+        elif ai.difficulty == 5:
+            return ai.make_move_expert(game, game.computer_ai)
+        else:
+            raise ValueError('custom error: Invalid difficulty in ComputerAI.make_move()')
+
     ''' ========== Instance Methods ========== '''
 
     def set_difficulty(self, difficulty):
@@ -274,19 +285,3 @@ class ComputerAI:
             raise ValueError('custom error: Invalid difficulty in ComputerAI.__init__()')
 
         self.difficulty = difficulty
-
-    def make_move(self, game: Game):
-        """ Call appropriate make_move_...() function based on self.difficulty. """
-
-        if self.difficulty == 1:
-            return self.make_move_random(game, game.computer_ai)
-        elif self.difficulty == 2:
-            return self.make_move_beginner(game, game.computer_ai)
-        elif self.difficulty == 3:
-            return self.make_move_moderate(game, game.computer_ai)
-        elif self.difficulty == 4:
-            return self.make_move_hard(game, game.computer_ai)
-        elif self.difficulty == 5:
-            return self.make_move_expert(game, game.computer_ai)
-        else:
-            raise ValueError('custom error: Invalid difficulty in ComputerAI.make_move()')

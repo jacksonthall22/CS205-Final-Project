@@ -1,6 +1,7 @@
 import pygame
 import Button
 import GameGUI
+import GamePiece
 import Layout
 import Game
 import time
@@ -162,7 +163,7 @@ def gui_game():
                 text = "Tie game"
             font = pygame.font.Font('freesansbold.ttf', 60)
             text_surf = font.render(text, True, Button.Button.TEXT_COLOR)
-            text_pos = [(X // 2) - 300, (Y // 2)]
+            text_pos = [(X // 2) - 400, (Y // 2)]
             SCREEN.blit(text_surf, text_pos)
 
         SCREEN.blit(TITLE, title_location)
@@ -170,17 +171,15 @@ def gui_game():
         pygame.display.update()
 
         if GameGUI.GameGUI.get_active_screen(gui) == in_game_layout:
-            current_game = Layout.Layout.get_game(GameGUI.GameGUI.get_active_screen(gui))
+            current_game: Game.Game = Layout.Layout.get_game(GameGUI.GameGUI.get_active_screen(gui))
             current_game.computer_ai.set_difficulty(diff)
             if Game.Game.is_over(current_game):
                 gui.update_active_screen(end_layout)
                 title_location = ((X // 2) - (452 // 2), 50)
             if Game.Game.has_no_valid_moves(current_game) and not Game.Game.is_over(current_game):
-                pygame.event.set_blocked(pygame.MOUSEBUTTONUP)
-                time.sleep(1)
-                pygame.event.set_allowed(pygame.MOUSEBUTTONUP)
                 current_game.skip_move()
-            if current_game.computer_move():
+
+            if current_game.side_to_move == GamePiece.GamePiece.W_CHAR and current_game.computer_move():
                 pygame.event.set_blocked(pygame.MOUSEBUTTONUP)
                 time.sleep(1)
                 pygame.event.set_allowed(pygame.MOUSEBUTTONUP)

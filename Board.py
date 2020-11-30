@@ -53,7 +53,6 @@ Fields
 ------
     Constant Class Vars
     -------------------
-        TODO update this
         B_CHAR : Character to print to terminal in board spaces containing black `GamePieces`
         W_CHAR : Character to print to terminal in board spaces containing white `GamePieces`
         EMPTY_CHAR : Character to print to terminal in board spaces containing no `GamePiece`
@@ -239,22 +238,16 @@ class Board(GUIElement.GUIElement):
     def get_starting_state():
         """ Return fully initialized Board where Tiles' GamePieces are set to starting Othello configuration. """
 
-        return [
-            [Tile.Tile(GamePiece.GamePiece()) for _ in range(Board.DEFAULT_BOARD_SIZE)],
-            [Tile.Tile(GamePiece.GamePiece()) for _ in range(Board.DEFAULT_BOARD_SIZE)],
-            [Tile.Tile(GamePiece.GamePiece()) for _ in range(Board.DEFAULT_BOARD_SIZE)],
-            [Tile.Tile(GamePiece.GamePiece()) for _ in range(3)]
-            + [Tile.Tile(GamePiece.GamePiece(GamePiece.GamePiece.W_CHAR)),
-               Tile.Tile(GamePiece.GamePiece(GamePiece.GamePiece.B_CHAR))]
-            + [Tile.Tile(GamePiece.GamePiece()) for _ in range((Board.DEFAULT_BOARD_SIZE - 2) // 2)],
-            [Tile.Tile(GamePiece.GamePiece()) for _ in range((Board.DEFAULT_BOARD_SIZE - 2) // 2)]
-            + [Tile.Tile(GamePiece.GamePiece(GamePiece.GamePiece.B_CHAR)),
-               Tile.Tile(GamePiece.GamePiece(GamePiece.GamePiece.W_CHAR))]
-            + [Tile.Tile(GamePiece.GamePiece()) for _ in range((Board.DEFAULT_BOARD_SIZE - 2) // 2)],
-            [Tile.Tile(GamePiece.GamePiece()) for _ in range(Board.DEFAULT_BOARD_SIZE)],
-            [Tile.Tile(GamePiece.GamePiece()) for _ in range(Board.DEFAULT_BOARD_SIZE)],
-            [Tile.Tile(GamePiece.GamePiece()) for _ in range(Board.DEFAULT_BOARD_SIZE)]
-        ]
+        return Board.get_state_from_strings([
+            '--------',
+            '--------',
+            '--------',
+            '---wb---',
+            '---bw---',
+            '--------',
+            '--------',
+            '--------'
+        ])
 
     @staticmethod
     def get_state_from_strings(state_str):
@@ -263,7 +256,7 @@ class Board(GUIElement.GUIElement):
             return a 2d list of Tiles with GamePieces corresponding to
 
             ex. to generate the starting state:
-                state_str = [
+                start_state_str = [
                     '--------',
                     '--------',
                     '--------',
@@ -273,6 +266,7 @@ class Board(GUIElement.GUIElement):
                     '--------',
                     '--------'
                 ]
+                start_state = Board.get_state_from_strings(start_state_str)
         """
 
         assert all((
@@ -285,8 +279,8 @@ class Board(GUIElement.GUIElement):
         state = []
         for rank_index, rank in enumerate(state_str):
             state.append([])
-            for file_index, file in enumerate(rank):
-                state[rank_index].append(Tile.Tile(GamePiece.GamePiece(state_str[rank_index][file_index])))
+            for file_index, color in enumerate(rank):
+                state[rank_index].append(Tile.Tile(GamePiece.GamePiece(color)))
 
         return state
 

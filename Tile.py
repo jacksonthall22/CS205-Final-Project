@@ -55,7 +55,6 @@ class Tile(GUIElement.GUIElement):
         assert all((
             type(game_piece) in (GamePiece.GamePiece, type(None)),
             type(highlight_circle) in (bool, type(None)),
-            # TODO Might want to add more later
         ))
 
         self.game_piece = game_piece

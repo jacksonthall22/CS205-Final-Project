@@ -129,10 +129,10 @@ class Game(GUIElement.GUIElement):
             return ranges_to_flip
 
         # Immediately invalid if there's no immediate neighboring GamePieces of opposite color
-        if color == GamePiece.GamePiece.B_CHAR and board.num_white_neighbors[rank][file] == 0:
-            return ranges_to_flip
-        elif color == GamePiece.GamePiece.W_CHAR and board.num_black_neighbors[rank][file] == 0:
-            return ranges_to_flip
+        # if color == GamePiece.GamePiece.B_CHAR and board.num_white_neighbors[rank][file] == 0:
+        #     return ranges_to_flip
+        # elif color == GamePiece.GamePiece.W_CHAR and board.num_black_neighbors[rank][file] == 0:
+        #     return ranges_to_flip
 
         # Valid iff, on any line starting from state[rank][file] and moving in the direction of an element in
         # NEIGHBOR_INDICES_RELATIVE (treating the tuples like direction vectors), there is 1 or more GamePiece of the
@@ -172,14 +172,18 @@ class Game(GUIElement.GUIElement):
                         # If so, add a generator to the list that generates tuples containing the indices to flip for
                         # this direction
 
-                        # TODO Can probably make more efficient (fewer if/else checks)
                         if d_rank == 0:
                             # Can't do a range(start, stop, step) if step is 0
                             # rank_range below is a generator (rank, rank, rank, rank, ...) with number of "rank"s equal
                             # to how many tiles are flipping in this direction
                             rank_range = (rank for _ in range(file + d_file, current_file, d_file))
                         else:
-                            rank_range = range(rank + d_rank, current_rank, d_rank)
+                            try:
+                                rank_range = range(rank + d_rank, current_rank, d_rank)
+                            except RecursionError:
+                                # TODO: this happens about 50% of games - last thing to fix
+                                print('test: RecursionError reached in get_flip_ranges()')
+                                break
 
                         if d_file == 0:
                             # See comment above
@@ -241,24 +245,32 @@ class Game(GUIElement.GUIElement):
         else:
             side_to_move = game.side_to_move
 
-        # TODO Only check moves in neighboring_white_... lists etc for efficiency
-        for rank in range(8):
-            for file in range(8):
+        for rank in range(len(game.board.state)):
+            for file in range(len(game.board.state[0])):
                 if Game.is_valid_move(game.board, rank, file, side_to_move):
                     yield rank, file
+
+        # This ends up being slower overall
+        # if game.side_to_move == GamePiece.GamePiece.B_CHAR:
+        #     for rank, file in game.board.indices_with_white_neighbors:
+        #         if Game.is_valid_move(game.board, rank, file, side_to_move):
+        #             yield rank, file
+        # else:
+        #     for rank, file in game.board.indices_with_black_neighbors:
+        #         if Game.is_valid_move(game.board, rank, file, side_to_move):
+        #             yield rank, file
 
     @staticmethod
     def get_random_valid_move(game):
         """ Return a random valid move as a (rank, file, is_only_move) tuple for the current game.side_to_move. """
 
-        all_valid_moves = Game.get_all_valid_moves(game)
-
-        if all_valid_moves:
+        if Game.has_no_valid_moves(game):
+            return None, None, None
+        else:
+            all_valid_moves = Game.get_all_valid_moves(game)
             choice = random.choice(all_valid_moves)
             return choice[0], choice[1], len(all_valid_moves) == 1
             #                            ^ indicates whether move was only move
-        else:
-            return None, None, None
 
     @staticmethod
     def get_winner(game):
@@ -276,8 +288,7 @@ class Game(GUIElement.GUIElement):
     def is_over(game: 'Game'):
         """ Return True iff the board has no empty Tiles or neither player has valid moves. """
 
-        # TODO Add check for the case when neither player has a move
-        return Board.Board.is_full(game.board.state)
+        return Game.has_no_valid_moves(game) and Game.has_no_valid_moves(game, True)
 
     @staticmethod
     def is_valid_move(board, rank, file, color):
@@ -410,7 +421,7 @@ class Game(GUIElement.GUIElement):
             return False
 
         self.board.place_piece(rank, file, color)
-        self.update_num_board_meta_lists(rank, file, color, True)
+        # self.update_board_meta_lists(rank, file, color, True)
 
         # Flip all the necessary lines of GamePieces & return True
         for flip_range in flip_ranges:
@@ -432,7 +443,7 @@ class Game(GUIElement.GUIElement):
 
         return new_game
 
-    def update_num_board_meta_lists(self, rank, file, color, is_new_piece):
+    def update_board_meta_lists(self, rank, file, color, is_new_piece):
         """ Docstring for update_num_neighbors_lists() - TODO """
 
         if color == GamePiece.GamePiece.W_CHAR:
@@ -445,7 +456,6 @@ class Game(GUIElement.GUIElement):
                     if not is_new_piece:
                         self.board.num_black_neighbors[rank + d_rank][file + d_file] -= 1
 
-                        # TODO Can probably make more efficient - may add and remove same element from indices_... list
                         # Remove these indices from indices_with_black_neighbors if it falls to 0 in num_black_neighbors
                         if self.board.num_black_neighbors[rank + d_rank][file + d_file] == 0 \
                                 and (rank + d_rank, file + d_file) in self.board.indices_with_black_neighbors:
@@ -487,9 +497,9 @@ class Game(GUIElement.GUIElement):
         """
 
         self.board.state[rank][file].game_piece.flip()
-        self.update_num_board_meta_lists(rank, file,
-                                         GamePiece.GamePiece.get_side_up(self.board.state[rank][file].game_piece),
-                                         False)
+        # self.update_board_meta_lists(rank, file,
+        #                              GamePiece.GamePiece.get_side_up(self.board.state[rank][file].game_piece),
+        #                              False)
 
     def flip_all_in_range(self, indices_to_flip):
         """
@@ -532,7 +542,7 @@ class Game(GUIElement.GUIElement):
         """ :return True iff computer makes a move, makes move for computer """
 
         if self.side_to_move == GamePiece.GamePiece.W_CHAR and not Game.is_over(self):
-            return self.computer_ai.make_move(self)
+            return ComputerAI.ComputerAI.make_move(self.computer_ai, self)
 
         return False
 
