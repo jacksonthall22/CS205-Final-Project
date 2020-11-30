@@ -16,11 +16,11 @@ BACKGROUND = [146, 196, 125]
 BUTTON_COLOR = [239, 239, 239]
 
 ''' Load images '''
-programIcon = pygame.image.load('icon.png')
+PROGRAM_ICON = pygame.image.load('icon.png')
 TITLE = pygame.image.load('title.png')
 
 ''' Set window icon '''
-pygame.display.set_icon(programIcon)
+pygame.display.set_icon(PROGRAM_ICON)
 
 ''' Create main game window, change window title '''
 X = 1040
@@ -47,7 +47,7 @@ def gui_game():
     e_menu.height = 100
     menu_layout = Layout.Layout([s_menu, e_menu])
 
-    # random, beginner, amateur, club, expert
+    # Random, Beginner, Moderate, Hard, Expert
     random_button = Button.Button(text="RANDOM")
     random_button.x_loc = (X // 4) - 100
     random_button.y_loc = (3 * Y // 5) - 50
@@ -60,11 +60,11 @@ def gui_game():
     beginner_button.width = 300
     beginner_button.height = 65
 
-    amateur_button = Button.Button(text="AMATEUR", color=(255, 255, 0))
-    amateur_button.x_loc = (X // 4) - 100
-    amateur_button.y_loc = (4 * Y // 5) - 65
-    amateur_button.width = 300
-    amateur_button.height = 65
+    moderate_button = Button.Button(text="MODERATE", color=(255, 255, 0))
+    moderate_button.x_loc = (X // 4) - 100
+    moderate_button.y_loc = (4 * Y // 5) - 65
+    moderate_button.width = 300
+    moderate_button.height = 65
 
     hard_button = Button.Button(text="HARD", color=(246, 129, 129))
     hard_button.x_loc = (3 * X // 4) - 175
@@ -77,7 +77,7 @@ def gui_game():
     expert_button.y_loc = (4.5 * Y // 5) - 35
     expert_button.width = 300
     expert_button.height = 65
-    difficulty_layout = Layout.Layout([random_button, beginner_button, amateur_button, hard_button, expert_button])
+    difficulty_layout = Layout.Layout([random_button, beginner_button, moderate_button, hard_button, expert_button])
 
     e_in_game = Button.Button(text="EXIT")
 
@@ -118,14 +118,15 @@ def gui_game():
                     quit_game()
                 elif action == "START":
                     gui.update_active_screen(difficulty_layout)
-                elif action == "RANDOM" or action == "BEGINNER" or action == "AMATEUR" or action == "HARD" or action == "EXPERT":
+                elif action == "RANDOM" or action == "BEGINNER" or action == "MODERATE" or action == "HARD" \
+                        or action == "EXPERT":
                     gui.update_active_screen(in_game_layout)
                     current_game = Layout.Layout.get_game(GameGUI.GameGUI.get_active_screen(gui))
                     if action == "RANDOM":
                         current_game.computer_ai.set_difficulty(1)
                     elif action == "BEGINNER":
                         current_game.computer_ai.set_difficulty(2)
-                    elif action == "AMATEUR":
+                    elif action == "MODERATE":
                         current_game.computer_ai.set_difficulty(3)
                     elif action == "HARD":
                         current_game.computer_ai.set_difficulty(4)
@@ -152,10 +153,10 @@ def gui_game():
             b_score, w_score = Game.Game.get_winner(current_game)
             if w_score > b_score:
                 dif = w_score - b_score
-                text = "You lost by: " + str(dif) + " points"
+                text = f'{b_score}-{w_score}: You lost by {dif} points!'
             elif w_score < b_score:
                 dif = b_score - w_score
-                text = "You won by: " + str(dif) + " points"
+                text = f'{b_score}-{w_score}: You won by {dif} points!'
             else:
                 text = "Tie game"
             font = pygame.font.Font('freesansbold.ttf', 60)

@@ -15,13 +15,13 @@ class GameGUI:
 
     ''' ========== Constructor ========== '''
 
-    def __init__(self, screens=None, active_layout=None):
+    def __init__(self, layouts=None, active_layout=None):
 
-        if screens is None:
-            screens = set()
+        if layouts is None:
+            layouts = set()
 
-        # List of Screen objects representing win screen, play screen, end screen, etc.
-        self.layouts = screens
+        # List of Layout objects representing win screen, play screen, end screen, etc.
+        self.layouts = layouts
 
         # Whichever screen should be draw()n in the pygame window
         self.active_layout = active_layout

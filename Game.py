@@ -58,7 +58,7 @@ class Game(GUIElement.GUIElement):
     ''' ========== Constructor ========== '''
 
     def __init__(self, state=Board.Board.get_starting_state(), side_to_move=GamePiece.GamePiece.B_CHAR, moves_played=0,
-                 ai_difficulty=5):
+                 ai_difficulty=1):
         super().__init__()
 
         # Make sure params are of correct types
@@ -531,11 +531,10 @@ class Game(GUIElement.GUIElement):
     def computer_move(self):
         """ :return True iff computer makes a move, makes move for computer """
 
-        move_made = False
         if self.side_to_move == GamePiece.GamePiece.W_CHAR and not Game.is_over(self):
-            move_made = self.computer_ai.make_move(self)
+            return self.computer_ai.make_move(self)
 
-        return move_made
+        return False
 
     def draw(self, pygame_screen):
         for row in self.board.state:
@@ -556,8 +555,6 @@ class Game(GUIElement.GUIElement):
         """ If the click location was on a Tile in self.board, make a move at that Tile if it is valid. """
         # Check every Tile in the board to see if click occurred inside its bounding box (might have occurred in a gap
         # between them - in this case loop ends and nothing more is handled, as expected)
-        # TODO check self.no_moves
-
         if self.side_to_move == GamePiece.GamePiece.B_CHAR:
             for rank_index, rank in enumerate(self.board.state):
                 for file_index, tile in enumerate(rank):

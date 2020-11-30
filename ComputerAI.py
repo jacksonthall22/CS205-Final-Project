@@ -61,13 +61,13 @@ class ComputerAI:
             },
         3:
             {
-                'name': 'Amateur',
+                'name': 'Moderate',
                 'search_depth': 4,
                 'probability_returning_random': 0.5
             },
         4:
             {
-                'name': 'Club',
+                'name': 'Hard',
                 'search_depth': 6,
                 'probability_returning_random': 0.25
             },
@@ -101,9 +101,9 @@ class ComputerAI:
         """ Make a random valid move from given Board, or None if no valid moves exist. """
         r, f, was_only_move = Game.Game.get_random_valid_move(game)
         if None in (r, f):
-            return
+            return False
 
-        game.make_move(r, f, game.side_to_move)
+        return game.make_move(r, f, game.side_to_move)
 
     @staticmethod
     def make_move_beginner(game: Game, ai: 'ComputerAI'):
@@ -114,7 +114,7 @@ class ComputerAI:
 
         if ComputerAI.DIFFICULTY_LEVELS[ai.difficulty]['probability_returning_random'] > random.random():
             # Make a random move
-            ComputerAI.make_move_random(game, ai)
+            return ComputerAI.make_move_random(game, ai)
         else:
             # Make a minimax-best move
             r, f, _ = ComputerAI.minimax(game, ComputerAI.DIFFICULTY_LEVELS[ai.difficulty]['search_depth'],
@@ -129,7 +129,7 @@ class ComputerAI:
                 raise RuntimeError('custom error: no moves found in ComputerAI.minimax()')
 
     @staticmethod
-    def make_move_amateur(game: Game, ai: 'ComputerAI'):
+    def make_move_moderate(game: Game, ai: 'ComputerAI'):
         """
             Either make the minimax-best move or a random move, given the AI's difficulty level (see
             ComputerAI.DIFFICULTY_LEVELS).
@@ -137,7 +137,7 @@ class ComputerAI:
 
         if ComputerAI.DIFFICULTY_LEVELS[ai.difficulty]['probability_returning_random'] > random.random():
             # Make a random move
-            ComputerAI.make_move_random(game, ai)
+            return ComputerAI.make_move_random(game, ai)
         else:
             # Make a minimax-best move
             r, f, _ = ComputerAI.minimax(game, ComputerAI.DIFFICULTY_LEVELS[ai.difficulty]['search_depth'],
@@ -152,15 +152,14 @@ class ComputerAI:
                 raise RuntimeError('custom error: no moves found in ComputerAI.minimax()')
 
     @staticmethod
-    def make_move_club(game: Game, ai: 'ComputerAI'):
+    def make_move_hard(game: Game, ai: 'ComputerAI'):
         """
             Either make the minimax-best move or a random move, given the AI's difficulty level (see
             ComputerAI.DIFFICULTY_LEVELS).
         """
-
         if ComputerAI.DIFFICULTY_LEVELS[ai.difficulty]['probability_returning_random'] > random.random():
             # Make a random move
-            ComputerAI.make_move_random(game, ai)
+            return ComputerAI.make_move_random(game, ai)
         else:
             # Make a minimax-best move
             r, f, _ = ComputerAI.minimax(game, ComputerAI.DIFFICULTY_LEVELS[ai.difficulty]['search_depth'],
@@ -284,9 +283,9 @@ class ComputerAI:
         elif self.difficulty == 2:
             return self.make_move_beginner(game, game.computer_ai)
         elif self.difficulty == 3:
-            return self.make_move_amateur(game, game.computer_ai)
+            return self.make_move_moderate(game, game.computer_ai)
         elif self.difficulty == 4:
-            return self.make_move_club(game, game.computer_ai)
+            return self.make_move_hard(game, game.computer_ai)
         elif self.difficulty == 5:
             return self.make_move_expert(game, game.computer_ai)
         else:
