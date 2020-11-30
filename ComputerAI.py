@@ -84,8 +84,7 @@ class ComputerAI:
     ''' ========== Constructor ========== '''
 
     def __init__(self, difficulty=None):
-        self.difficulty = None
-        self.set_difficulty(difficulty)
+        self.difficulty = difficulty
 
     ''' ========== Magic Methods ========== '''
 
@@ -124,6 +123,7 @@ class ComputerAI:
                 move_made = game.make_move(r, f, game.side_to_move)
                 if not move_made:
                     raise RuntimeError('custom error: ComputerAI.minimax() did not generate a valid move')
+                print('Here')
                 return True
             else:
                 raise RuntimeError('custom error: no moves found in ComputerAI.minimax()')

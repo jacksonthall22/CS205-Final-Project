@@ -106,6 +106,7 @@ def gui_game():
     title_location = ((X // 2) - (452 // 2), 50)
 
     in_game = True
+    diff = 1
 
     while in_game:
         for event in pygame.event.get():
@@ -123,15 +124,15 @@ def gui_game():
                     gui.update_active_screen(in_game_layout)
                     current_game = Layout.Layout.get_game(GameGUI.GameGUI.get_active_screen(gui))
                     if action == "RANDOM":
-                        current_game.computer_ai.set_difficulty(1)
+                        diff = 1
                     elif action == "BEGINNER":
-                        current_game.computer_ai.set_difficulty(2)
+                        diff = 2
                     elif action == "MODERATE":
-                        current_game.computer_ai.set_difficulty(3)
+                        diff = 3
                     elif action == "HARD":
-                        current_game.computer_ai.set_difficulty(4)
+                        diff = 4
                     elif action == "EXPERT":
-                        current_game.computer_ai.set_difficulty(5)
+                        diff = 5
                     in_game_layout.new_game()
                     title_location = (20, 20)
                 elif action == 'NEW GAME':
@@ -169,8 +170,8 @@ def gui_game():
         pygame.display.update()
 
         if GameGUI.GameGUI.get_active_screen(gui) == in_game_layout:
-            current_game: Game.Game = Layout.Layout.get_game(GameGUI.GameGUI.get_active_screen(gui))
-
+            current_game = Layout.Layout.get_game(GameGUI.GameGUI.get_active_screen(gui))
+            current_game.computer_ai.set_difficulty(diff)
             if Game.Game.is_over(current_game):
                 gui.update_active_screen(end_layout)
                 title_location = ((X // 2) - (452 // 2), 50)

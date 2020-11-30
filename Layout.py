@@ -39,7 +39,7 @@ class Layout:
         """ :return game object in the current layout """
         for e in layout.elements:
             if type(e) is Game.Game:
-                return copy.deepcopy(e)
+                return e
 
     ''' ========== Instance Methods ========== '''
 
