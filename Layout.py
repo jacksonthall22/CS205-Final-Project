@@ -9,6 +9,7 @@ A Layout consists of
 
 import GUIElement
 import Game
+import copy
 
 
 class Layout:
@@ -37,16 +38,16 @@ class Layout:
     def get_game(layout):
         """ :return game object in the current layout """
         for e in layout.elements:
-            if type(e) == Game.Game:
+            if type(e) is Game.Game:
                 return e
 
     ''' ========== Instance Methods ========== '''
 
     def new_game(self):
         for index, item in enumerate(self.elements):
-            if type(item) == Game.Game:
-                g = Game.Game()
-                self.elements[index] = g
+            if type(item) is Game.Game:
+                self.elements[index] = Game.Game()
+                break
 
     def handle_click(self, x_click_loc, y_click_loc):
         """ Docstring for handle_window_click() - TODO """

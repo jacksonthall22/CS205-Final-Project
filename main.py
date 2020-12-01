@@ -1,7 +1,4 @@
-from Board import Board
 from Game import Game
-from GamePiece import GamePiece
-# import pygame
 
 
 def welcome():

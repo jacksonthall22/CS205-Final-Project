@@ -55,7 +55,6 @@ class Tile(GUIElement.GUIElement):
         assert all((
             type(game_piece) in (GamePiece.GamePiece, type(None)),
             type(highlight_circle) in (bool, type(None)),
-            # TODO Might want to add more later
         ))
 
         self.game_piece = game_piece
@@ -63,6 +62,11 @@ class Tile(GUIElement.GUIElement):
         self.set_game_piece_locations_and_sizes()
 
     ''' ========== Magic Methods ========== '''
+
+    def __repr__(self):
+        """ Docstring for __repr__() - TODO """
+
+        return f'[{self.game_piece.side_up}]'
 
     ''' ========== Static Methods ========== '''
 

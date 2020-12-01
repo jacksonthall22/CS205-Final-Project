@@ -13,15 +13,19 @@ class Button(GUIElement):
 
     ''' ========== Constructor ========== '''
 
-    def __init__(self, text=None):
+    def __init__(self, text=None, color=None):
         # Call parent constructor
         super().__init__()
 
+        if color is None:
+            color = Button.BUTTON_COLOR
         assert all((
             type(text) in (str, type(None)),
+            type(color) in (list, tuple, type(None))
         ))
 
         self.text = text
+        self.color = color
 
     ''' ========== Magic Methods ========== '''
 
@@ -35,9 +39,9 @@ class Button(GUIElement):
         w = self.width
         h = self.height
 
-        pygame.draw.rect(screen, Button.BUTTON_COLOR, (x, y, w, h))
+        pygame.draw.rect(screen, self.color, (x, y, w, h))
         font = pygame.font.Font('freesansbold.ttf', 48)
-        t = font.render(self.text, True, Button.TEXT_COLOR, Button.BUTTON_COLOR)
+        t = font.render(self.text, True, Button.TEXT_COLOR, self.color)
         r = t.get_rect()
         r.center = ((x + (w / 2)), (y + (h / 2)))
         screen.blit(t, r)
