@@ -137,13 +137,7 @@ class Game(GUIElement.GUIElement):
         # Valid iff, on any line starting from state[rank][file] and moving in the direction of an element in
         # NEIGHBOR_INDICES_RELATIVE (treating the tuples like direction vectors), there is 1 or more GamePiece of the
         # opposite color followed by a GamePiece of the same color.
-        if color == GamePiece.GamePiece.B_CHAR:
-            other_color = GamePiece.GamePiece.W_CHAR
-        elif color == GamePiece.GamePiece.W_CHAR:
-            other_color = GamePiece.GamePiece.B_CHAR
-        else:
-            raise ValueError(f'custom error: invalid color given to Game.is_valid_move() - not GamePiece.B_CHAR '
-                             f'("{GamePiece.GamePiece.B_CHAR}") or GamePiece.W_CHAR ("{GamePiece.GamePiece.W_CHAR}")')
+        other_color = GamePiece.GamePiece.get_opposite_color(color)
 
         # Check for line of >= 1 other_color followed by 1 this_color
         # Check in all 8 directions
@@ -178,12 +172,7 @@ class Game(GUIElement.GUIElement):
                             # to how many tiles are flipping in this direction
                             rank_range = (rank for _ in range(file + d_file, current_file, d_file))
                         else:
-                            try:
-                                rank_range = range(rank + d_rank, current_rank, d_rank)
-                            except RecursionError:
-                                # TODO: this happens about 50% of games - last thing to fix
-                                print('test: RecursionError reached in get_flip_ranges()')
-                                break
+                            rank_range = range(rank + d_rank, current_rank, d_rank)
 
                         if d_file == 0:
                             # See comment above
@@ -197,30 +186,27 @@ class Game(GUIElement.GUIElement):
                 # Invalid if loop tries to access element at an invalid index before `break`ing
                 continue
 
-        if not ranges_to_flip:
-            return False
-
         return ranges_to_flip
 
     @staticmethod
-    def has_valid_moves(game, opponent_to_move: bool = False):
+    def has_valid_moves(game, opponent_to_move: bool = False, color=None):
         """
-            Return True iff there are no moves for the side_to_move. If
-            opponent_to_move is True, return True iff there are no moves
-            for the opponent.
+            Return True iff there is one or more moves in game's current board state. If `color` is given,
+            check for moves by that color, else check for moves by game.side_to_move. If opponent_to_move is True,
+            check for moves of the opposite color.
         """
-        for _ in Game.generate_all_valid_moves(game, opponent_to_move):
+        for _ in Game.generate_all_valid_moves(game, opponent_to_move, color):
             return True
         return False
 
     @staticmethod
-    def has_no_valid_moves(game, opponent_to_move: bool = False):
+    def has_no_valid_moves(game, opponent_to_move: bool = False, color=None):
         """
-            Return False iff there are no moves for the side_to_move. If
-            opponent_to_move is True, return False iff there are no moves
-            for the opponent.
+            Return True iff there are no moves in game's current board state. If `color` is given,
+            check for moves by that color, else check for moves by game.side_to_move. If opponent_to_move is True,
+            check for moves of the opposite color.
         """
-        return not Game.has_valid_moves(game, opponent_to_move)
+        return not Game.has_valid_moves(game, opponent_to_move, color)
 
     @staticmethod
     def get_all_valid_moves(game, opponent_to_move: bool = False):
@@ -231,23 +217,26 @@ class Game(GUIElement.GUIElement):
         return list(Game.generate_all_valid_moves(game, opponent_to_move))
 
     @staticmethod
-    def generate_all_valid_moves(game, opponent_to_move: bool = False):
+    def generate_all_valid_moves(game, opponent_to_move: bool = False, color=None):
         """
-            Yield all valid moves for the given game. If opponent_to_move is true,
-            yield legal moves if it were opponent's turn.
+            Yield all valid moves for the given game. If `color` is given, check for moves by that color, else check
+            for moves by game.side_to_move. If opponent_to_move is True, check for moves of the opposite color.
         """
 
         if opponent_to_move:
-            if game.side_to_move == GamePiece.GamePiece.B_CHAR:
-                side_to_move = GamePiece.GamePiece.W_CHAR
+            # Opposite of `color`, if it's set
+            if color is not None:
+                color = GamePiece.GamePiece.get_opposite_color(color)
             else:
-                side_to_move = GamePiece.GamePiece.B_CHAR
+                # Opposite of game.side_to_move
+                color = GamePiece.GamePiece.get_opposite_color(game.side_to_move)
         else:
-            side_to_move = game.side_to_move
+            if color is None:
+                color = game.side_to_move
 
         for rank in range(len(game.board.state)):
             for file in range(len(game.board.state[0])):
-                if Game.is_valid_move(game.board, rank, file, side_to_move):
+                if Game.is_valid_move(game.board, rank, file, color):
                     yield rank, file
 
         # This ends up being slower overall
@@ -288,7 +277,7 @@ class Game(GUIElement.GUIElement):
     def is_over(game: 'Game'):
         """ Return True iff the board has no empty Tiles or neither player has valid moves. """
 
-        return Game.has_no_valid_moves(game) and Game.has_no_valid_moves(game, True)
+        return game.moves_played == 60 or Game.has_no_valid_moves(game) and Game.has_no_valid_moves(game, True)
 
     @staticmethod
     def is_valid_move(board, rank, file, color):
@@ -296,8 +285,18 @@ class Game(GUIElement.GUIElement):
 
         # Validate that get_flip_ranges() does not return empty list
         # In Python not [] == True
-
         return not not Game.get_flip_ranges(board, rank, file, color)
+
+    @staticmethod
+    def get_position_after_move(game, rank, file, color=None):
+        if color is None:
+            color = game.side_to_move
+
+        new_game = deepcopy(game)
+
+        new_game.make_move(rank, file, color)
+
+        return new_game
 
     ''' ========== Instance Methods ========== '''
 
@@ -406,89 +405,99 @@ class Game(GUIElement.GUIElement):
 
     def skip_move(self):
         """ Skip the side_to_move's move. """
-        self.side_to_move = (GamePiece.GamePiece.B_CHAR, GamePiece.GamePiece.W_CHAR)[
-            self.side_to_move == GamePiece.GamePiece.B_CHAR]
+        self.side_to_move = GamePiece.GamePiece.get_opposite_color(self.side_to_move)
 
     def make_move(self, rank, file, color):
         """
-            If move is valid, update state, num_<black/white>_neighbors, indices_with_<black/white>_neighbors,
-            and side_to_move, then return True. If move does not flip any tiles, don't make the move and return False.
+            If move is valid, update state, and side_to_move, then return True. If move is not valid, return False.
         """
         # Return if there are no valid directions to flip
         flip_ranges = Game.get_flip_ranges(self.board, rank, file, color)
 
-        if list(flip_ranges) == 0:
+        if len(flip_ranges) == 0:
             return False
 
         self.board.place_piece(rank, file, color)
-        # self.update_board_meta_lists(rank, file, color, True)
 
         # Flip all the necessary lines of GamePieces & return True
         for flip_range in flip_ranges:
             self.flip_all_in_range(flip_range)
 
         self.moves_played += 1
-        self.side_to_move = (GamePiece.GamePiece.B_CHAR, GamePiece.GamePiece.W_CHAR)[
-            self.side_to_move == GamePiece.GamePiece.B_CHAR]
+        self.side_to_move = GamePiece.GamePiece.get_opposite_color(self.side_to_move)
         return True
 
-    @staticmethod
-    def get_position_after_move(game, rank, file, side_to_move=None):
-        if side_to_move is None:
-            side_to_move = game.side_to_move
+    def try_next_moves(self, color):
+        """
+            For all valid moves by the given color in the current position, make the move
+            and yield, then un-make the move.
+        """
+        for rank, file in Game.generate_all_valid_moves(self, color=color):
+            flip_ranges = [list(gen) for gen in Game.get_flip_ranges(self.board, rank, file, color)]
 
-        new_game = deepcopy(game)
+            # Note: This try block should not error - in ComputerAI.minimax(), pruning a branch causes for loop to
+            #       break, which would stop this generator from un-making the move if there were no finally clause
+            try:
+                # Do piece placement and flippage
+                self.moves_played += 1
+                self.board.place_piece(rank, file, color)
+                for flip_range in flip_ranges:
+                    self.flip_all_in_range(flip_range)
 
-        new_game.make_move(rank, file, side_to_move)
+                yield rank, file
+            finally:
+                # Undo piece placement and flippage
+                self.moves_played -= 1
+                self.board.remove_piece(rank, file)
+                for flip_range in flip_ranges:
+                    self.flip_all_in_range(flip_range)
 
-        return new_game
-
-    def update_board_meta_lists(self, rank, file, color, is_new_piece):
-        """ Docstring for update_num_neighbors_lists() - TODO """
-
-        if color == GamePiece.GamePiece.W_CHAR:
-            # Flipping black -> white
-            for d_rank, d_file in Board.Board.NEIGHBOR_INDICES_RELATIVE:
-                try:
-                    self.board.num_white_neighbors[rank + d_rank][file + d_file] += 1
-
-                    # Only decrement opposite color if a GamePiece was already at this index
-                    if not is_new_piece:
-                        self.board.num_black_neighbors[rank + d_rank][file + d_file] -= 1
-
-                        # Remove these indices from indices_with_black_neighbors if it falls to 0 in num_black_neighbors
-                        if self.board.num_black_neighbors[rank + d_rank][file + d_file] == 0 \
-                                and (rank + d_rank, file + d_file) in self.board.indices_with_black_neighbors:
-                            self.board.indices_with_black_neighbors.remove((rank + d_rank, file + d_file))
-
-                    # Remove these indices from indices_with_white_neighbors if it falls to 0 in num_white_neighbors
-                    if self.board.num_white_neighbors[rank + d_rank][file + d_file] > 0:
-                        self.board.indices_with_white_neighbors.add((rank + d_rank, file + d_file))
-                except IndexError:
-                    continue
-
-        elif color == GamePiece.GamePiece.B_CHAR:
-            # Flipping white -> black
-            for d_rank, d_file in Board.Board.NEIGHBOR_INDICES_RELATIVE:
-                try:
-                    self.board.num_black_neighbors[rank + d_rank][file + d_file] += 1
-
-                    # Only decrement opposite color if a GamePiece was already at this index
-                    if not is_new_piece:
-                        self.board.num_white_neighbors[rank + d_rank][file + d_file] -= 1
-
-                        # Remove these indices from indices_with_black_neighbors if it falls to 0 in num_black_neighbors
-                        if self.board.num_white_neighbors[rank + d_rank][file + d_file] == 0 \
-                                and (rank + d_rank, file + d_file) in self.board.indices_with_white_neighbors:
-                            self.board.indices_with_white_neighbors.remove((rank + d_rank, file + d_file))
-
-                    # Remove these indices from indices_with_white_neighbors if it falls to 0 in num_white_neighbors
-                    if self.board.num_black_neighbors[rank + d_rank][file + d_file] > 0:
-                        self.board.indices_with_black_neighbors.add((rank + d_rank, file + d_file))
-                except IndexError:
-                    continue
-        else:
-            raise ValueError('custom error: Game.flip() called with range containing different colored GamePieces')
+    # def update_board_meta_lists(self, rank, file, color, is_new_piece):
+    #     """ Docstring for update_num_neighbors_lists() - TODO """
+    #
+    #     if color == GamePiece.GamePiece.W_CHAR:
+    #         # Flipping black -> white
+    #         for d_rank, d_file in Board.Board.NEIGHBOR_INDICES_RELATIVE:
+    #             try:
+    #                 self.board.num_white_neighbors[rank + d_rank][file + d_file] += 1
+    #
+    #                 # Only decrement opposite color if a GamePiece was already at this index
+    #                 if not is_new_piece:
+    #                     self.board.num_black_neighbors[rank + d_rank][file + d_file] -= 1
+    #
+    #                     # Remove these indices from indices_with_black_neighbors if it falls to 0 in num_black_neighbors
+    #                     if self.board.num_black_neighbors[rank + d_rank][file + d_file] == 0 \
+    #                             and (rank + d_rank, file + d_file) in self.board.indices_with_black_neighbors:
+    #                         self.board.indices_with_black_neighbors.remove((rank + d_rank, file + d_file))
+    #
+    #                 # Remove these indices from indices_with_white_neighbors if it falls to 0 in num_white_neighbors
+    #                 if self.board.num_white_neighbors[rank + d_rank][file + d_file] > 0:
+    #                     self.board.indices_with_white_neighbors.add((rank + d_rank, file + d_file))
+    #             except IndexError:
+    #                 continue
+    #
+    #     elif color == GamePiece.GamePiece.B_CHAR:
+    #         # Flipping white -> black
+    #         for d_rank, d_file in Board.Board.NEIGHBOR_INDICES_RELATIVE:
+    #             try:
+    #                 self.board.num_black_neighbors[rank + d_rank][file + d_file] += 1
+    #
+    #                 # Only decrement opposite color if a GamePiece was already at this index
+    #                 if not is_new_piece:
+    #                     self.board.num_white_neighbors[rank + d_rank][file + d_file] -= 1
+    #
+    #                     # Remove these indices from indices_with_black_neighbors if it falls to 0 in num_black_neighbors
+    #                     if self.board.num_white_neighbors[rank + d_rank][file + d_file] == 0 \
+    #                             and (rank + d_rank, file + d_file) in self.board.indices_with_white_neighbors:
+    #                         self.board.indices_with_white_neighbors.remove((rank + d_rank, file + d_file))
+    #
+    #                 # Remove these indices from indices_with_white_neighbors if it falls to 0 in num_white_neighbors
+    #                 if self.board.num_black_neighbors[rank + d_rank][file + d_file] > 0:
+    #                     self.board.indices_with_black_neighbors.add((rank + d_rank, file + d_file))
+    #             except IndexError:
+    #                 continue
+    #     else:
+    #         raise ValueError('custom error: Game.flip() called with range containing different colored GamePieces')
 
     def flip(self, rank, file):
         """
@@ -550,6 +559,7 @@ class Game(GUIElement.GUIElement):
         for row in self.board.state:
             for tile in row:
                 tile.remove_highlight()
+
         if self.side_to_move == GamePiece.GamePiece.B_CHAR:
             for r, f in Game.generate_all_valid_moves(self):
                 self.board.state[r][f].highlight_tile()

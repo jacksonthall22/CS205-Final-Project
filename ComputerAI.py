@@ -37,6 +37,7 @@ Methods
 import random
 
 import Game
+import GamePiece
 
 
 class ComputerAI:
@@ -54,25 +55,25 @@ class ComputerAI:
         2:
             {
                 'name': 'Beginner',
-                'max_depth': 3,  # 10
+                'max_depth': 4,  # 10
                 'probability_returning_random': 0.75
             },
         3:
             {
                 'name': 'Moderate',
-                'max_depth': 3,  # 15
+                'max_depth': 5,  # 15
                 'probability_returning_random': 0.5
             },
         4:
             {
                 'name': 'Hard',
-                'max_depth': 4,  # 20
+                'max_depth': 6,  # 20
                 'probability_returning_random': 0.25
             },
         5:
             {
                 'name': 'Expert',
-                'max_depth': 4,  # 30
+                'max_depth': 6,  # 30
                 'probability_returning_random': 0
             }
     }
@@ -115,7 +116,7 @@ class ComputerAI:
         else:
             # Make a minimax-best move
             r, f, _ = ComputerAI.minimax(game, ComputerAI.DIFFICULTY_LEVELS[ai.difficulty]['max_depth'],
-                                         float('-inf'), float('+inf'), False)
+                                         float('-inf'), float('+inf'), game.side_to_move)
 
             if None not in (r, f):
                 move_made = game.make_move(r, f, game.side_to_move)
@@ -138,7 +139,7 @@ class ComputerAI:
         else:
             # Make a minimax-best move
             r, f, _ = ComputerAI.minimax(game, ComputerAI.DIFFICULTY_LEVELS[ai.difficulty]['max_depth'],
-                                         float('-inf'), float('+inf'), False)
+                                         float('-inf'), float('+inf'), game.side_to_move)
 
             if None not in (r, f):
                 move_made = game.make_move(r, f, game.side_to_move)
@@ -160,7 +161,7 @@ class ComputerAI:
         else:
             # Make a minimax-best move
             r, f, _ = ComputerAI.minimax(game, ComputerAI.DIFFICULTY_LEVELS[ai.difficulty]['max_depth'],
-                                         float('-inf'), float('+inf'), False)
+                                         float('-inf'), float('+inf'), game.side_to_move)
 
             if None not in (r, f):
                 move_made = game.make_move(r, f, game.side_to_move)
@@ -174,7 +175,7 @@ class ComputerAI:
     def make_move_expert(game: Game, ai: 'ComputerAI'):
         """ Make the best move using alpha-beta search. Return True iff move was made successfully. """
         r, f, _ = ComputerAI.minimax(game, ComputerAI.DIFFICULTY_LEVELS[ai.difficulty]['max_depth'],
-                                     float('-inf'), float('+inf'), False)
+                                     float('-inf'), float('+inf'), game.side_to_move)
 
         if None not in (r, f):
             move_made = game.make_move(r, f, game.side_to_move)
@@ -199,7 +200,7 @@ class ComputerAI:
         return random.normalvariate(0, 1)
 
     @staticmethod
-    def minimax(game, depth, alpha, beta, maximizing_player):
+    def minimax(game, depth, alpha, beta, color):
         """
             Preform minimax search on the given Game (return
             move with highest static evaluation `depth` moves
@@ -209,35 +210,36 @@ class ComputerAI:
             https://www.youtube.com/watch?v=l-hh51ncgDI&list=TLPQMjkxMTIwMjBN_bodUBpAxQ&index=1
             (@ 10:26)
         """
-        if depth == 0 or Game.Game.is_over(game):
+        # print(game)
+        # time.sleep(0.1)
+
+        if depth == 0:
+            # Normally would have to check if game.is_over(), but lines below would make it redundant
             return None, None, ComputerAI.static_eval()
 
         # Without the following check this function would return +/- infinity in positions
         # where no moves are yielded from generate_all_valid_moves() - no future static eval would
         # beat infinity so computer would always preference first line it finds that forces opponent
         # to skip a move regardless of future outcomes
-        if Game.Game.has_no_valid_moves(game):
+        if Game.Game.has_no_valid_moves(game, color=color):
             # Credit to: https://stackoverflow.com/a/51323433/7304977
             # No children (this side has no moves). If opponent also has no moves
             # in this position, game is over - return static_eval(). Else, return
             # the best minimax move from perspective of opponent (at same depth)
-            if Game.Game.has_no_valid_moves(game, True):
+            if Game.Game.has_no_valid_moves(game, color=color, opponent_to_move=True):
                 # No moves for opponent in this position either
                 return None, None, ComputerAI.static_eval()
 
-            return ComputerAI.minimax(game, depth, alpha, beta, not maximizing_player)
-
-        children = ((r, f, Game.Game.get_position_after_move(game, r, f))
-                    for r, f in Game.Game.generate_all_valid_moves(game))
+            return ComputerAI.minimax(game, depth, alpha, beta, GamePiece.GamePiece.get_opposite_color(color))
 
         best_move_r = None
         best_move_f = None
-        if maximizing_player:
-            # -infinity = worst score for maximizing player
+        if color == GamePiece.GamePiece.B_CHAR:
+            # -infinity = worst score for maximizing player (black)
             max_eval = float('-inf')
-            for r, f, child in children:
+            for r, f in game.try_next_moves(GamePiece.GamePiece.B_CHAR):
                 # Best move at next depth irrelevant at this depth (only eval matters)
-                _, _, current_eval = ComputerAI.minimax(child, depth-1, alpha, beta, False)
+                _, _, current_eval = ComputerAI.minimax(game, depth-1, alpha, beta, GamePiece.GamePiece.W_CHAR)
                 if current_eval > max_eval:
                     max_eval = current_eval
                     best_move_r = r
@@ -247,11 +249,11 @@ class ComputerAI:
                     break
             return best_move_r, best_move_f, max_eval
         else:
-            # +infinity = worst score for minimizing player
+            # +infinity = worst score for minimizing player (white)
             min_eval = float('+inf')
-            for r, f, child in children:
+            for r, f in game.try_next_moves(GamePiece.GamePiece.W_CHAR):
                 # Best move at next depth irrelevant at this depth (only eval matters)
-                _, _, current_eval = ComputerAI.minimax(child, depth-1, alpha, beta, True)
+                _, _, current_eval = ComputerAI.minimax(game, depth-1, alpha, beta, GamePiece.GamePiece.B_CHAR)
                 if current_eval < min_eval:
                     min_eval = current_eval
                     best_move_r = r

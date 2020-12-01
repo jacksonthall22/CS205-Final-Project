@@ -108,10 +108,10 @@ class Board(GUIElement.GUIElement):
         # All these set to None for now before being set in set_state()
         # If not set to None first PyCharm gives warning for adding instance variables outside __init__()
         self.state = None
-        self.num_black_neighbors = None
-        self.num_white_neighbors = None
-        self.indices_with_black_neighbors = None
-        self.indices_with_white_neighbors = None
+        # self.num_black_neighbors = None
+        # self.num_white_neighbors = None
+        # self.indices_with_black_neighbors = None
+        # self.indices_with_white_neighbors = None
         self.set_state(state)
         self.set_tile_locations_and_sizes()
 
@@ -163,35 +163,36 @@ class Board(GUIElement.GUIElement):
     def __repr__(self):
         """ Print all metadata for this object. """
 
-        # Header
-        r = 'Board __repr__()\n'
-        r += '----------------\n'
+        # # Header
+        # r = 'Board __repr__()\n'
+        # r += '----------------\n'
+        #
+        # # Super's __repr__()
+        # r += '  super().__repr__(): ' + super().__repr__() + '\n'
 
-        # Super's __repr__()
-        r += '  super().__repr__(): ' + super().__repr__() + '\n'
-
-        r += '  state: [\n'
+        # r += '  state: [\n'
+        r = ''
         for rank in self.state:
-            r += '    ' + ', '.join(str(tile.game_piece) for tile in rank) + '\n'
-        r += '  ]\n'
+            r += ''.join(str(tile.game_piece) for tile in rank) + '\n'
+        # r += '  ]\n'
 
-        r += '  num_black_neighbors: [\n'
-        for rank in self.num_black_neighbors:
-            r += '    ' + ', '.join(str(i) for i in rank) + '\n'
-        r += '  ]\n'
-
-        r += '  indices_with_black_neighbors: {\n'
-        r += '    ' + ', '.join(str(coord) for coord in self.indices_with_black_neighbors) + '\n'
-        r += '  }\n'
-
-        r += '  num_white_neighbors: [\n'
-        for rank in self.num_white_neighbors:
-            r += '    ' + ', '.join(str(i) for i in rank) + '\n'
-        r += '  ]\n'
-
-        r += '  indices_with_white_neighbors: {\n'
-        r += '    ' + ', '.join(str(coord) for coord in self.indices_with_white_neighbors) + '\n'
-        r += '  }\n'
+        # r += '  num_black_neighbors: [\n'
+        # for rank in self.num_black_neighbors:
+        #     r += '    ' + ', '.join(str(i) for i in rank) + '\n'
+        # r += '  ]\n'
+        #
+        # r += '  indices_with_black_neighbors: {\n'
+        # r += '    ' + ', '.join(str(coord) for coord in self.indices_with_black_neighbors) + '\n'
+        # r += '  }\n'
+        #
+        # r += '  num_white_neighbors: [\n'
+        # for rank in self.num_white_neighbors:
+        #     r += '    ' + ', '.join(str(i) for i in rank) + '\n'
+        # r += '  ]\n'
+        #
+        # r += '  indices_with_white_neighbors: {\n'
+        # r += '    ' + ', '.join(str(coord) for coord in self.indices_with_white_neighbors) + '\n'
+        # r += '  }\n'
 
         return r
 
@@ -405,28 +406,32 @@ class Board(GUIElement.GUIElement):
             self.state = new_state
 
             # Two 2d lists: see docs at the top
-            self.num_black_neighbors = Board.get_num_neighbors(self.state, GamePiece.GamePiece.B_CHAR)
-            self.num_white_neighbors = Board.get_num_neighbors(self.state, GamePiece.GamePiece.W_CHAR)
-
-            # Two 1d sets: contains tuples of (rank, file) indices where
-            # self.num_<white/black>_neighbors[rank][file] > 0
-            # Ex. for starting position:
-            #     self.indices_with_black_neighbors = {(2, 2), (2, 3), (2, 4), (3, 2), (3, 4), (3, 5), ... (5, 5)}
-            # Note: Python sets have O(1) insert, delete, and `x in s` operations
-            self.indices_with_black_neighbors = Board.get_indices_with_neighbors(self.num_white_neighbors)
-            self.indices_with_white_neighbors = Board.get_indices_with_neighbors(self.num_white_neighbors)
+            # self.num_black_neighbors = Board.get_num_neighbors(self.state, GamePiece.GamePiece.B_CHAR)
+            # self.num_white_neighbors = Board.get_num_neighbors(self.state, GamePiece.GamePiece.W_CHAR)
+            #
+            # # Two 1d sets: contains tuples of (rank, file) indices where
+            # # self.num_<white/black>_neighbors[rank][file] > 0
+            # # Ex. for starting position:
+            # #     self.indices_with_black_neighbors = {(2, 2), (2, 3), (2, 4), (3, 2), (3, 4), (3, 5), ... (5, 5)}
+            # # Note: Python sets have O(1) insert, delete, and `x in s` operations
+            # self.indices_with_black_neighbors = Board.get_indices_with_neighbors(self.num_white_neighbors)
+            # self.indices_with_white_neighbors = Board.get_indices_with_neighbors(self.num_white_neighbors)
         else:
-            # Should never reach here - will be helpful for debugging later
             raise ValueError('custom error: Invalid new_state given to Board.set_state()')
 
     def place_piece(self, rank, file, color):
-        """ Set the GamePiece of the Tile at the given location to the given color. Assumes move already validated. """
+        """
+            Set the GamePiece of the Tile at the given location to the given color. No error checking.
+            Does not flip any pieces.
+        """
+        self.state[rank][file].game_piece.set_side_up(color)
 
-        if GamePiece.GamePiece.get_side_up(self.state[rank][file].game_piece) == GamePiece.GamePiece.EMPTY_CHAR:
-            self.state[rank][file].game_piece.set_side_up(color)
-
-        else:
-            raise ValueError('custom error: invalid [rank][file] location given to Board.place_piece()')
+    def remove_piece(self, rank, file):
+        """
+            Set the GamePiece in the Tile at the given location to GamePiece.EMPTY_CHAR. No error checking.
+            Used only in ComputerAI.minimax() when recursing.
+        """
+        self.state[rank][file].game_piece.set_side_up(GamePiece.GamePiece.EMPTY_CHAR)
 
     def draw(self, pygame_screen):
         for row in self.state:

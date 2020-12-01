@@ -106,6 +106,15 @@ class GamePiece(GUIElement.GUIElement):
         else:
             return GamePiece.EMPTY_DISPLAY_CHAR
 
+    @staticmethod
+    def get_opposite_color(color):
+        """ Return the opposite GamePiece color if color is GamePiece.B_CHAR or GamePiece.W_CHAR. """
+
+        if color == GamePiece.B_CHAR:
+            return GamePiece.W_CHAR
+        else:
+            return GamePiece.B_CHAR
+
     ''' ========== Instance Methods ========== '''
 
     def flip(self):
@@ -119,8 +128,6 @@ class GamePiece(GUIElement.GUIElement):
 
     def set_side_up(self, side_up):
         """ Set self.side_up to given value. """
-        assert side_up in ('b', 'w')
-
         self.side_up = side_up
 
     def draw(self, pygame_screen):
