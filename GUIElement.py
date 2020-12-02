@@ -4,45 +4,6 @@ GUIElement objects represent the metadata of any object that is drawable on the 
 GUIElement extends ABC (stands for Abstract Base Class), a built-in Python library for creating abstract
 classes. GUIElement is abstract by design so that its children must implement its single `@abstractmethod` 
 called `display()`.
-
-==========================
-|||     Class Info     |||
-==========================
-
-Subclasses
-==========
-    - Game
-    - Board
-    - Tile
-    - GamePiece
-
-Fields
-======
-    Constant Class Vars
-    -------------------
-        TODO
-
-    Regular Class Vars
-    ------------------
-        TODO
-
-Methods
-=======
-    Constructor
-    -----------
-        TODO
-
-    Magic Methods
-    -------------
-        TODO
-
-    Static Methods
-    --------------
-        TODO
-
-    Instance Methods
-    ----------------
-        TODO
 """
 
 from abc import ABC, abstractmethod  # Builtin Python lib to declare abstract classes

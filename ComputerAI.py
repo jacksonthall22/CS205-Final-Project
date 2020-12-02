@@ -1,38 +1,5 @@
 """
 Container for all methods used to choose good Othello moves.
-
-==========================
-|||     Class Info     |||
-==========================
-
-Fields
-======
-    Constant Class Vars
-    -------------------
-        TODO
-
-    Regular Class Vars
-    ------------------
-        TODO
-
-Methods
-=======
-    Constructor
-    -----------
-        TODO
-
-    Magic Methods
-    -------------
-        TODO
-
-    Static Methods
-    --------------
-        TODO
-
-    Instance Methods
-    ----------------
-        TODO
-
 """
 import random
 

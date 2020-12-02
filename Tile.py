@@ -64,9 +64,8 @@ class Tile(GUIElement.GUIElement):
     ''' ========== Magic Methods ========== '''
 
     def __repr__(self):
-        """ Docstring for __repr__() - TODO """
-
-        return f'[{self.game_piece.side_up}]'
+        """ Return a string "[x]" where x is the formal representation of the contained GamePiece. """
+        return f'[{repr(self.game_piece)}]'
 
     ''' ========== Static Methods ========== '''
 
@@ -150,11 +149,12 @@ class Tile(GUIElement.GUIElement):
             self.game_piece.draw(pygame_screen)
 
     def handle_click(self, x_click_loc, y_click_loc):
-        """ Docstring for handle_click(self, x_click_loc, y_click_loc):() - TODO """
+        """
+            Although Tile is a GUIElement, there is no need to ever handle a click because its containing Board's
+            handle_click() will always be called instead if click occurs inside GamePiece.
 
-        # Note: This method doesn't need to actually be implemented.
-        #       The only time the `handle_click()` method would need to be called here (on a Tile) is after the
-        #       `handle_click()` of the containing Board has been called - all piece placement logic is
-        #       located in Board.handle_click(). It cannot be implemented here because from this scope, we don't have
-        #       access to the Board's Game object and therefore can't know what color piece to place.
-        return None
+            A handle_click() could not be implemented here to place a piece anyway because from this scope, there is
+            no access to the Tile's containing (Board's containing) Game object and therefore there is no way to know
+            what color GamePiece would need to be placed, nevermind validate the move using functions in Game.
+        """
+        pass

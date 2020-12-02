@@ -1,38 +1,5 @@
 """
 `GamePiece` represents a two-colored Othello piece that can be placed in `Tile`s within a `Board`.
-
-==========================
-|||     Class Info     |||
-==========================
-
-Fields
-======
-    Constant Class Vars
-    -------------------
-        TODO
-
-    Regular Class Vars
-    ------------------
-        TODO
-
-Methods
-=======
-    Constructor
-    -----------
-        TODO
-
-    Magic Methods
-    -------------
-        TODO
-
-    Static Methods
-    --------------
-        TODO
-
-    Instance Methods
-    ----------------
-        TODO
-
 """
 
 import GUIElement
@@ -82,7 +49,7 @@ class GamePiece(GUIElement.GUIElement):
         return GamePiece.EMPTY_DISPLAY_CHAR
 
     def __repr__(self):
-        """ Docstring for __repr__() - TODO """
+        """ Return GamePiece.B_CHAR, GamePiece.W_CHAR, or GamePiece.EMPTY_CHAR depending on self.side_up. """
 
         if self.side_up is None:
             return GamePiece.EMPTY_CHAR
@@ -140,5 +107,8 @@ class GamePiece(GUIElement.GUIElement):
             pygame.draw.circle(pygame_screen, GamePiece.WHITE, position, int(self.width / 2))
 
     def handle_click(self, x_click_loc, y_click_loc):
-        """ Docstring for handle_click() - TODO """
-        return None
+        """
+            Although GamePiece is a GUIElement, there is no need to ever handle a click because its containing
+            Board's handle_click() will always be called instead if click occurs inside GamePiece.
+        """
+        pass

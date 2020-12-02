@@ -2,14 +2,10 @@
 A Layout represents the a whole screen layout / view shown to the user. A GameGUI can have multiple Screens, so
 whenever a new view is needed within a `GameGUI g` (main playing screen, win screen, menu screen, etc.), add a new
 Screen to the `g.layouts` list.
-
-A Layout consists of
-
 """
 
 import GUIElement
 import Game
-import copy
 
 
 class Layout:
@@ -50,8 +46,7 @@ class Layout:
                 break
 
     def handle_click(self, x_click_loc, y_click_loc):
-        """ Docstring for handle_window_click() - TODO """
-
+        """ Determine which element in self.elements the click occurred inside and handle the click on that element. """
         for element in self.elements:
             if GUIElement.GUIElement.click_is_inside(element, x_click_loc, y_click_loc):
                 return element.handle_click(x_click_loc, y_click_loc)
