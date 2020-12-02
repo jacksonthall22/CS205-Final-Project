@@ -9,8 +9,6 @@ class Button(GUIElement):
     BUTTON_COLOR = [239, 239, 239]
     TEXT_COLOR = [0, 0, 0]
 
-    ''' ========== Regular Class Variables ========== '''
-
     ''' ========== Constructor ========== '''
 
     def __init__(self, text=None, color=None):
@@ -19,17 +17,9 @@ class Button(GUIElement):
 
         if color is None:
             color = Button.BUTTON_COLOR
-        assert all((
-            type(text) in (str, type(None)),
-            type(color) in (list, tuple, type(None))
-        ))
 
         self.text = text
         self.color = color
-
-    ''' ========== Magic Methods ========== '''
-
-    ''' ========== Static Methods ========== '''
 
     ''' ========== Instance Methods ========== '''
 
@@ -47,5 +37,5 @@ class Button(GUIElement):
         screen.blit(t, r)
 
     def handle_click(self, x_click_loc, y_click_loc):
-        """ Docstring for handle_click(self, x_click_loc, y_click_loc):() - return text for next step """
+        """ :return text for next step """
         return self.text

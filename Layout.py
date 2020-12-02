@@ -2,22 +2,14 @@
 A Layout represents the a whole screen layout / view shown to the user. A GameGUI can have multiple Screens, so
 whenever a new view is needed within a `GameGUI g` (main playing screen, win screen, menu screen, etc.), add a new
 Screen to the `g.layouts` list.
-
-A Layout consists of
-
 """
 
 import GUIElement
 import Game
-import copy
 
 
 class Layout:
     """ A Layout represents a particular screen layout / view shown to the user. See more docs at top of file. """
-
-    ''' ========== Constant Class Variables ========== '''
-
-    ''' ========== Regular Class Variables ========== '''
 
     ''' ========== Constructor ========== '''
 
@@ -30,13 +22,12 @@ class Layout:
         # be drawn on this Screen
         self.elements = gui_elements
 
-    ''' ========== Magic Methods ========== '''
-
     ''' ========== Static Methods ========== '''
 
     @staticmethod
     def get_game(layout):
         """ :return game object in the current layout """
+
         for e in layout.elements:
             if type(e) is Game.Game:
                 return e
@@ -50,7 +41,7 @@ class Layout:
                 break
 
     def handle_click(self, x_click_loc, y_click_loc):
-        """ Docstring for handle_window_click() - TODO """
+        """ calls handle_click of the correct GUIElement clicked on """
 
         for element in self.elements:
             if GUIElement.GUIElement.click_is_inside(element, x_click_loc, y_click_loc):

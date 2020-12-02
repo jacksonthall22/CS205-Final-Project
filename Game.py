@@ -1,46 +1,12 @@
 """
 Game objects extend GUIElement and store any relevant data about an Othello game. It contains all methods related to
 Othello game logic (making and validating moves, getting AI's move, etc.).
-
-==========================
-|||     Class Info     |||
-==========================
-
-Fields
-======
-    Constant Class Vars
-    -------------------
-        TODO
-
-    Regular Class Vars
-    ------------------
-        TODO
-
-Methods
-=======
-    Constructor
-    -----------
-        TODO
-
-    Magic Methods
-    -------------
-        TODO
-
-    Static Methods
-    --------------
-        TODO
-
-    Instance Methods
-    ----------------
-        TODO
-
 """
 
 import Board
 import ComputerAI
 import GamePiece
 import GUIElement
-
 from copy import deepcopy
 import pygame
 import random
@@ -51,26 +17,12 @@ import time
 class Game(GUIElement.GUIElement):
     """ Game extends GUIElement, stores relevant metadata about an Othello game. """
 
-    ''' ========== Constant Class Variables ========== '''
-
-    ''' ========== Regular Class Variables ========== '''
-
     ''' ========== Constructor ========== '''
 
     def __init__(self, state=Board.Board.get_starting_state(), side_to_move=GamePiece.GamePiece.B_CHAR, moves_played=0,
                  ai_difficulty=1):
         super().__init__()
 
-        # Make sure params are of correct types
-        assert all((
-            type(state) in (list, None),
-            state,  # Checks that state isn't empty
-            all((len(sublist) == len(state) for sublist in state)),
-            side_to_move in (GamePiece.GamePiece.B_CHAR, GamePiece.GamePiece.W_CHAR),
-            type(moves_played) == int,
-            moves_played >= 0,
-            ai_difficulty in ComputerAI.ComputerAI.DIFFICULTY_LEVELS
-        ))
         self.board = Board.Board(Board.Board.get_starting_state())
         self.side_to_move = side_to_move
         self.moves_played = moves_played
@@ -127,12 +79,6 @@ class Game(GUIElement.GUIElement):
         # Immediately invalid if the square is occupied
         if GamePiece.GamePiece.get_side_up(board.state[rank][file].game_piece) != GamePiece.GamePiece.EMPTY_CHAR:
             return ranges_to_flip
-
-        # Immediately invalid if there's no immediate neighboring GamePieces of opposite color
-        # if color == GamePiece.GamePiece.B_CHAR and board.num_white_neighbors[rank][file] == 0:
-        #     return ranges_to_flip
-        # elif color == GamePiece.GamePiece.W_CHAR and board.num_black_neighbors[rank][file] == 0:
-        #     return ranges_to_flip
 
         # Valid iff, on any line starting from state[rank][file] and moving in the direction of an element in
         # NEIGHBOR_INDICES_RELATIVE (treating the tuples like direction vectors), there is 1 or more GamePiece of the
@@ -238,16 +184,6 @@ class Game(GUIElement.GUIElement):
             for file in range(len(game.board.state[0])):
                 if Game.is_valid_move(game.board, rank, file, color):
                     yield rank, file
-
-        # This ends up being slower overall
-        # if game.side_to_move == GamePiece.GamePiece.B_CHAR:
-        #     for rank, file in game.board.indices_with_white_neighbors:
-        #         if Game.is_valid_move(game.board, rank, file, side_to_move):
-        #             yield rank, file
-        # else:
-        #     for rank, file in game.board.indices_with_black_neighbors:
-        #         if Game.is_valid_move(game.board, rank, file, side_to_move):
-        #             yield rank, file
 
     @staticmethod
     def get_random_valid_move(game):
@@ -452,53 +388,6 @@ class Game(GUIElement.GUIElement):
                 for flip_range in flip_ranges:
                     self.flip_all_in_range(flip_range)
 
-    # def update_board_meta_lists(self, rank, file, color, is_new_piece):
-    #     """ Docstring for update_num_neighbors_lists() - TODO """
-    #
-    #     if color == GamePiece.GamePiece.W_CHAR:
-    #         # Flipping black -> white
-    #         for d_rank, d_file in Board.Board.NEIGHBOR_INDICES_RELATIVE:
-    #             try:
-    #                 self.board.num_white_neighbors[rank + d_rank][file + d_file] += 1
-    #
-    #                 # Only decrement opposite color if a GamePiece was already at this index
-    #                 if not is_new_piece:
-    #                     self.board.num_black_neighbors[rank + d_rank][file + d_file] -= 1
-    #
-    #                     # Remove these indices from indices_with_black_neighbors if it falls to 0 in num_black_neighbors
-    #                     if self.board.num_black_neighbors[rank + d_rank][file + d_file] == 0 \
-    #                             and (rank + d_rank, file + d_file) in self.board.indices_with_black_neighbors:
-    #                         self.board.indices_with_black_neighbors.remove((rank + d_rank, file + d_file))
-    #
-    #                 # Remove these indices from indices_with_white_neighbors if it falls to 0 in num_white_neighbors
-    #                 if self.board.num_white_neighbors[rank + d_rank][file + d_file] > 0:
-    #                     self.board.indices_with_white_neighbors.add((rank + d_rank, file + d_file))
-    #             except IndexError:
-    #                 continue
-    #
-    #     elif color == GamePiece.GamePiece.B_CHAR:
-    #         # Flipping white -> black
-    #         for d_rank, d_file in Board.Board.NEIGHBOR_INDICES_RELATIVE:
-    #             try:
-    #                 self.board.num_black_neighbors[rank + d_rank][file + d_file] += 1
-    #
-    #                 # Only decrement opposite color if a GamePiece was already at this index
-    #                 if not is_new_piece:
-    #                     self.board.num_white_neighbors[rank + d_rank][file + d_file] -= 1
-    #
-    #                     # Remove these indices from indices_with_black_neighbors if it falls to 0 in num_black_neighbors
-    #                     if self.board.num_white_neighbors[rank + d_rank][file + d_file] == 0 \
-    #                             and (rank + d_rank, file + d_file) in self.board.indices_with_white_neighbors:
-    #                         self.board.indices_with_white_neighbors.remove((rank + d_rank, file + d_file))
-    #
-    #                 # Remove these indices from indices_with_white_neighbors if it falls to 0 in num_white_neighbors
-    #                 if self.board.num_black_neighbors[rank + d_rank][file + d_file] > 0:
-    #                     self.board.indices_with_black_neighbors.add((rank + d_rank, file + d_file))
-    #             except IndexError:
-    #                 continue
-    #     else:
-    #         raise ValueError('custom error: Game.flip() called with range containing different colored GamePieces')
-
     def flip(self, rank, file):
         """
             Take indices rank, file and update board.num_<black/white>_neighbors and
@@ -506,9 +395,6 @@ class Game(GUIElement.GUIElement):
         """
 
         self.board.state[rank][file].game_piece.flip()
-        # self.update_board_meta_lists(rank, file,
-        #                              GamePiece.GamePiece.get_side_up(self.board.state[rank][file].game_piece),
-        #                              False)
 
     def flip_all_in_range(self, indices_to_flip):
         """

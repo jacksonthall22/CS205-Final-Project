@@ -39,8 +39,6 @@ class Tile(GUIElement.GUIElement):
 
     SPACING = 1
 
-    ''' ========== Regular Class Variables ========== '''
-
     ''' ========== Constructor ========== '''
 
     def __init__(self, game_piece=None, highlight_circle=None):
@@ -50,12 +48,6 @@ class Tile(GUIElement.GUIElement):
         # Make a new empty GamePiece if appropriate
         if game_piece is None:
             game_piece = GamePiece.GamePiece()
-
-        # Make sure params are of correct type
-        assert all((
-            type(game_piece) in (GamePiece.GamePiece, type(None)),
-            type(highlight_circle) in (bool, type(None)),
-        ))
 
         self.game_piece = game_piece
         self.highlight_valid_move = highlight_circle
@@ -67,8 +59,6 @@ class Tile(GUIElement.GUIElement):
         """ Docstring for __repr__() - TODO """
 
         return f'[{self.game_piece.side_up}]'
-
-    ''' ========== Static Methods ========== '''
 
     ''' ========== Instance Methods ========== '''
 

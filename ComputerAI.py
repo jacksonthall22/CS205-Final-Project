@@ -1,41 +1,4 @@
-"""
-Container for all methods used to choose good Othello moves.
-
-==========================
-|||     Class Info     |||
-==========================
-
-Fields
-======
-    Constant Class Vars
-    -------------------
-        TODO
-
-    Regular Class Vars
-    ------------------
-        TODO
-
-Methods
-=======
-    Constructor
-    -----------
-        TODO
-
-    Magic Methods
-    -------------
-        TODO
-
-    Static Methods
-    --------------
-        TODO
-
-    Instance Methods
-    ----------------
-        TODO
-
-"""
 import random
-
 import Game
 import GamePiece
 
@@ -77,8 +40,6 @@ class ComputerAI:
                 'probability_returning_random': 0
             }
     }
-
-    ''' ========== Regular Class Variables ========== '''
 
     ''' ========== Constructor ========== '''
 
@@ -239,7 +200,7 @@ class ComputerAI:
             max_eval = float('-inf')
             for r, f in game.try_next_moves(GamePiece.GamePiece.B_CHAR):
                 # Best move at next depth irrelevant at this depth (only eval matters)
-                _, _, current_eval = ComputerAI.minimax(game, depth-1, alpha, beta, GamePiece.GamePiece.W_CHAR)
+                _, _, current_eval = ComputerAI.minimax(game, depth - 1, alpha, beta, GamePiece.GamePiece.W_CHAR)
                 if current_eval > max_eval:
                     max_eval = current_eval
                     best_move_r = r
@@ -253,7 +214,7 @@ class ComputerAI:
             min_eval = float('+inf')
             for r, f in game.try_next_moves(GamePiece.GamePiece.W_CHAR):
                 # Best move at next depth irrelevant at this depth (only eval matters)
-                _, _, current_eval = ComputerAI.minimax(game, depth-1, alpha, beta, GamePiece.GamePiece.B_CHAR)
+                _, _, current_eval = ComputerAI.minimax(game, depth - 1, alpha, beta, GamePiece.GamePiece.B_CHAR)
                 if current_eval < min_eval:
                     min_eval = current_eval
                     best_move_r = r
