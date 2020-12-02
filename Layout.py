@@ -41,8 +41,7 @@ class Layout:
                 break
 
     def handle_click(self, x_click_loc, y_click_loc):
-        """ calls handle_click of the correct GUIElement clicked on """
-
+        """ Determine which element in self.elements was clicked on and handle the click for that element. """
         for element in self.elements:
             if GUIElement.GUIElement.click_is_inside(element, x_click_loc, y_click_loc):
                 return element.handle_click(x_click_loc, y_click_loc)

@@ -11,10 +11,11 @@ called `display()`.
 
 Subclasses
 ==========
-    - Game
     - Board
-    - Tile
+    - Button
+    - Game
     - GamePiece
+    - Tile
 """
 
 from abc import ABC, abstractmethod  # Builtin Python lib to declare abstract classes

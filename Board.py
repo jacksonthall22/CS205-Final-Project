@@ -48,23 +48,6 @@ Here's a blank board state for reference (with empty Tiles):
         │      │      │      │      │      │      │      │      │
         └──────┴──────┴──────┴──────┴──────┴──────┴──────┴──────┘
           a/[0]  b/[1]  c/[2]  d/[3]  e/[4]  f/[5]  g/[6]  h/[7]
-
-Fields
-------
-    Constant Class Vars
-    -------------------
-        B_CHAR : Character to print to terminal in board spaces containing black `GamePieces`
-        W_CHAR : Character to print to terminal in board spaces containing white `GamePieces`
-        EMPTY_CHAR : Character to print to terminal in board spaces containing no `GamePiece`
-    Instance Vars
-    -------------
-        state : Current state of the board as a 2d list of `Tile` objects, each of which
-                optionally contains a `GamePiece` object (see `Tile` class documentation)
-        num_black_neighbors: 2d list where each element contains an int equal to the number of black GamePieces
-                neighboring the corresponding element in state
-        num_white_neighbors: 2d list where each element contains an int equal to the number of white GamePieces
-                neighboring the corresponding element in state
-
 """
 
 import GamePiece

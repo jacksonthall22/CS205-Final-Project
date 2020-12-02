@@ -1,3 +1,7 @@
+"""
+Container for all methods used to choose good Othello moves.
+"""
+
 import random
 import Game
 import GamePiece
@@ -18,25 +22,25 @@ class ComputerAI:
         2:
             {
                 'name': 'Beginner',
-                'max_depth': 4,  # 10
+                'max_depth': 5,
                 'probability_returning_random': 0.75
             },
         3:
             {
                 'name': 'Moderate',
-                'max_depth': 5,  # 15
+                'max_depth': 6,
                 'probability_returning_random': 0.5
             },
         4:
             {
                 'name': 'Hard',
-                'max_depth': 6,  # 20
+                'max_depth': 7,
                 'probability_returning_random': 0.25
             },
         5:
             {
                 'name': 'Expert',
-                'max_depth': 6,  # 30
+                'max_depth': 8,
                 'probability_returning_random': 0
             }
     }
@@ -158,7 +162,7 @@ class ComputerAI:
         """
 
         # Generate float from normal distribution (mean = 0, sd = 1)
-        return random.normalvariate(0, 1)
+        return random.getrandbits(8)
 
     @staticmethod
     def minimax(game, depth, alpha, beta, color):
