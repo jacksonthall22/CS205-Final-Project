@@ -1,4 +1,5 @@
-from Game import Game
+import Game
+import UI
 
 
 def welcome():
@@ -11,27 +12,20 @@ def welcome():
 ██║   ██║   ██║   ██╔══██║██╔══╝  ██║     ██║     ██║   ██║
 ╚██████╔╝   ██║   ██║  ██║███████╗███████╗███████╗╚██████╔╝
  ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝ ╚═════╝ 
-Created by Ben Sylvester, Jackson Hall, Jordan Marchese, and Parker Sawbridge
+Created by: Ben Sylvester, Jackson Hall, Jordan Marchese, and Parker Strawbridge
 ''')
 
 
 def main():
-    welcome()
-
-    # game = Game(Board.get_state_from_strings([
-    #     'ww--b--b',
-    #     'www-b-bb',
-    #     'wwwwb-bb',
-    #     'wwwbwwbb',
-    #     'wwbwwwbb',
-    #     'bwwwwbwb',
-    #     'wbbwwwbb',
-    #     'bbbwwb-b'
-    # ]), GamePiece.B_CHAR)
-
-    game = Game()
-
-    game.game_loop()
+    """ Runs GUI or command line game based on gui Bool """
+    gui = True
+    if gui:
+        UI.gui_game()
+        UI.quit_game()
+    else:
+        welcome()
+        game = Game.Game()
+        game.game_loop()
 
 
 if __name__ == '__main__':

@@ -4,6 +4,18 @@ GUIElement objects represent the metadata of any object that is drawable on the 
 GUIElement extends ABC (stands for Abstract Base Class), a built-in Python library for creating abstract
 classes. GUIElement is abstract by design so that its children must implement its single `@abstractmethod` 
 called `display()`.
+
+==========================
+|||     Class Info     |||
+==========================
+
+Subclasses
+==========
+    - Board
+    - Button
+    - Game
+    - GamePiece
+    - Tile
 """
 
 from abc import ABC, abstractmethod  # Builtin Python lib to declare abstract classes
@@ -14,10 +26,6 @@ class GUIElement(ABC):
         GUIElement is an abstract class used to represent any object that is drawable in the GUI. All drawable objects
         extend GUIElement.
     """
-
-    ''' ========== Constant Class Variables ========== '''
-
-    ''' ========== Regular Class Variables ========== '''
 
     ''' ========== Constructor ========== '''
 
@@ -86,8 +94,7 @@ class GUIElement(ABC):
             Return True iff the (x_click_loc, y_click_loc) pixel coordinate is located inside the bounding box of this
             GUIElement.
         """
-        return gui_element.x_loc <= x_click_loc < gui_element.x_loc + gui_element.width \
-               and gui_element.y_loc <= y_click_loc < gui_element.y_loc + gui_element.height
+        return gui_element.x_loc <= x_click_loc < gui_element.x_loc + gui_element.width and gui_element.y_loc <= y_click_loc < gui_element.y_loc + gui_element.height
 
     ''' ========== Instance Methods ========== '''
 

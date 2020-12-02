@@ -23,15 +23,11 @@ class GamePiece(GUIElement.GUIElement):
     BLACK = [0, 0, 0]
     WHITE = [255, 255, 255]
 
-    ''' ========== Regular Class Variables ========== '''
-
     ''' ========== Constructor ========== '''
 
     def __init__(self, side_up=EMPTY_CHAR):
         # Call parent constructor
         super().__init__()
-
-        assert side_up in (GamePiece.B_CHAR, GamePiece.W_CHAR, GamePiece.EMPTY_CHAR)
 
         self.side_up = side_up
 

@@ -75,8 +75,6 @@ class Board(GUIElement.GUIElement):
     # Number of pixels gap between ranks/files in the GUI's Board
     GUI_TILE_GAP_SIZE = 2.5
 
-    ''' ========== Regular Class Variables ========== '''
-
     ''' ========== Constructor ========== '''
 
     def __init__(self, state=None, x_loc=500, y_loc=15, width=528, height=528):
@@ -86,21 +84,12 @@ class Board(GUIElement.GUIElement):
         # All these set to None for now before being set in set_state()
         # If not set to None first PyCharm gives warning for adding instance variables outside __init__()
         self.state = None
-        # self.num_black_neighbors = None
-        # self.num_white_neighbors = None
-        # self.indices_with_black_neighbors = None
-        # self.indices_with_white_neighbors = None
         self.set_state(state)
         self.set_tile_locations_and_sizes()
 
     ''' ========== Magic Methods ========== '''
 
     def __str__(self, show_coords=True):
-        # Quick check to make sure board is correct dimensions and
-        # only contains 'b', 'w', or None in every square
-        # (assert statements throw an AssertionError if given expression is False)
-        assert Board.is_valid_state(self.state)
-
         # Build board string
         output_string = ''
 
@@ -141,36 +130,9 @@ class Board(GUIElement.GUIElement):
     def __repr__(self):
         """ Print all metadata for this object. """
 
-        # # Header
-        # r = 'Board __repr__()\n'
-        # r += '----------------\n'
-        #
-        # # Super's __repr__()
-        # r += '  super().__repr__(): ' + super().__repr__() + '\n'
-
-        # r += '  state: [\n'
         r = ''
         for rank in self.state:
             r += ''.join(str(tile.game_piece) for tile in rank) + '\n'
-        # r += '  ]\n'
-
-        # r += '  num_black_neighbors: [\n'
-        # for rank in self.num_black_neighbors:
-        #     r += '    ' + ', '.join(str(i) for i in rank) + '\n'
-        # r += '  ]\n'
-        #
-        # r += '  indices_with_black_neighbors: {\n'
-        # r += '    ' + ', '.join(str(coord) for coord in self.indices_with_black_neighbors) + '\n'
-        # r += '  }\n'
-        #
-        # r += '  num_white_neighbors: [\n'
-        # for rank in self.num_white_neighbors:
-        #     r += '    ' + ', '.join(str(i) for i in rank) + '\n'
-        # r += '  ]\n'
-        #
-        # r += '  indices_with_white_neighbors: {\n'
-        # r += '    ' + ', '.join(str(coord) for coord in self.indices_with_white_neighbors) + '\n'
-        # r += '  }\n'
 
         return r
 
@@ -248,13 +210,6 @@ class Board(GUIElement.GUIElement):
                 start_state = Board.get_state_from_strings(start_state_str)
         """
 
-        assert all((
-            len(state_str) == 8,
-            len(state_str[0]) == 8,
-            all((c in (GamePiece.GamePiece.B_CHAR, GamePiece.GamePiece.W_CHAR, GamePiece.GamePiece.EMPTY_CHAR) for rank
-                 in state_str for c in rank))
-        ))
-
         state = []
         for rank_index, rank in enumerate(state_str):
             state.append([])
@@ -280,7 +235,7 @@ class Board(GUIElement.GUIElement):
             all((
                 all((
                     GamePiece.GamePiece.get_side_up(tile.game_piece) in (
-                    GamePiece.GamePiece.B_CHAR, GamePiece.GamePiece.W_CHAR, GamePiece.GamePiece.EMPTY_CHAR)
+                        GamePiece.GamePiece.B_CHAR, GamePiece.GamePiece.W_CHAR, GamePiece.GamePiece.EMPTY_CHAR)
                     for tile in rank))
                 for rank in state
             )),
@@ -293,8 +248,6 @@ class Board(GUIElement.GUIElement):
             color neighboring state[r][f] (ie. Tiles at state[r + delta_r][f + delta_f] for
             (delta_r, delta_f) in NEIGHBOR_INDEXES_RELATIVE). If state is None, return None.
         """
-
-        assert neighbor_color in (GamePiece.GamePiece.B_CHAR, GamePiece.GamePiece.W_CHAR)
 
         # Return None if there is no `state` to build the list from
         if state is None:

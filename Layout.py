@@ -11,10 +11,6 @@ import Game
 class Layout:
     """ A Layout represents a particular screen layout / view shown to the user. See more docs at top of file. """
 
-    ''' ========== Constant Class Variables ========== '''
-
-    ''' ========== Regular Class Variables ========== '''
-
     ''' ========== Constructor ========== '''
 
     def __init__(self, gui_elements=None):
@@ -26,13 +22,12 @@ class Layout:
         # be drawn on this Screen
         self.elements = gui_elements
 
-    ''' ========== Magic Methods ========== '''
-
     ''' ========== Static Methods ========== '''
 
     @staticmethod
     def get_game(layout):
         """ :return game object in the current layout """
+
         for e in layout.elements:
             if type(e) is Game.Game:
                 return e
@@ -46,7 +41,7 @@ class Layout:
                 break
 
     def handle_click(self, x_click_loc, y_click_loc):
-        """ Determine which element in self.elements the click occurred inside and handle the click on that element. """
+        """ Determine which element in self.elements was clicked on and handle the click for that element. """
         for element in self.elements:
             if GUIElement.GUIElement.click_is_inside(element, x_click_loc, y_click_loc):
                 return element.handle_click(x_click_loc, y_click_loc)
